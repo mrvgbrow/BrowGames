@@ -1,0 +1,65 @@
+#!/c/Users/sp4ce/AppData/Local/Programs/Python/Python310/python
+
+import pygame
+import math
+
+# General
+SCREEN_HEIGHT=600
+SCREEN_WIDTH=800
+FONT_SIZE=36
+SCREEN_COLOR=(0,0,0)
+SOUND_VOLUME=1
+
+# Timing
+TICK_FRAMERATE=120
+
+# Scoring 
+SCORE_XPOS=10
+SCORE_YPOS=10
+SCORE_HIDE=True
+
+# Paddle properties
+PLAYER_MOVESTEP=5
+PLAYER1_CONTROL='computer'
+PLAYER2_CONTROL='computer'
+PLAYER1_X_POSITION=SCREEN_WIDTH/20
+PLAYER2_X_POSITION=SCREEN_WIDTH*19/20
+PLAYER_WIDTH=SCREEN_WIDTH/60
+PLAYER_HEIGHT=SCREEN_HEIGHT/10
+PLAYER1_COLOR=(0,150,150)
+PLAYER2_COLOR=(200,200,0)
+PLAYER_CONTROL_FACTOR=0.5
+PLAYER_RADIUS=PLAYER_WIDTH*3
+PADDLE_TYPE='normal'
+
+# Ball properties
+BALL_NUMBER=1
+BALL_SPEED=PLAYER_MOVESTEP
+BALL_RADIUS=7
+BALL_COLOR=(100,200,100)
+#BALL_MINANGLE_RADIANS=math.pi/8
+BALL_MINANGLE_RADIANS=0
+
+# AI Properties
+AI_PREDICT_BOUNCE=1
+AI_PADDLE_SHIFT=0.5
+
+# Bug demos
+DISCRETE_STEPS=0
+
+# Import pygame.locals for easier access to key coordinates
+# Updated to conform to flake8 and black standards
+from pygame.locals import (
+    RLEACCEL,
+    K_UP,
+    K_DOWN,
+    K_LEFT,
+    K_RIGHT,
+    K_ESCAPE,
+    K_LEFTBRACKET,
+    K_RIGHTBRACKET,
+    KEYDOWN,
+    KEYUP,
+    K_p,
+    QUIT,
+)
