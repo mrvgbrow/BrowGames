@@ -43,6 +43,9 @@ BALL_MINANGLE_RADIANS=math.pi/8
 AI_PREDICT_BOUNCE=1
 AI_PADDLE_SHIFT=0.75
 
+# Bug Demos
+DISCRETE_STEPS=True
+
 # Import pygame.locals for easier access to key coordinates
 # Updated to conform to flake8 and black standards
 from pygame.locals import (
