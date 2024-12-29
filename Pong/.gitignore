@@ -2,3 +2,6 @@ scores.dat
 *.spec
 gif/*
 text/*
+dist/*
+build/*
+__pycache__/*

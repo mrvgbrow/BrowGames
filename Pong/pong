@@ -1,14 +1,20 @@
 #!/c/Users/sp4ce/AppData/Local/Programs/Python/Python310/python
 
+# These lines are only for the creation of the executable. 
+# Remove when running from a Ptyhon interpreter.
 if getattr(sys,'frozen', False):
     os.chdir(sys._MEIPASS)
+
 import os
+import sys
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide' 
 #os.environ['SDL_VIDEO_WINDOW_POS']="%d,%d" % (0,0)
 import pygame
-import sys
+import menu
+import presets
 import player
 import curved_paddle
+import random
 import datetime
 import ball
 import gameconstants as gc
@@ -17,11 +23,20 @@ import gameconstants as gc
 pygame.init()
 pygame.font.init()
 pygame.mixer.music.load("ding.mp3")
-pygame.mixer.music.set_volume(gc.SOUND_VOLUME)
 clock=pygame.time.Clock()
-font=pygame.font.Font(None,gc.FONT_SIZE)
+presets_dict=presets.load_presets()
+preset_default='One Player Standard'
+presets.set_preset(presets_dict[preset_default])
 screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
+menu_run=True
+while menu_run:
+    menu_run,preset_default=menu.run_menu('Pong',screen,presets_dict,preset_default)
+gc.scale_parameters()
+
+font=pygame.font.Font(None,gc.FONT_SIZE)
+pygame.mixer.music.set_volume(gc.SOUND_VOLUME)
 all_sprites = pygame.sprite.Group()
+screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
 
 # Create the player and ball sprites, add them to sprite groups for 
 # ease of processing.
@@ -45,7 +60,7 @@ total_time=0
 score_player1=0   
 score_player2=0
 current_player=2
-pause=True
+pause=False
 step=False
 
 while running:
@@ -113,9 +128,14 @@ while running:
     if balls_hit:
         for ball_hit in balls_hit:
             if ball_hit.player_active==1:
-                ball_hit.bounce_wall('right')
-                anglechange=player1.compute_anglechange(ball_hit.rect.centery)
-                ball_hit.anglechange(anglechange)
+                if gc.ORIGINAL_BOUNCE:
+                  new_angle=player1.compute_original_angle(ball_hit.rect.centery,ball_hit.speedx)
+                  ball_hit.set_angle(new_angle)
+                else:
+                  ball_hit.bounce_wall('right')
+                  anglechange=player1.compute_anglechange(ball_hit.rect.centery)
+                  ball_hit.anglechange(anglechange)
+                player1.target=gc.SCREEN_HEIGHT*random.random()
                 ball_hit.player_active=2
                 current_player=2
 
@@ -125,15 +145,31 @@ while running:
     if balls_hit:
         for ball_hit in balls_hit:
             if ball_hit.player_active==2:
-                ball_hit.bounce_wall('left')
-                anglechange=-player2.compute_anglechange(ball_hit.rect.centery)
-                ball_hit.anglechange(anglechange)
+                if gc.ORIGINAL_BOUNCE:
+                  new_angle=player2.compute_original_angle(ball_hit.rect.centery,ball_hit.speedx)
+                  ball_hit.set_angle(new_angle)
+                else:
+                  ball_hit.bounce_wall('left')
+                  anglechange=-player2.compute_anglechange(ball_hit.rect.centery)
+                  ball_hit.anglechange(anglechange)
+                player2.target=gc.SCREEN_HEIGHT*random.random()
                 ball_hit.player_active=1
                 current_player=1
 
     # If no balls remain on the field, increment the score for the player
     # whose turn it *isn't*
     if not balls:
+
+        # This code was used to generate a demo of the original bounce pattern
+#        for i in range(5):
+#          ball_0=ball.Ball()
+#          ball_0.y=0.5*gc.SCREEN_HEIGHT-gc.PLAYER_HEIGHT/2+float(i)*gc.PLAYER_HEIGHT/4
+#          ball_0.rect.centery=0.5*gc.SCREEN_HEIGHT-gc.PLAYER_HEIGHT/2+float(i)*gc.PLAYER_HEIGHT/4+15
+#          ball_0.speedy=0
+#          ball_0.speedx=gc.BALL_SPEED/gc.TICK_FRAMERATE
+#          balls.add(ball_0)
+#          all_sprites.add(ball_0)
+
         ball_0=ball.Ball()
         balls.add(ball_0)
         all_sprites.add(ball_0)
@@ -162,3 +198,4 @@ pygame.mixer.quit()
 
 # Done! Time to quit.
 pygame.quit()
+

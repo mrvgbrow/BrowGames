@@ -15,9 +15,9 @@ class Ball(pygame.sprite.Sprite):
         self.surf.set_colorkey(gc.SCREEN_COLOR,gc.RLEACCEL)
         pygame.draw.circle(self.surf, gc.BALL_COLOR,(gc.BALL_RADIUS,gc.BALL_RADIUS),gc.BALL_RADIUS)
         self.mask=pygame.mask.from_surface(self.surf)
-        angle=random.random()*math.pi/2-math.pi/4
-        self.speed=gc.BALL_SPEED
-        self.speedx,self.speedy=physics.angle_to_coords(angle,self.speed)
+        angle=random.random()*math.pi/2-math.pi/4+random.random()-0.5
+        self.base_speed=gc.BALL_SPEED
+        self.speedx,self.speedy=physics.angle_to_coords(angle,self.base_speed)
         if self.speedx<0:
             self.player_active=1
         else:
@@ -64,15 +64,24 @@ class Ball(pygame.sprite.Sprite):
     def anglechange(self,angle_change):
         angle_old,speed=physics.coords_to_angle(self.speedx,self.speedy)
         angle=angle_old+angle_change
-        if abs(math.pi/2-angle) < gc.BALL_MINANGLE_RADIANS:
-            angle=math.pi/2+(angle_old-math.pi/2)/abs(angle_old-math.pi/2)*gc.BALL_MINANGLE_RADIANS
-        if abs(-math.pi/2-angle) < gc.BALL_MINANGLE_RADIANS:
-            angle=-math.pi/2+(angle_old+math.pi/2)/abs(angle_old+math.pi/2)*gc.BALL_MINANGLE_RADIANS
+        if abs(math.pi/2-angle) < gc.BALL_MINANGLE_DEGREES*math.pi/180.0:
+            angle=math.pi/2+(angle_old-math.pi/2)/abs(angle_old-math.pi/2)*gc.BALL_MINANGLE_DEGREES*math.pi/180.0
+        if abs(-math.pi/2-angle) < gc.BALL_MINANGLE_DEGREES*math.pi/180.0:
+            angle=-math.pi/2+(angle_old+math.pi/2)/abs(angle_old+math.pi/2)*gc.BALL_MINANGLE_DEGREES*math.pi/180.0
+        self.base_speed+=gc.BALL_SPEED_INCREASE
+        speed=min(self.base_speed,gc.BALL_MAX_SPEED)
         self.speedx,self.speedy=physics.angle_to_coords(angle,speed)
+
+    def set_angle(self,angle_set):
+        angle_old,speed=physics.coords_to_angle(self.speedx,self.speedy)
+        self.base_speed+=gc.BALL_SPEED_INCREASE
+        speed=min(self.base_speed,gc.BALL_MAX_SPEED)
+        speed=speed*abs(1/math.cos(angle_set))
+        self.speedx,self.speedy=physics.angle_to_coords(angle_set,speed)
 
     def update_intercept(self,x_position):
         self.intercept=physics.find_intercept(self.speedx,self.speedy,self.rect.centerx,self.rect.centery,x_position)
-        if (self.intercept < 0 or self.intercept > gc.SCREEN_HEIGHT) and gc.AI_PREDICT_BOUNCE == 1:
+        if (self.intercept < 0 or self.intercept > gc.SCREEN_HEIGHT) and gc.AI_PREDICT_BOUNCE:
             intercept_x_0=physics.find_intercept(self.speedy,self.speedx,self.rect.centery,self.rect.centerx,0)
             intercept_x_1=physics.find_intercept(self.speedy,self.speedx,self.rect.centery,self.rect.centerx,gc.SCREEN_HEIGHT)
             if self.player_active==2:
