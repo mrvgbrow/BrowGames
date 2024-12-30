@@ -2,8 +2,8 @@
 
 # These lines are only for the creation of the executable. 
 # Remove when running from a Ptyhon interpreter.
-if getattr(sys,'frozen', False):
-    os.chdir(sys._MEIPASS)
+#if getattr(sys,'frozen', False):
+#    os.chdir(sys._MEIPASS)
 
 import os
 import sys
@@ -25,7 +25,7 @@ pygame.font.init()
 pygame.mixer.music.load("ding.mp3")
 clock=pygame.time.Clock()
 presets_dict=presets.load_presets()
-preset_default='One Player Standard'
+preset_default='One Player Computer Perfect'
 presets.set_preset(presets_dict[preset_default])
 screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
 menu_run=True
@@ -62,6 +62,8 @@ score_player2=0
 current_player=2
 pause=False
 step=False
+center_line_width=2
+n_dash_center_line=30
 
 while running:
 
@@ -117,10 +119,21 @@ while running:
     for entity in all_sprites:
         screen.blit(entity.surf,entity.rect)
 
-    # Render the score in the upper left corner 
+    # Render the score, if requested 
     if not gc.SCORE_HIDE:
         score_text=font.render(f'Player1: {score_player1}  Player2: {score_player2}',True,(255,255,255))
         screen.blit(score_text, (gc.SCORE_XPOS,gc.SCORE_YPOS))
+
+    # Render the clock, if requested
+    if not gc.TIME_HIDE:
+        rounded_time=float(int(total_time*100))/100.0
+        time_text=font.render(f'Time: {rounded_time}',True,(255,255,255))
+        screen.blit(time_text, (gc.TIME_XPOS,gc.TIME_YPOS))
+
+    if not gc.CENTER_LINE_HIDE:
+        for center_count in range(n_dash_center_line):
+            y_pos=gc.SCREEN_HEIGHT/n_dash_center_line*center_count
+            pygame.draw.rect(screen,(255,255,255),(gc.SCREEN_WIDTH/2-center_line_width/2,y_pos,center_line_width,gc.SCREEN_HEIGHT/n_dash_center_line/2))
 
     # Check whether any balls are colliding with the player 1. If so, compute
     # the bounce angle and change the active player
