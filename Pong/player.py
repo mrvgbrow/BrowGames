@@ -35,8 +35,8 @@ class Player(pygame.sprite.Sprite):
         elif control == 'computer':
             if abs(target-self.target)>gc.PLAYER_HEIGHT*gc.AI_ERROR_DISTANCE and target>0 and target<gc.SCREEN_HEIGHT:
                 self.target=target+2*(random.random()-0.5)*gc.AI_ERROR_DISTANCE*(gc.PLAYER_HEIGHT+gc.BALL_RADIUS)
-            if self.target > 0 and self.target < gc.SCREEN_HEIGHT:
-                direction=self.target-self.rect.centery+gc.PLAYER_HEIGHT*gc.AI_PADDLE_SHIFT*(4.5-(self.target % 10))/10
+            if self.target>-gc.PLAYER_HEIGHT*gc.AI_ERROR_DISTANCE and self.target<gc.SCREEN_HEIGHT+gc.PLAYER_HEIGHT*gc.AI_ERROR_DISTANCE:
+                direction=self.target-self.rect.centery
                 if abs(direction) > gc.PLAYER_MOVESTEP:
                     self.rect.move_ip(0,direction/abs(direction)*gc.PLAYER_MOVESTEP)
 
