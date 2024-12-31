@@ -64,6 +64,8 @@ pause=False
 step=False
 center_line_width=2
 n_dash_center_line=30
+time_ref=0
+ball_wait=False
 
 while running:
 
@@ -105,11 +107,13 @@ while running:
 
     # Only update the AI position when the ball is moving towards it
     if current_player == 1:
-        player1.update(pressed_keys,gc.PLAYER1_CONTROL,ball_i.intercept)
-        player2.update(pressed_keys,gc.PLAYER2_CONTROL,-1)
+        player1.update(pressed_keys,gc.PLAYER1_CONTROL,ball_i.intercept,ball_i.speedy)
+        if gc.PLAYER2_CONTROL != 'computer':
+            player2.update(pressed_keys,gc.PLAYER2_CONTROL,-1,ball_i.speedy)
     else:
-        player1.update(pressed_keys,gc.PLAYER1_CONTROL,-1)
-        player2.update(pressed_keys,gc.PLAYER2_CONTROL,ball_i.intercept)
+        if gc.PLAYER1_CONTROL != 'computer':
+            player1.update(pressed_keys,gc.PLAYER1_CONTROL,-1,ball_i.speedy)
+        player2.update(pressed_keys,gc.PLAYER2_CONTROL,ball_i.intercept,ball_i.speedy)
 
 
     # Fill the background
@@ -141,6 +145,7 @@ while running:
     if balls_hit:
         for ball_hit in balls_hit:
             if ball_hit.player_active==1:
+                pygame.mixer.music.play(loops=1)
                 if gc.ORIGINAL_BOUNCE:
                   new_angle=player1.compute_original_angle(ball_hit.rect.centery,ball_hit.speedx)
                   ball_hit.set_angle(new_angle)
@@ -158,6 +163,7 @@ while running:
     if balls_hit:
         for ball_hit in balls_hit:
             if ball_hit.player_active==2:
+                pygame.mixer.music.play(loops=1)
                 if gc.ORIGINAL_BOUNCE:
                   new_angle=player2.compute_original_angle(ball_hit.rect.centery,ball_hit.speedx)
                   ball_hit.set_angle(new_angle)
@@ -183,14 +189,19 @@ while running:
 #          balls.add(ball_0)
 #          all_sprites.add(ball_0)
 
-        ball_0=ball.Ball()
-        balls.add(ball_0)
-        all_sprites.add(ball_0)
-        if current_player==1:
-            score_player2+=1
-        else:
-            score_player1+=1
-        current_player=2
+        if time_ref<total_time and not ball_wait:
+            time_ref=total_time
+            ball_wait=True
+            if current_player==1:
+                score_player2+=1
+            else:
+                score_player1+=1
+            current_player=2
+        if total_time-time_ref>gc.BALL_WAIT and ball_wait:
+            ball_wait=False
+            ball_0=ball.Ball()
+            balls.add(ball_0)
+            all_sprites.add(ball_0)
 
     # Update the display
     pygame.display.flip()

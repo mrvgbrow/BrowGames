@@ -21,7 +21,7 @@ class Player(pygame.sprite.Sprite):
         )
         self.mask=pygame.mask.from_surface(self.surf)
 
-    def update(self, pressed_keys, control, target):
+    def update(self, pressed_keys, control, target,target_speed_y):
         if control == 'arrows':
             if pressed_keys[gc.K_UP]:
                 self.rect.move_ip(0,-gc.PLAYER_MOVESTEP)
@@ -33,9 +33,10 @@ class Player(pygame.sprite.Sprite):
             if pressed_keys[gc.K_s]:
                 self.rect.move_ip(0,gc.PLAYER_MOVESTEP)
         elif control == 'computer':
-            if abs(target-self.target)>gc.PLAYER_HEIGHT*gc.AI_ERROR_DISTANCE and target>0 and target<gc.SCREEN_HEIGHT:
-                self.target=target+2*(random.random()-0.5)*gc.AI_ERROR_DISTANCE*(gc.PLAYER_HEIGHT+gc.BALL_RADIUS)
-            if self.target>-gc.PLAYER_HEIGHT*gc.AI_ERROR_DISTANCE and self.target<gc.SCREEN_HEIGHT+gc.PLAYER_HEIGHT*gc.AI_ERROR_DISTANCE:
+            error_distance=self.compute_error_distance(target_speed_y)
+            if (abs(target-self.target)>error_distance and target>0 and target<gc.SCREEN_HEIGHT) or random.random()<gc.AI_RANDOM_ADJUST:
+                self.target=target+2*(random.random()-0.5)*error_distance
+            if self.target>-error_distance and self.target<gc.SCREEN_HEIGHT+error_distance:
                 direction=self.target-self.rect.centery
                 if abs(direction) > gc.PLAYER_MOVESTEP:
                     self.rect.move_ip(0,direction/abs(direction)*gc.PLAYER_MOVESTEP)
@@ -58,3 +59,8 @@ class Player(pygame.sprite.Sprite):
         else:
           original_angle=math.pi/16*location_on_paddle
         return original_angle
+
+    def compute_error_distance(self,ball_speed_y):
+        error_distance= gc.PLAYER_HEIGHT*gc.AI_ERROR_DISTANCE*(1+gc.AI_YSPEED_ERROR_FACTOR*abs(ball_speed_y)/gc.BALL_MAX_SPEED)
+        return error_distance
+
