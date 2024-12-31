@@ -5,12 +5,15 @@ import gameconstants as gc
 import presets
 
 def run_menu(title,screen,presets_dict,preset_default):
-  global menu_run
+  global menu_run,original_pars
   menu_run=False
-  menu=pygame_menu.Menu(title,800,600,theme=pygame_menu.themes.THEME_BLUE,onclose=pygame_menu.events.CLOSE)
-  smenu=pygame_menu.Menu('Settings',800,600,theme=pygame_menu.themes.THEME_BLUE)
-  pmenu=pygame_menu.Menu('Presets',800,600,theme=pygame_menu.themes.THEME_BLUE,onclose=pygame_menu.events.CLOSE)
-  spmenu=pygame_menu.Menu('Save Preset',800,600,theme=pygame_menu.themes.THEME_BLUE)
+  menu=pygame_menu.Menu(title,800,600,theme=pygame_menu.themes.THEME_DEFAULT,onclose=pygame_menu.events.CLOSE)
+  get_parameters()
+  n_parameters=len(original_pars.keys())
+  n_rows=int(n_parameters/2)+2
+  smenu=pygame_menu.Menu('Settings',800,600,theme=pygame_menu.themes.THEME_DEFAULT,columns=2,rows=n_rows)
+  pmenu=pygame_menu.Menu('Presets',800,600,theme=pygame_menu.themes.THEME_DEFAULT,onclose=pygame_menu.events.CLOSE)
+  spmenu=pygame_menu.Menu('Save Preset',800,600,theme=pygame_menu.themes.THEME_DEFAULT)
   menu.add.button('Play with Current Settings',pygame_menu.events.CLOSE)
   def one_player_run():
       presets.set_preset(presets_dict['One Player Standard'])
@@ -46,6 +49,7 @@ def make_spmenu(spmenu):
   spmenu.add.button('Back',pygame_menu.events.BACK)
 
 def make_pmenu(pmenu,presets_dict,preset_input):
+  font_size=24
   def select_preset(widget=None):
       global menu_run
       preset_input.set_title('Loaded Preset: '+widget.get_title())
@@ -54,47 +58,53 @@ def make_pmenu(pmenu,presets_dict,preset_input):
       pmenu.close()
   for preset_key in presets_dict.keys():
       preset_name=preset_key
-      button=pmenu.add.button(preset_name,select_preset)
+      button=pmenu.add.button(preset_name,select_preset,font_size=font_size)
       button.add_self_to_kwargs()
   pmenu.add.label('')
-  pmenu.add.button('Back',pygame_menu.events.BACK)
+  pmenu.add.button('Back',pygame_menu.events.BACK,font_size=font_size)
   return True
 
 def make_smenu(smenu):
   global original_pars
-  parameters=gc.__dir__()
-  ignore_pars=['QUIT','KEYDOWN','KEYUP','RLEACCEL']
+  font_size=18
+  first_widget=[]
   input_values=['arrows','wasd','computer']
   input_select_list=[]
   for input_val in input_values:
       input_select_list.append((input_val.capitalize(),input_val))
-  original_pars={}
-  first_widget=[]
-  for par in parameters:
-      if par.upper() == par and par[:2] != 'K_' and par[:1] != '_' and not par in ignore_pars:
-          original_pars[par]=getattr(gc,par)
-          value=getattr(gc,par)
-          if type(value) is bool:
-              widget=smenu.add.toggle_switch(par,value,onchange=set_input,args=[par],font_size=24)
-          elif type(value) is int:
-              widget=smenu.add.text_input(par+': ',default=value,onchange=set_input,args=[par],input_type=pygame_menu.locals.INPUT_INT,font_size=24)
-          elif type(value) is float:
-              widget=smenu.add.text_input(par+': ',default=value,onchange=set_input,args=[par],input_type=pygame_menu.locals.INPUT_FLOAT,font_size=24)
-          elif value in input_values:
-              widget=smenu.add.dropselect(title=par+': ',items=input_select_list,onchange=set_input_drop,args=[par],default=input_values.index(value),font_size=24)
-          elif type(value) is tuple:
-              tmenu=pygame_menu.Menu(par,600,400,theme=pygame_menu.themes.THEME_BLUE)
-              widget=smenu.add.button(par,tmenu,font_size=24)
-              index=0
-              for subvalue in value:
-                  tmenu.add.text_input(par+': ',default=subvalue,onchange=set_input_subvalue,args=[par,index],input_type=pygame_menu.locals.INPUT_INT)
-                  index+=1
-              tmenu.add.button('OK',pygame_menu.events.BACK)
-          if not first_widget:
-              first_widget=widget
+  for par in original_pars:
+      value=getattr(gc,par)
+      value=getattr(gc,par)
+      if type(value) is bool:
+          widget=smenu.add.toggle_switch(par,value,onchange=set_input,args=[par],font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
+      elif type(value) is int:
+          widget=smenu.add.text_input(par+': ',default=value,onchange=set_input,args=[par],input_type=pygame_menu.locals.INPUT_INT,font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
+      elif type(value) is float:
+          widget=smenu.add.text_input(par+': ',default=value,onchange=set_input,args=[par],input_type=pygame_menu.locals.INPUT_FLOAT,font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
+      elif value in input_values:
+          widget=smenu.add.dropselect(title=par+': ',items=input_select_list,onchange=set_input_drop,args=[par],default=input_values.index(value),font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
+      elif type(value) is tuple:
+          tmenu=pygame_menu.Menu(par,600,400,theme=pygame_menu.themes.THEME_DEFAULT)
+          widget=smenu.add.button(par,tmenu,font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
+          index=0
+          for subvalue in value:
+              tmenu.add.text_input(par+': ',default=subvalue,onchange=set_input_subvalue,args=[par,index],input_type=pygame_menu.locals.INPUT_INT)
+              index+=1
+          tmenu.add.button('OK',pygame_menu.events.BACK)
+      if not first_widget:
+          first_widget=widget
   smenu.add.label('')
   smenu.add.button('OK',pygame_menu.events.BACK)
   smenu.scroll_to_widget(first_widget)
+
+def get_parameters():
+  global original_pars
+  parameters=gc.__dir__()
+  ignore_pars=['QUIT','KEYDOWN','KEYUP','RLEACCEL']
+  original_pars={}
+  for par in parameters:
+      if par.upper() == par and par[:2] != 'K_' and par[:1] != '_' and not par in ignore_pars:
+          original_pars[par]=getattr(gc,par)
 
 def set_input(input_value,args):
   setattr(gc,args[0],input_value)
@@ -113,3 +123,4 @@ def load_original_parameters():
   global original_pars
   for par in original_pars:
       setattr(gc,par,original_pars[par])
+
