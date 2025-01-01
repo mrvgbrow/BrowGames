@@ -20,17 +20,18 @@ class CurvedPaddle(pygame.sprite.Sprite):
         )
         self.draw(color)
 
-    def update(self, pressed_keys, control, target):
+    def update(self, pressed_keys, control, target,target_speed_y):
         if control == 'player':
             if pressed_keys[gc.K_UP]:
                 self.rect.move_ip(0,-gc.PLAYER_MOVESTEP)
             if pressed_keys[gc.K_DOWN]:
                 self.rect.move_ip(0,gc.PLAYER_MOVESTEP)
         elif control == 'computer':
-            if abs(target-self.target)>gc.PLAYER_HEIGHT/8:
-                self.target=target
-            if self.target > 0 and self.target < gc.SCREEN_HEIGHT:
-                direction=self.target-self.rect.centery+gc.PLAYER_HEIGHT*gc.AI_PADDLE_SHIFT*(4.5-(self.target % 10))/10
+            error_distance=self.compute_error_distance(target_speed_y)
+            if (abs(target-self.target)>error_distance and target>0 and target<gc.SCREEN_HEIGHT) or random.random()<gc.AI_RANDOM_ADJUST:
+                self.target=target+2*(random.random()-0.5)*error_distance
+            if self.target>-error_distance and self.target<gc.SCREEN_HEIGHT+error_distance:
+                direction=self.target-self.rect.centery
                 if abs(direction) > gc.PLAYER_MOVESTEP:
                     self.rect.move_ip(0,direction/abs(direction)*gc.PLAYER_MOVESTEP)
 
@@ -53,4 +54,8 @@ class CurvedPaddle(pygame.sprite.Sprite):
         if self.rect.centerx>gc.SCREEN_WIDTH/2:
             self.surf=pygame.transform.flip(self.surf,True,False)
         self.mask=pygame.mask.from_surface(self.surf)
+
+    def compute_error_distance(self,ball_speed_y):
+        error_distance= gc.PLAYER_HEIGHT*gc.AI_ERROR_DISTANCE*(1+gc.AI_YSPEED_ERROR_FACTOR*abs(ball_speed_y)/gc.BALL_MAX_SPEED)
+        return error_distance
 
