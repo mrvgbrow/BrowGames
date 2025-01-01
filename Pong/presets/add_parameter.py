@@ -13,7 +13,7 @@ for preset_file in preset_files:
     linenum=0
     for preset_line in preset_lines:
         if linenum==5:
-            new_preset_file.write(parameter_name+'='+parameter_value+"\n\n")
+            new_preset_file.write(parameter_name+'='+parameter_value+"\n")
         linenum+=1
         new_preset_file.write(preset_line)
     new_preset_file.close()
