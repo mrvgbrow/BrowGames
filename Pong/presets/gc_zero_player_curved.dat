@@ -3,9 +3,9 @@
 import pygame
 import math
 
-SHOW_BALL_TRAIL=True
-CURVED_PADDLE=False
-AI_YSPEED_ERROR_FACTOR=1.5
+SHOW_BALL_TRAIL=False
+CURVED_PADDLE=True
+AI_YSPEED_ERROR_FACTOR=1.0
 BALL_WAIT=True
 TIME_HIDE=True
 
@@ -33,7 +33,7 @@ TIME_YPOS=10
 
 # Paddle properties
 PLAYER_MOVESPEED=600
-PLAYER1_CONTROL='arrows'
+PLAYER1_CONTROL='computer'
 PLAYER2_CONTROL='computer'
 PLAYER1_X_POSITION=0.05
 PLAYER2_X_POSITION=0.95
@@ -55,13 +55,14 @@ BALL_MINANGLE_DEGREES=22.5
 
 # AI Properties
 AI_PREDICT_BOUNCE=True
-AI_ERROR_DISTANCE=0
+AI_PADDLE_SHIFT=0.25
+AI_ERROR_DISTANCE=0.5
 
 # Bug demos
 DISCRETE_STEPS=False
 
 # Bug Demos
-ORIGINAL_BOUNCE=True
+ORIGINAL_BOUNCE=False
 
 # Import pygame.locals for easier access to key coordinates
 # Updated to conform to flake8 and black standards
