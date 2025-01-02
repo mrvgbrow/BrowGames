@@ -25,7 +25,7 @@ pygame.font.init()
 pygame.mixer.music.load("ding.mp3")
 clock=pygame.time.Clock()
 presets_dict=presets.load_presets()
-preset_default='One Player Computer Perfect'
+preset_default='One Player Standard'
 presets.set_preset(presets_dict[preset_default])
 screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
 menu_run=True
@@ -40,7 +40,7 @@ screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
 
 # Create the player and ball sprites, add them to sprite groups for 
 # ease of processing.
-if gc.PADDLE_TYPE=='curved':
+if gc.CURVED_PADDLE:
     player1=curved_paddle.CurvedPaddle(gc.PLAYER1_X_POSITION,gc.PLAYER1_COLOR)
     player2=curved_paddle.CurvedPaddle(gc.PLAYER2_X_POSITION,gc.PLAYER2_COLOR)
 else:
@@ -66,6 +66,8 @@ center_line_width=2
 n_dash_center_line=30
 time_ref=0
 ball_wait=False
+ball_position_array=[]
+reset=False
 
 while running:
 
@@ -83,6 +85,8 @@ while running:
                     pause=True
             if event.key == gc.K_RIGHTBRACKET:
                 step=True
+            if event.key == gc.K_r:
+                reset=True
 
     # If paused, continuously skip over the game loop (except event processing).
     # If taking one step through the loop, don't pause but unset the step
@@ -104,6 +108,8 @@ while running:
         else:
             intercept=gc.PLAYER1_X_POSITION
         ball_i.update(intercept)
+        ball_position_array.append((ball_i.x,ball_i.y))
+
 
     # Only update the AI position when the ball is moving towards it
     if current_player == 1:
@@ -133,6 +139,11 @@ while running:
         rounded_time=float(int(total_time*100))/100.0
         time_text=font.render(f'Time: {rounded_time}',True,(255,255,255))
         screen.blit(time_text, (gc.TIME_XPOS,gc.TIME_YPOS))
+
+    if gc.SHOW_BALL_TRAIL:
+        for ball_position in ball_position_array:
+            if ball_position[0]>0 and ball_position[1]>0:
+                pygame.draw.circle(screen, (255,255,255),ball_position,1)
 
     if not gc.CENTER_LINE_HIDE:
         for center_count in range(n_dash_center_line):
@@ -179,6 +190,7 @@ while running:
     # whose turn it *isn't*
     if not balls:
 
+        ball_position_array=[]
         # This code was used to generate a demo of the original bounce pattern
 #        for i in range(5):
 #          ball_0=ball.Ball()
@@ -202,6 +214,11 @@ while running:
             ball_0=ball.Ball()
             balls.add(ball_0)
             all_sprites.add(ball_0)
+
+    if reset:
+        score_player1=0
+        score_player2=0
+        reset=False
 
     # Update the display
     pygame.display.flip()
