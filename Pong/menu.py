@@ -11,6 +11,7 @@ def run_menu(title,screen,presets_dict,preset_default):
   get_parameters()
   n_parameters=len(original_pars.keys())
   n_rows=int(n_parameters/2)+2
+  amenu=pygame_menu.Menu('About',800,600,theme=pygame_menu.themes.THEME_DEFAULT)
   smenu=pygame_menu.Menu('Settings',800,600,theme=pygame_menu.themes.THEME_DEFAULT,columns=2,rows=n_rows)
   pmenu=pygame_menu.Menu('Presets',800,600,theme=pygame_menu.themes.THEME_DEFAULT,onclose=pygame_menu.events.CLOSE)
   spmenu=pygame_menu.Menu('Save Preset',800,600,theme=pygame_menu.themes.THEME_DEFAULT)
@@ -29,10 +30,12 @@ def run_menu(title,screen,presets_dict,preset_default):
   menu.add.button('Computer Only',zero_player_run)
   menu.add.button('Presets',pmenu)
   menu.add.button('Settings',smenu)
+  menu.add.button('About',amenu)
 #  menu.add.button('Save Preset',spmenu)
   menu.add.button('Quit',pygame_menu.events.EXIT)
   menu.add.label('')
   preset_input=menu.add.label('Loaded preset: '+preset_default)
+  make_amenu(amenu)
   make_smenu(smenu)
   make_pmenu(pmenu,presets_dict,preset_input)
   make_spmenu(spmenu)
@@ -62,6 +65,25 @@ def make_pmenu(pmenu,presets_dict,preset_input):
       button.add_self_to_kwargs()
   pmenu.add.label('')
   pmenu.add.button('Back',pygame_menu.events.BACK,font_size=font_size)
+  return True
+
+def make_amenu(amenu):
+  font_size=24
+  readme_file="text/instructions.md"
+  readme_file_lines=open(readme_file,"r")
+  first_line=readme_file_lines.readline()
+  title_array1=first_line.split(">")
+  title_array2=title_array1[1].split(" ")
+  version_file="text/version.md"
+  version_file_lines=open(version_file,"r")
+  first_line=version_file_lines.readline()
+  version_array1=first_line.split("<")
+  version_array2=version_array1[1].split(" ")
+  amenu.add.label(title_array2[0])
+  amenu.add.label('Version '+version_array2[1])
+  amenu.add.label('Written by Nicholas A. Bond, 2024-2025')
+  amenu.add.label('')
+  amenu.add.button('Back',pygame_menu.events.BACK,font_size=font_size)
   return True
 
 def make_smenu(smenu):
