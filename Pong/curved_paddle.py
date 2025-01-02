@@ -42,7 +42,7 @@ class CurvedPaddle(pygame.sprite.Sprite):
 
     def compute_anglechange(self,ballpos_y):
         location_on_paddle=ballpos_y-self.rect.centery
-        if location_on_paddle<gc.PLAYER_RADIUS:
+        if abs(location_on_paddle)<gc.PLAYER_RADIUS:
             nominal_change=math.asin(location_on_paddle/gc.PLAYER_RADIUS)
         else:
             nominal_change=0
