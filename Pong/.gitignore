@@ -1,7 +1,10 @@
 scores.dat
 *.spec
 gif/*
-text/*
+zip.script
+text/future_changes.txt
+text/convert_info.txt
+text/blog.txt
 dist/*
 build/*
 __pycache__/*
