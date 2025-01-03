@@ -15,8 +15,10 @@ import presets
 import player
 import curved_paddle
 import random
+import math
 import datetime
 import ball
+import wall
 import gameconstants as gc
 
 # Initialize the game, music, timer, and screen
@@ -53,6 +55,20 @@ for i in range(gc.BALL_NUMBER):
     ball_i=ball.Ball()
     balls.add(ball_i)
     all_sprites.add(ball_i)
+
+top_wall=wall.Wall("top",gc.SCREEN_WIDTH/2,gc.WALL_WIDTH/2,gc.SCREEN_WIDTH,gc.WALL_WIDTH)
+bottom_wall=wall.Wall("bottom",gc.SCREEN_WIDTH/2,gc.SCREEN_HEIGHT-gc.WALL_WIDTH/2,gc.SCREEN_WIDTH,gc.WALL_WIDTH)
+sub_wall_size=(gc.SCREEN_HEIGHT-2*gc.WALL_WIDTH-gc.GOAL_SIZE)/2+gc.WALL_WIDTH
+bottom_left_wall=wall.Wall("bottom left",gc.WALL_WIDTH/2,gc.SCREEN_HEIGHT-sub_wall_size/2,gc.WALL_WIDTH,sub_wall_size)
+top_left_wall=wall.Wall("top left",gc.WALL_WIDTH/2,sub_wall_size/2,gc.WALL_WIDTH,sub_wall_size)
+bottom_right_wall=wall.Wall("bottom right",gc.SCREEN_WIDTH-gc.WALL_WIDTH/2,gc.SCREEN_HEIGHT-sub_wall_size/2,gc.WALL_WIDTH,sub_wall_size)
+top_right_wall=wall.Wall("top right",gc.SCREEN_WIDTH-gc.WALL_WIDTH/2,sub_wall_size/2,gc.WALL_WIDTH,sub_wall_size)
+if gc.GOAL_SIZE<1:
+    walls=[top_wall,bottom_wall,bottom_left_wall,bottom_right_wall,top_left_wall,top_right_wall]
+    all_sprites.add(top_wall,bottom_wall,bottom_left_wall,top_left_wall,bottom_right_wall,top_right_wall)
+else:
+    walls=[top_wall,bottom_wall]
+    all_sprites.add(top_wall,bottom_wall)
 
 # Initialize variables
 running = True    # Flag indicating when to stop the game
@@ -183,6 +199,24 @@ while running:
                   anglechange=-player2.compute_anglechange(ball_hit.rect.centery)
                   ball_hit.anglechange(anglechange)
                 player2.target=gc.SCREEN_HEIGHT*random.random()
+                ball_hit.player_active=1
+                current_player=1
+
+    # Check whether any balls are colliding with the walls
+    for this_wall in walls:
+        balls_hit=pygame.sprite.spritecollide(this_wall, balls,False,collided=pygame.sprite.collide_mask)
+        for ball_hit in balls_hit:
+            pygame.mixer.music.play(loops=1)
+            if this_wall.name=="top":
+                ball_hit.bounce_wall("down")
+            elif this_wall.name=="bottom":
+                ball_hit.bounce_wall("up")
+            elif "left" in this_wall.name:
+                ball_hit.bounce_wall("right")
+                current_player=2
+                ball_hit.player_active=2
+            elif "right" in this_wall.name:
+                ball_hit.bounce_wall("left")
                 ball_hit.player_active=1
                 current_player=1
 

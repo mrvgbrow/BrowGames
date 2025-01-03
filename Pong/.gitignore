@@ -4,6 +4,7 @@ gif/*
 zip.script
 text/future_changes.txt
 text/convert_info.txt
+text/prepare_release.notes
 text/blog.txt
 dist/*
 build/*

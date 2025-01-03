@@ -18,6 +18,7 @@ class Ball(pygame.sprite.Sprite):
         angle=random.random()*math.pi/2-math.pi/4+random.random()-0.5
         self.base_speed=gc.BALL_SPEED
         self.speedx,self.speedy=physics.angle_to_coords(angle,self.base_speed)
+        self.anglechange(0.0)
         if self.speedx<0:
             self.player_active=1
         else:
@@ -64,10 +65,10 @@ class Ball(pygame.sprite.Sprite):
     def anglechange(self,angle_change):
         angle_old,speed=physics.coords_to_angle(self.speedx,self.speedy)
         angle=angle_old+angle_change
-        if abs(math.pi/2-angle) < gc.BALL_MINANGLE_DEGREES*math.pi/180.0:
-            angle=math.pi/2+(angle_old-math.pi/2)/abs(angle_old-math.pi/2)*gc.BALL_MINANGLE_DEGREES*math.pi/180.0
-        if abs(-math.pi/2-angle) < gc.BALL_MINANGLE_DEGREES*math.pi/180.0:
-            angle=-math.pi/2+(angle_old+math.pi/2)/abs(angle_old+math.pi/2)*gc.BALL_MINANGLE_DEGREES*math.pi/180.0
+        if abs(math.pi/2-physics.angle_to_atan2_range(angle)) < gc.BALL_MINANGLE_DEGREES*math.pi/180.0:
+            angle=math.pi/2+math.copysign(1,angle_old-math.pi/2)*gc.BALL_MINANGLE_DEGREES*math.pi/180.0
+        if abs(-math.pi/2-physics.angle_to_atan2_range(angle)) < gc.BALL_MINANGLE_DEGREES*math.pi/180.0:
+            angle=-math.pi/2+math.copysign(1,angle_old+math.pi/2)*gc.BALL_MINANGLE_DEGREES*math.pi/180.0
         self.base_speed+=gc.BALL_SPEED_INCREASE
         speed=min(self.base_speed,gc.BALL_MAX_SPEED)
         self.speedx,self.speedy=physics.angle_to_coords(angle,speed)
@@ -81,18 +82,18 @@ class Ball(pygame.sprite.Sprite):
 
     def update_intercept(self,x_position):
         self.intercept=physics.find_intercept(self.speedx,self.speedy,self.rect.centerx,self.rect.centery,x_position)
-        if (self.intercept < 0 or self.intercept > gc.SCREEN_HEIGHT) and gc.AI_PREDICT_BOUNCE:
-            intercept_x_0=physics.find_intercept(self.speedy,self.speedx,self.rect.centery,self.rect.centerx,0)
-            intercept_x_1=physics.find_intercept(self.speedy,self.speedx,self.rect.centery,self.rect.centerx,gc.SCREEN_HEIGHT)
+        if (self.intercept < gc.WALL_WIDTH or self.intercept > gc.SCREEN_HEIGHT-gc.WALL_WIDTH) and gc.AI_PREDICT_BOUNCE:
+            intercept_x_0=physics.find_intercept(self.speedy,self.speedx,self.rect.centery,self.rect.centerx,gc.WALL_WIDTH)
+            intercept_x_1=physics.find_intercept(self.speedy,self.speedx,self.rect.centery,self.rect.centerx,gc.SCREEN_HEIGHT-gc.WALL_WIDTH)
             if self.player_active==2:
                 if intercept_x_1 > intercept_x_0:
-                    self.intercept=physics.find_intercept(self.speedx,-self.speedy,intercept_x_1,gc.SCREEN_HEIGHT,x_position)
+                    self.intercept=physics.find_intercept(self.speedx,-self.speedy,intercept_x_1,gc.SCREEN_HEIGHT-gc.WALL_WIDTH,x_position)
                 else:
-                    self.intercept=physics.find_intercept(self.speedx,-self.speedy,intercept_x_0,0,x_position)
+                    self.intercept=physics.find_intercept(self.speedx,-self.speedy,intercept_x_0,gc.WALL_WIDTH,x_position)
             else:
                 if intercept_x_1 < intercept_x_0:
-                    self.intercept=physics.find_intercept(self.speedx,-self.speedy,intercept_x_1,gc.SCREEN_HEIGHT,x_position)
+                    self.intercept=physics.find_intercept(self.speedx,-self.speedy,intercept_x_1,gc.SCREEN_HEIGHT-gc.WALL_WIDTH,x_position)
                 else:
-                    self.intercept=physics.find_intercept(self.speedx,-self.speedy,intercept_x_0,0,x_position)
+                    self.intercept=physics.find_intercept(self.speedx,-self.speedy,intercept_x_0,gc.WALL_WIDTH,x_position)
             if self.intercept < 0 or self.intercept > gc.SCREEN_HEIGHT:
                 self.intercept=-1

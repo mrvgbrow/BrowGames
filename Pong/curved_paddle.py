@@ -51,14 +51,14 @@ class CurvedPaddle(pygame.sprite.Sprite):
                 if abs(direction) > gc.PLAYER_MOVESTEP:
                     self.rect.move_ip(0,direction/abs(direction)*gc.PLAYER_MOVESTEP)
 
-        if self.rect.top <= 0:
-            self.rect.top=0
-        if self.rect.left <= 0:
-            self.rect.left=0
-        if self.rect.bottom > gc.SCREEN_HEIGHT:
-            self.rect.bottom=gc.SCREEN_HEIGHT
-        if self.rect.right > gc.SCREEN_WIDTH:
-            self.rect.right=gc.SCREEN_WIDTH
+        if self.rect.top <= gc.WALL_WIDTH:
+            self.rect.top=gc.WALL_WIDTH
+        if self.rect.left <= gc.WALL_WIDTH:
+            self.rect.left=gc.WALL_WIDTH
+        if self.rect.bottom > gc.SCREEN_HEIGHT-gc.WALL_WIDTH:
+            self.rect.bottom=gc.SCREEN_HEIGHT-gc.WALL_WIDTH
+        if self.rect.right > gc.SCREEN_WIDTH-gc.WALL_WIDTH:
+            self.rect.right=gc.SCREEN_WIDTH-gc.WALL_WIDTH
 
     def compute_anglechange(self,ballpos_y):
         location_on_paddle=ballpos_y-self.rect.centery

@@ -27,11 +27,21 @@ class Player(pygame.sprite.Sprite):
                 self.rect.move_ip(0,-gc.PLAYER_MOVESTEP)
             if pressed_keys[gc.K_DOWN]:
                 self.rect.move_ip(0,gc.PLAYER_MOVESTEP)
+            if gc.PADDLE_ALLOW_LEFTRIGHT:
+                if pressed_keys[gc.K_LEFT]:
+                    self.rect.move_ip(-gc.PLAYER_MOVESTEP,0)
+                if pressed_keys[gc.K_RIGHT]:
+                    self.rect.move_ip(gc.PLAYER_MOVESTEP,0)
         elif control == 'wasd':
             if pressed_keys[gc.K_w]:
                 self.rect.move_ip(0,-gc.PLAYER_MOVESTEP)
             if pressed_keys[gc.K_s]:
                 self.rect.move_ip(0,gc.PLAYER_MOVESTEP)
+            if gc.PADDLE_ALLOW_LEFTRIGHT:
+                if pressed_keys[gc.K_a]:
+                    self.rect.move_ip(-gc.PLAYER_MOVESTEP,0)
+                if pressed_keys[gc.K_d]:
+                    self.rect.move_ip(gc.PLAYER_MOVESTEP,0)
         elif control == 'computer':
             error_distance=self.compute_error_distance(target_speed_y)
             if (abs(target-self.target)>error_distance and target>0 and target<gc.SCREEN_HEIGHT) or random.random()<gc.AI_RANDOM_ADJUST:
@@ -41,10 +51,14 @@ class Player(pygame.sprite.Sprite):
                 if abs(direction) > gc.PLAYER_MOVESTEP:
                     self.rect.move_ip(0,direction/abs(direction)*gc.PLAYER_MOVESTEP)
 
-        if self.rect.top <= 0:
-            self.rect.top=0
-        if self.rect.bottom > gc.SCREEN_HEIGHT:
-            self.rect.bottom=gc.SCREEN_HEIGHT
+        if self.rect.top <= gc.WALL_WIDTH:
+            self.rect.top=gc.WALL_WIDTH
+        if self.rect.left <= gc.WALL_WIDTH:
+            self.rect.left=gc.WALL_WIDTH
+        if self.rect.bottom > gc.SCREEN_HEIGHT-gc.WALL_WIDTH:
+            self.rect.bottom=gc.SCREEN_HEIGHT-gc.WALL_WIDTH
+        if self.rect.right > gc.SCREEN_WIDTH-gc.WALL_WIDTH:
+            self.rect.right=gc.SCREEN_WIDTH-gc.WALL_WIDTH
 
     def compute_anglechange(self,ballpos_y):
         location_on_paddle=ballpos_y-self.rect.centery
