@@ -3,6 +3,7 @@
 import pygame
 import math
 
+SCORE_YPOS=0.1
 BALL_FIX_SPEED=True
 WALL_COLOR=(104,0,0)
 WALL_WIDTH=0.03
@@ -29,8 +30,6 @@ SOUND_VOLUME=0
 TICK_FRAMERATE=60
 
 # Scoring 
-SCORE_XPOS=10
-SCORE_YPOS=10
 SCORE_HIDE=True
 
 # Clock Display
