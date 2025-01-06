@@ -7,12 +7,13 @@ import gameconstants as gc
 
 
 class CurvedPaddle(pygame.sprite.Sprite):
-    def __init__(self,x_position,color):
+    def __init__(self,x_position,color,player_id):
         super(CurvedPaddle,self).__init__()
-        self.surf=pygame.Surface((gc.PLAYER_RADIUS,gc.PLAYER_HEIGHT))
+        self.real_height=min(gc.PLAYER_HEIGHT,math.sqrt(gc.PLAYER_RADIUS**2-(gc.PLAYER_RADIUS-2*gc.PLAYER_WIDTH)**2)*2)
+        self.surf=pygame.Surface((gc.PLAYER_RADIUS,self.real_height))
         self.target=-1        
         self.surf.set_colorkey(gc.SCREEN_COLOR)
-        self.real_height=min(gc.PLAYER_HEIGHT,math.sqrt(gc.PLAYER_RADIUS**2-(gc.PLAYER_RADIUS-gc.PLAYER_WIDTH)**2)*2)
+        self.player_id=player_id
         self.rect = self.surf.get_rect(
             center=(
                 x_position,

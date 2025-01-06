@@ -7,12 +7,13 @@ import gameconstants as gc
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self,x_position,color):
+    def __init__(self,x_position,color,player_id):
         super(Player,self).__init__()
         self.surf=pygame.Surface((gc.PLAYER_WIDTH,gc.PLAYER_HEIGHT))
         self.surf.fill(color)
         self.surf.set_colorkey(gc.SCREEN_COLOR)
         self.target=-1
+        self.player_id=player_id
         self.rect = self.surf.get_rect(
             center=(
                 x_position,
