@@ -38,6 +38,7 @@ class Ball(pygame.sprite.Sprite):
         if self.rect.bottom >= gc.SCREEN_HEIGHT-gc.WALL_WIDTH:
             self.bounce_wall('up')
         if self.rect.right >= gc.SCREEN_WIDTH:
+            self.reset_speed()
             return 1
         self.x+=self.speedx
         self.y+=self.speedy
@@ -46,6 +47,7 @@ class Ball(pygame.sprite.Sprite):
         else:
             self.rect.move_ip(self.speedx,self.speedy)
         if self.rect.right < 0:
+            self.reset_speed()
             return -1
         self.update_intercept(intercept)
         return 0
@@ -83,6 +85,9 @@ class Ball(pygame.sprite.Sprite):
         if gc.BALL_FIX_XSPEED:
             speed=speed*abs(1/math.cos(angle_set))
         self.speedx,self.speedy=physics.angle_to_coords(angle_set,speed)
+
+    def reset_speed(self):
+        self.base_speed=gc.BALL_SPEED
 
     def update_intercept(self,x_position):
         self.intercept=physics.find_intercept(self.speedx,self.speedy,self.rect.centerx,self.rect.centery,x_position)
