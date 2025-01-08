@@ -1,3 +1,36 @@
+<h1>Version 1.2</h1>
+
+<p>This program is tunable version of the original Pong (1972). You can adjust the parameters (e.g., paddle size, ball speed) to change the game and experiment with different designs. It is a standalone executable so just remove the old version and replace it with this one.</p>
+
+<p>Please note that not all combinations of parameters will be playable and some will even crash the game. However, it will revert to the default parameters when you restart, so don't be shy about breaking the game from time to time.</p>
+
+<h2>New Features</h2>
+
+<ul>
+<li>User can add a dashed center line to the court.</li>
+<li>User can now add a wait to the serve between points.</li>
+<li>User can optionally display the elapsed game time in the corner.</li>
+<li>User can reset the game score with the r key.</li>
+<li>Added the ability to reset the score with the r key.</li>
+<li>Added an "About" section to the main menu, where you can view the game version and basic info.</li>
+<li>Added walls to the edge of the playing field, including the option to have them extend up the sides to create a "goal".</li>
+<li>User can set the paddle to move left/right as well as up/down.</li>
+<li>User can request that the ball's horizontal speed remain fixed.</li>
+<li>The score display now resembles the original Pong (thanks to "Pong Score Extended", https://fontstruct.com/fontstructions/show/2450791/).</li>
+<li>The direction of the serve is now randomized whether it goes left or right rather than always going right.</li>
+</ul>
+<h2>Bug Fixes</h2>
+<ul>
+<li>Fixed a bug with the curved paddle that was causing a crash when the ball hit the edge of the paddle.</li>
+<li>Curved paddle height was not being properly accounted for.</li>
+<li>Minimum angle restrictions were not being enforced in some cases.</li>
+</ul>
+<h2>Improvements</h2>
+<ul>
+<li>Improved the curved paddle AI and controls with the features already present with the regular paddle.</li>
+<li>The ball speed now resets between points.</li>
+</ul>
+
 <h1>Version 1.1</h1>
 
 <p>This program is tunable version of the original Pong (1972). You can adjust the parameters (e.g., paddle size, ball speed) to change the game and experiment with different designs. It is a standalone executable so just remove the old version and replace it with this one.</p>

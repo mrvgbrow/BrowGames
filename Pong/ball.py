@@ -18,11 +18,13 @@ class Ball(pygame.sprite.Sprite):
         angle=random.random()*math.pi/2-math.pi/4+random.random()-0.5
         self.base_speed=gc.BALL_SPEED
         self.speedx,self.speedy=physics.angle_to_coords(angle,self.base_speed)
-        self.speedx=math.copysign(1,random.random()-0.5)*self.speedx
+        self.speedx=math.copysign(1,random.random()-0.5)*self.speedx # Randomize the direction of the serve
         self.anglechange(0.0)
         self.player_hit=0
-#        self.x=((random.random()-0.5)*0.2+0.5)*gc.SCREEN_WIDTH
-        self.x=0.5*gc.SCREEN_WIDTH
+        if gc.BALL_RANDOMIZE_XSTART:
+            self.x=((random.random()-0.5)*0.2+0.5)*gc.SCREEN_WIDTH
+        else:
+            self.x=0.5*gc.SCREEN_WIDTH
 #        print(self.speedx, self.speedy,angle)
         self.y=random.random()*gc.SCREEN_HEIGHT
         self.rect = self.surf.get_rect(

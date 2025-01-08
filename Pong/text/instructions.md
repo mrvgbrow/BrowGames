@@ -11,7 +11,7 @@ If the player control is set to "arrows", press the up arrow to move the paddle 
 <br><br>
 To reset the score, press the r key. 
 <br><br>
-To pause the game at any time, press the p key. While paused, you can step the game forward one frame at a time with the "]" key.
+To pause the game at any time, press the p key. While paused, you can step the game forward one frame at a time with the "]" key. To end the game, press Esc.
 
 <h2>MAIN MENU</h2>
 
