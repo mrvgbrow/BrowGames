@@ -24,6 +24,7 @@
 <li>Fixed a bug with the curved paddle that was causing a crash when the ball hit the edge of the paddle.</li>
 <li>Curved paddle height was not being properly accounted for.</li>
 <li>Minimum angle restrictions were not being enforced in some cases.</li>
+<li>Some parameters weren't adjustable in Settings because they were being treated as integers</li>
 </ul>
 <h2>Improvements</h2>
 <ul>

@@ -3,8 +3,6 @@
 import sys
 
 exec_run=False
-# These lines are only for the creation of the executable. 
-# Remove when running from a Ptyhon interpreter.
 if getattr(sys,'frozen', False):
     os.chdir(sys._MEIPASS)
     exec_run=True
@@ -68,7 +66,7 @@ bottom_left_wall=wall.Wall("bottom left",gc.WALL_WIDTH/2,gc.SCREEN_HEIGHT-sub_wa
 top_left_wall=wall.Wall("top left",gc.WALL_WIDTH/2,sub_wall_size/2,gc.WALL_WIDTH,sub_wall_size)
 bottom_right_wall=wall.Wall("bottom right",gc.SCREEN_WIDTH-gc.WALL_WIDTH/2,gc.SCREEN_HEIGHT-sub_wall_size/2,gc.WALL_WIDTH,sub_wall_size)
 top_right_wall=wall.Wall("top right",gc.SCREEN_WIDTH-gc.WALL_WIDTH/2,sub_wall_size/2,gc.WALL_WIDTH,sub_wall_size)
-if gc.GOAL_SIZE<1:
+if gc.GOAL_SIZE<gc.SCREEN_HEIGHT:
     walls=[top_wall,bottom_wall,bottom_left_wall,bottom_right_wall,top_left_wall,top_right_wall]
     all_sprites.add(top_wall,bottom_wall,bottom_left_wall,top_left_wall,bottom_right_wall,top_right_wall)
 else:

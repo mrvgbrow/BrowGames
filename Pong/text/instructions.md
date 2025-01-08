@@ -1,5 +1,4 @@
 <h1>BROWPONG GAME INSTRUCTIONS</h1>
-<br>Version 1.0</br>
 
 <p>This program is tunable version of the original Pong (1972). You can adjust the parameters (e.g., paddle size, ball speed) to change the game and experiment with different designs.</p>
 
@@ -12,6 +11,8 @@ If the player control is set to "arrows", press the up arrow to move the paddle 
 To reset the score, press the r key. 
 <br><br>
 To pause the game at any time, press the p key. While paused, you can step the game forward one frame at a time with the "]" key. To end the game, press Esc.
+<br><br>
+If PADDLE_ALLOW_LEFTRIGHT is set to True, you can use the left/right arrows a/d keys to move the paddle.
 
 <h2>MAIN MENU</h2>
 
@@ -33,6 +34,8 @@ To pause the game at any time, press the p key. While paused, you can step the g
 <li>Two Player Standard - The standard two-player game (also accessible from the main menu).</li>
 <li>Zero Player Standard - The standard game with two computer players (also accessible from the main menu as Computer Only).</li>
 <li>Zero Player Curved - Watch two computers play with curved paddles.</li>
+<li>One Player Curved - One-player game with curved paddles.</li>
+<li>Two Player Curved - Two-player game with curved paddles.</li>
 <li>One Player Computer Offset No Mistakes - A one-player game against a mistake-free computer player with an offset that allows for high-angle shots.</li>
 <li>One Player Original - A one-player game configured to closely resemble the original Atari game.</li>
 <li>Two Player Original - A two-player game configured to closely resemble the original Atari game.</li>
@@ -48,8 +51,7 @@ To pause the game at any time, press the p key. While paused, you can step the g
 <li>Screen Color - The background color of the playing field </li>
 <li>Sound volume - Volume of the sound effects, between 0 and 1.</li>
 <li>Tick Framerate - Frames per second.</li>
-<li>Score X Position - X position of the score display in pixels.</li>
-<li>Score Y Position - Y position of the score display in pixels.</li>
+<li>Score Y Position - Y position of the score display as a fraction of the screen height (smaller values towards the top).</li>
 <li>Score Hide - If set to True, the score will not be displayed.</li>
 <li>Time Hide - If set to True, the game time elapse will not be displayed.</li>
 <li>Center Line Hide - If set to False, there will be a white a dashed line marking the center of the court</li>
@@ -60,19 +62,24 @@ To pause the game at any time, press the p key. While paused, you can step the g
 <li>Player 2 X Position - The horizontal position of player 2 relative to the screen width (between 0 and 1).</li>
 <li>Player Width - The width of the paddles relative to the screen width (between 0 and 1)</li>
 <li>Player Height - The height of the paddles relative to the screen height (between 0 and 1)</li>
+<li>Paddle Allow Left Right - When set to True, the paddle can move left/right as well as up/down.</li>
 <li>Player 1 Color - The color of player 1's paddle.</li>
 <li>Player 2 Color - The color of player 2's paddle.</li>
 <li>Player Control Factor - When "Original Bounce" is False, this factor determines how much additional deflection is given to the ball when it hits the sides of the paddles. No additional deflection is 0 and 0.5 is a moderate value.</li>
-<li>Player Radius - [Currently inactive parameter]</li>
 <li>Curved Paddle - If set to True, a curved paddle will be used in place of the normal pong paddle. This also enables special physics that cause the ball to move in response to the curvature of the paddle.</li>
+<li>Player Radius - Radius of curvature for the paddle in pixels. Only used when "Curved Paddle" is set to True.</li>
 <li>Ball Number - Number of balls on the playing field to start the game.</li>
 <li>Ball Speed Increase - Increase in ball speed with every paddle impact, in pixels per second.</li>
 <li>Ball Max Speed - Maximum ball speed in pixels per second. </li>
 <li>Ball Speed - Speed of the ball in pixels per second. When "Original Bounce" is True, this is the horizontal speed. When it's False, this is the total speed.</li>
 <li>Ball Radius - Radius of the ball in pixels.</li>
 <li>Ball Color - Color of the ball</li>
-<li>Ball Wait - When set to true, there will be a two-second wait before a ball is served between points.</li>
+<li>Ball Wait - The number of seconds to wait before a ball is served between points.</li>
 <li>Ball Minangle - The minimum possible angle of motion (relative to vertical) for the ball in degrees. Only has an effect if "Original Bounce" is False.</li>
+<li>Ball Fix X Speed - When set to True, fixes the x speed of the ball.</li>
+<li>Wall Width - The width of the exterior wall as a fraction of the screen height.</li>
+<li>Wall Color - The color of the exterior wall.</li>
+<li>Goal Size - The size of the openings on the side of the screen, relative to the screen height.</li>
 <li>Show Ball Trail - When set to True, the ball's path will be traced as it moves. The path resets between points.</li>
 <li>AI Predict Bounce - When True, the computer player will predict the impact of a wall bounce before it happens.</li>
 <li>AI Error Distance - The AI will make random paddle placement errors, with a maximum error equal to this value times the length of the paddle. A smaller distance means a better AI.</li>
@@ -82,4 +89,4 @@ To pause the game at any time, press the p key. While paused, you can step the g
 <li>Original Bounce - When set to True, the ball will bounce off the paddle at a fixed angle based on where it hits the paddle, similar to the original Pong. When set to False, the ball will bounce in a more realistic way (modified by the "Player control Factor").</li>
 </ul>
 <h2>Running from the Source Code</h2>
-If you wish to run the program from the source code using a Python interpreter, be sure that the two lines at the top of the main "pong" program are commented out (they are marked with a comment). Aside from the standard Python packages, you will also need pygame and pygame_menu.
+If you wish to run the program from the source code using a Python interpreter, you will need pygame and pygame_menu.
