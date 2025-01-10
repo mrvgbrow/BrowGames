@@ -86,6 +86,7 @@ time_ref=0
 ball_wait=False
 ball_position_array=[]
 reset=False
+debug_string=''
 
 while running:
 
@@ -170,6 +171,12 @@ while running:
         time_text=font.render(f'Time: {rounded_time}',True,(255,255,255))
         screen.blit(time_text, (gc.TIME_XPOS,gc.TIME_YPOS))
 
+#    debug_string=f'{ball_i.intercept:.1f} {player1.target:.1f} {gc.PLAYER_HEIGHT}'
+    if debug_string != '':
+        debug_text=font.render(debug_string,True,(255,255,255))
+        screen.blit(debug_text, (gc.SCREEN_HEIGHT/2,gc.SCREEN_WIDTH/2))
+
+
     if gc.SHOW_BALL_TRAIL:
         for ball_position in ball_position_array:
             if ball_position[0]>0 and ball_position[1]>0:
@@ -225,10 +232,7 @@ while running:
 #        for i in range(1):
 #          ball_0=ball.Ball()
 #          vertical_shift=-gc.PLAYER_HEIGHT/3.35+float(score_player2+score_player1)*gc.PLAYER_HEIGHT/10
-#          ball_0.y=0.5*gc.SCREEN_HEIGHT+vertical_shift
-#          ball_0.rect.centery=0.5*gc.SCREEN_HEIGHT+vertical_shift
-#          ball_0.speedy=0
-#          ball_0.speedx=gc.BALL_SPEED
+#          ball_0.shoot((player1.rect.centerx,player1.rect.centery-gc.PLAYER_HEIGHT/1.7),10,300,210)
 #          balls.add(ball_0)
 #          all_sprites.add(ball_0)
 

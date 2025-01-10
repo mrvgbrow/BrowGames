@@ -21,15 +21,17 @@
 </ul>
 <h2>Bug Fixes</h2>
 <ul>
-<li>Fixed a bug with the curved paddle that was causing a crash when the ball hit the edge of the paddle.</li>
+<li>Fixed a bug with the curved paddle that was sometimes causing a crash when the ball hit the edge of the curved paddle.</li>
 <li>Curved paddle height was not being properly accounted for.</li>
 <li>Minimum angle restrictions were not being enforced in some cases.</li>
-<li>Some parameters weren't adjustable in Settings because they were being treated as integers</li>
+<li>Initial serve could start with the ball inside of a wall.</li>
+<li>Some parameters (including the volume) weren't adjustable in Settings because they were being treated as integers</li>
 </ul>
 <h2>Improvements</h2>
 <ul>
 <li>Improved the curved paddle AI and controls with the features already present with the regular paddle.</li>
 <li>The ball speed now resets between points.</li>
+<li>Never allow backwards bounce with curved paddle. </li>
 </ul>
 
 <h1>Version 1.1</h1>
