@@ -26,7 +26,7 @@ class Ball(pygame.sprite.Sprite):
         else:
             self.x=0.5*gc.SCREEN_WIDTH
 #        print(self.speedx, self.speedy,angle)
-        self.y=random.random()*gc.SCREEN_HEIGHT
+        self.y=random.random()*(gc.SCREEN_HEIGHT-4*gc.WALL_WIDTH)+2*gc.WALL_WIDTH
         self.rect = self.surf.get_rect(
             center=(
                 self.x,
@@ -53,6 +53,15 @@ class Ball(pygame.sprite.Sprite):
             return -1
         self.update_intercept(intercept)
         return 0
+
+    def shoot(self,target,speed,distance,direction):
+        self.base_speed=speed
+        direction=direction*math.pi/180
+        self.speedx,self.speedy=physics.angle_to_coords(direction,speed)
+        self.x=target[0]-distance*math.cos(direction)
+        self.rect.centerx=self.x
+        self.y=target[1]-distance*math.sin(direction)
+        self.rect.centery=self.y
 
     def bounce_wall(self,direction):
         if direction=='left': 
