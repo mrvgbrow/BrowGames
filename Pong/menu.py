@@ -88,7 +88,7 @@ def make_amenu(amenu):
 
 def make_smenu(smenu):
   global original_pars
-  font_size=18
+  font_size=17
   first_widget=[]
   input_values=['arrows','wasd','computer']
   input_select_list=[]
