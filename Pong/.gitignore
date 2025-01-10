@@ -7,5 +7,6 @@ text/convert_info.txt
 text/prepare_release.notes
 text/blog.txt
 dist/*
+old_versions/*
 build/*
 __pycache__/*

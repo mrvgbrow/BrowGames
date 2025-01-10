@@ -7,13 +7,14 @@ import gameconstants as gc
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self,x_position,color,player_id):
+    def __init__(self,x_position,color,player_id,control):
         super(Player,self).__init__()
         self.surf=pygame.Surface((gc.PLAYER_WIDTH,gc.PLAYER_HEIGHT))
         self.surf.fill(color)
         self.surf.set_colorkey(gc.SCREEN_COLOR)
         self.target=-1
         self.player_id=player_id
+        self.control=control
         self.rect = self.surf.get_rect(
             center=(
                 x_position,
@@ -22,8 +23,8 @@ class Player(pygame.sprite.Sprite):
         )
         self.mask=pygame.mask.from_surface(self.surf)
 
-    def update(self, pressed_keys, control, target,target_speed_y):
-        if control == 'arrows':
+    def update(self, pressed_keys, target,target_speed_y):
+        if self.control == 'arrows':
             if pressed_keys[gc.K_UP]:
                 self.rect.move_ip(0,-gc.PLAYER_MOVESTEP)
             if pressed_keys[gc.K_DOWN]:
@@ -33,7 +34,7 @@ class Player(pygame.sprite.Sprite):
                     self.rect.move_ip(-gc.PLAYER_MOVESTEP,0)
                 if pressed_keys[gc.K_RIGHT]:
                     self.rect.move_ip(gc.PLAYER_MOVESTEP,0)
-        elif control == 'wasd':
+        elif self.control == 'wasd':
             if pressed_keys[gc.K_w]:
                 self.rect.move_ip(0,-gc.PLAYER_MOVESTEP)
             if pressed_keys[gc.K_s]:
@@ -43,7 +44,7 @@ class Player(pygame.sprite.Sprite):
                     self.rect.move_ip(-gc.PLAYER_MOVESTEP,0)
                 if pressed_keys[gc.K_d]:
                     self.rect.move_ip(gc.PLAYER_MOVESTEP,0)
-        elif control == 'computer':
+        elif self.control == 'computer':
             error_distance=self.compute_error_distance(target_speed_y)
             if (abs(target-self.target)>error_distance and target>0 and target<gc.SCREEN_HEIGHT) or random.random()<gc.AI_RANDOM_ADJUST:
                 self.target=target+2*(random.random()-0.5)*error_distance
