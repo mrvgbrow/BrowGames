@@ -82,6 +82,8 @@ class Ball(pygame.sprite.Sprite):
             angle=math.pi/2+math.copysign(1,angle-math.pi/2)*gc.BALL_MINANGLE_DEGREES*math.pi/180.0
         if abs(-math.pi/2-angle) < gc.BALL_MINANGLE_DEGREES*math.pi/180.0:
             angle=-math.pi/2+math.copysign(1,angle+math.pi/2)*gc.BALL_MINANGLE_DEGREES*math.pi/180.0
+        if math.copysign(1,math.cos(angle_old)) != math.copysign(1,math.cos(angle)):
+            angle=angle_old
         self.base_speed+=gc.BALL_SPEED_INCREASE
         speed=min(self.base_speed,gc.BALL_MAX_SPEED)
 #        print('before/middle/after ',angle*180/math.pi,angle_mid*180/math.pi,angle_old*180/math.pi)
