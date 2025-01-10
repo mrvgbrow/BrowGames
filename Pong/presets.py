@@ -3,6 +3,8 @@
 import glob
 import gameconstants as gc
 
+ignore_pars=['QUIT','KEYDOWN','KEYUP','RLEACCEL']
+
 def load_presets():
     preset_files=glob.glob('presets/gc_*')
     all_presets={}
@@ -51,11 +53,23 @@ def set_preset(preset_dict):
     for parameter in preset_dict:
         setattr(gc,parameter,preset_dict[parameter])
 
+def get_settings():
+    global ignore_pars
+
+    parameters=gc.__dir__()
+    settings_dict={}
+    for par in parameters:
+        if par.upper() == par and par[:2] != 'K_' and par[:1] != '_' and not par in ignore_pars:
+           value=getattr(gc,par)
+           settings_dict[par]=value
+    return settings_dict
+
 def save_preset(name):
+    global ignore_pars
+
     name='presets/gc_'+name+'.dat'
     new_preset=open(name,"w")
     parameters=gc.__dir__()
-    ignore_pars=['QUIT','KEYDOWN','KEYUP','RLEACCEL']
     for par in parameters:
         if par.upper() == par and par[:2] != 'K_' and par[:1] != '_' and not par in ignore_pars:
            value=getattr(gc,par)
