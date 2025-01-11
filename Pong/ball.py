@@ -37,7 +37,7 @@ class Ball(pygame.sprite.Sprite):
             )
         )
 
-    def update(self,intercept):
+    def update(self):
         if self.rect.top <= gc.WALL_WIDTH:
             self.bounce_wall('down')
         if self.rect.bottom >= gc.SCREEN_HEIGHT-gc.WALL_WIDTH:
@@ -54,7 +54,7 @@ class Ball(pygame.sprite.Sprite):
         if self.rect.right < 0:
             self.reset_speed()
             return -1
-        self.update_intercept(intercept)
+#        self.update_intercept(intercept)
         return 0
 
     def shoot(self,target,speed,distance,direction):

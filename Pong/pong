@@ -136,11 +136,7 @@ while running:
     # the horizontal positions of player 1 and player 2. This is used by the
     # AI to decide where to move.
     for ball_i in balls:
-        if ball_i.speedx>0:
-            intercept=gc.PLAYER2_X_POSITION
-        else:
-            intercept=gc.PLAYER1_X_POSITION
-        kill_case=ball_i.update(intercept)
+        kill_case=ball_i.update()
         if kill_case==-1:
             score[1]+=1
             ball_i.kill()
@@ -162,7 +158,7 @@ while running:
         player_side=1 if player.rect.centerx < gc.SCREEN_WIDTH/2 else 2
         ball_side=1 if ball_i.speedx<0 else 2
         if not (ball_side!=player_side and player.control == 'computer'):
-            player.update(pressed_keys,ball_i.intercept,ball_i.speedy)
+            player.update(pressed_keys,balls)
 
 
     # Fill the background
@@ -209,6 +205,8 @@ while running:
     for player_object in players:
         balls_hit=pygame.sprite.spritecollide(player_object, balls,False,collided=pygame.sprite.collide_mask)
         if balls_hit:
+            for player in players:
+                player.target=None
             for ball_hit in balls_hit:
                 if ball_hit.player_hit!=player_object.player_id:
                     pygame.mixer.music.play(loops=1)
@@ -221,23 +219,27 @@ while running:
                       ball_hit.bounce_wall(direction)
                       anglechange=anglesign*player_object.compute_anglechange(ball_hit.rect.centery)
                       ball_hit.anglechange(anglechange)
-                    player_object.target=gc.SCREEN_HEIGHT*random.random()
+                    player_object.target=None
                     ball_hit.player_hit=player_object.player_id
 
     # Check whether any balls are colliding with the walls
     for this_wall in walls:
         balls_hit=pygame.sprite.spritecollide(this_wall, balls,False,collided=pygame.sprite.collide_mask)
-        for ball_hit in balls_hit:
-            pygame.mixer.music.play(loops=1)
-            ball_hit.player_hit=0
-            if this_wall.name=="top":
-                ball_hit.bounce_wall("down")
-            elif this_wall.name=="bottom":
-                ball_hit.bounce_wall("up")
-            elif "left" in this_wall.name:
-                ball_hit.bounce_wall("right")
-            elif "right" in this_wall.name:
-                ball_hit.bounce_wall("left")
+        if balls_hit:
+            for ball_hit in balls_hit:
+                pygame.mixer.music.play(loops=1)
+                ball_hit.player_hit=0
+                if this_wall.name=="top":
+                    ball_hit.bounce_wall("down")
+                elif this_wall.name=="bottom":
+                    ball_hit.bounce_wall("up")
+                elif "left" in this_wall.name:
+                    ball_hit.bounce_wall("right")
+                elif "right" in this_wall.name:
+                    ball_hit.bounce_wall("left")
+            for player in players:
+                player.target=None
+
 
     # If no balls remain on the field, increment the score for the player
     # whose turn it *isn't*
