@@ -82,17 +82,18 @@ else:
 # Initialize variables
 running = True    # Flag indicating when to stop the game
 total_time=0      
-score_side1=0   
-score_side2=0
+score=[0,0]
 pause=False
 step=False
 center_line_width=2
 n_dash_center_line=30
 time_ref=0
+time_ref=1
 ball_wait=False
 ball_position_array=[]
 reset=False
 debug_string=''
+game_state=0
 
 while running:
 
@@ -136,11 +137,18 @@ while running:
             intercept=gc.PLAYER1_X_POSITION
         kill_case=ball_i.update(intercept)
         if kill_case==-1:
-            score_side2+=1
+            score[1]+=1
             ball_i.kill()
         elif kill_case==1:
-            score_side1+=1
+            score[0]+=1
             ball_i.kill()
+        for side in range(2):
+            if score[side]>=gc.SCORE_MAX:
+                win_text=font.render('Player '+str(side+1)+' Wins!',True,(255,255,255))
+                game_state=1
+                time_ref_1=total_time
+
+
         ball_position_array.append((ball_i.x,ball_i.y))
 
 
@@ -161,9 +169,9 @@ while running:
 
     # Render the score, if requested 
     if not gc.SCORE_HIDE:
-#        score_text=font.render(f'Player1: {score_side1}  Player2: {score_side2}',True,(255,255,255))
-        score_text1=font.render(f'{score_side1}',True,(255,255,255))
-        score_text2=font.render(f'{score_side2}',True,(255,255,255))
+#        score_text=font.render(f'Player1: {score[0]}  Player2: {score[1]}',True,(255,255,255))
+        score_text1=font.render(f'{score[0]}',True,(255,255,255))
+        score_text2=font.render(f'{score[1]}',True,(255,255,255))
 #        screen.blit(score_text, (gc.SCORE_XPOS,gc.SCORE_YPOS))
         screen.blit(score_text1, (0.23*gc.SCREEN_WIDTH,gc.SCORE_YPOS))
         screen.blit(score_text2, (0.73*gc.SCREEN_WIDTH,gc.SCORE_YPOS))
@@ -227,7 +235,7 @@ while running:
 
     # If no balls remain on the field, increment the score for the player
     # whose turn it *isn't*
-    if not balls:
+    if not balls and game_state==0:
 
         ball_position_array=[]
         # This code is used for testing different ball trajectories
@@ -247,9 +255,14 @@ while running:
             balls.add(ball_0)
             all_sprites.add(ball_0)
 
+    if game_state==1:
+        screen.blit(win_text, (gc.SCREEN_WIDTH/2-win_text.get_width()/2,gc.SCREEN_HEIGHT*0.53-win_text.get_height()/2))
+        if total_time-time_ref_1>3:
+            running=False
+
     if reset:
-        score_side1=0
-        score_side2=0
+        score[0]=0
+        score[1]=0
         reset=False
 
     # Update the display
@@ -262,7 +275,7 @@ while running:
 original_stdout = sys.stdout
 with open('scores.dat','a') as f:
     sys.stdout = f
-    print('%s, Player1 (%s): %d,  Player2 (%s): %d,  Game Time: %.2f seconds' % (datetime.datetime.now(),gc.PLAYER1_CONTROL,score_side1,gc.PLAYER2_CONTROL,score_side2,total_time))
+    print('%s, Player1 (%s): %d,  Player2 (%s): %d,  Game Time: %.2f seconds' % (datetime.datetime.now(),gc.PLAYER1_CONTROL,score[0],gc.PLAYER2_CONTROL,score[1],total_time))
     sys.stdout=original_stdout
 
 # Stop the sound effects
