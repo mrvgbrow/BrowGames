@@ -29,7 +29,7 @@ pygame.font.init()
 pygame.mixer.music.load("ding.mp3")
 clock=pygame.time.Clock()
 presets_dict=presets.load_presets()
-preset_default='One Player Standard'
+preset_default='Standard'
 presets.set_preset(presets_dict[preset_default])
 screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
 menu_run=True
@@ -47,17 +47,16 @@ screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
 # Create the player and ball sprites, add them to sprite groups for 
 # ease of processing.
 n_players=2
-if gc.CURVED_PADDLE:
-    player1=curved_paddle.CurvedPaddle(gc.PLAYER1_X_POSITION,gc.PLAYER1_COLOR,1)
-    player2=curved_paddle.CurvedPaddle(gc.PLAYER2_X_POSITION,gc.PLAYER2_COLOR,2)
-else:
-    for player_i in range(n_players):
-        player_x_position=current_settings['PLAYER'+str(player_i+1)+"_X_POSITION"]
-        player_color=current_settings['PLAYER'+str(player_i+1)+"_COLOR"]
-        player_control=current_settings['PLAYER'+str(player_i+1)+"_CONTROL"]
+for player_i in range(n_players):
+    player_x_position=current_settings['PLAYER'+str(player_i+1)+"_X_POSITION"]
+    player_color=current_settings['PLAYER'+str(player_i+1)+"_COLOR"]
+    player_control=current_settings['PLAYER'+str(player_i+1)+"_CONTROL"]
+    if gc.CURVED_PADDLE:
+        player_o=curved_paddle.CurvedPaddle(player_x_position,player_color,player_i+1,player_control)
+    else:
         player_o=player.Player(player_x_position,player_color,player_i+1,player_control)
-        players.add(player_o)
-        all_sprites.add(player_o)
+    players.add(player_o)
+    all_sprites.add(player_o)
 
 
 balls=pygame.sprite.Group()
