@@ -72,7 +72,7 @@ bottom_left_wall=wall.Wall("bottom left",gc.WALL_WIDTH/2,gc.SCREEN_HEIGHT-sub_wa
 top_left_wall=wall.Wall("top left",gc.WALL_WIDTH/2,sub_wall_size/2,gc.WALL_WIDTH,sub_wall_size)
 bottom_right_wall=wall.Wall("bottom right",gc.SCREEN_WIDTH-gc.WALL_WIDTH/2,gc.SCREEN_HEIGHT-sub_wall_size/2,gc.WALL_WIDTH,sub_wall_size)
 top_right_wall=wall.Wall("top right",gc.SCREEN_WIDTH-gc.WALL_WIDTH/2,sub_wall_size/2,gc.WALL_WIDTH,sub_wall_size)
-if gc.GOAL_SIZE<gc.SCREEN_HEIGHT:
+if gc.GOAL_SIZE<gc.SCREEN_HEIGHT-2*gc.WALL_WIDTH:
     walls=[top_wall,bottom_wall,bottom_left_wall,bottom_right_wall,top_left_wall,top_right_wall]
     all_sprites.add(top_wall,bottom_wall,bottom_left_wall,top_left_wall,bottom_right_wall,top_right_wall)
 else:
@@ -242,7 +242,7 @@ while running:
 #        for i in range(1):
 #          ball_0=ball.Ball()
 #          vertical_shift=-gc.PLAYER_HEIGHT/3.35+float(score_side2+score_side1)*gc.PLAYER_HEIGHT/10
-#          ball_0.shoot((player1.rect.centerx,player1.rect.centery-gc.PLAYER_HEIGHT/1.7),10,300,210)
+#          ball_0.shoot((gc.PLAYER1_X_POSITION/3,gc.SCREEN_HEIGHT-gc.WALL_WIDTH),10,300,130)
 #          balls.add(ball_0)
 #          all_sprites.add(ball_0)
 
