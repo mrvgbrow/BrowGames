@@ -32,39 +32,48 @@ presets_dict=presets.load_presets()
 preset_default='Standard'
 presets.set_preset(presets_dict[preset_default])
 screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
+
+# Load the menu. Continue reloading the menu until an option is selected that requests
+# the game to load.
 menu_run=True
 while menu_run:
-    menu_run,preset_out=menu.run_menu('Pong',screen,presets_dict,preset_default)
+    menu_run,preset_out=menu.run_menu('Pong',screen,presets_dict,preset_default,True)
+
+# Scale the selected game constants and extract them as a dictionary
 gc.scale_parameters()
 current_settings=presets.get_settings()
 
-font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE)
-pygame.mixer.music.set_volume(gc.SOUND_VOLUME)
+font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE) # A pong-like font. Used in displayed text.
+pygame.mixer.music.set_volume(gc.SOUND_VOLUME)   # Set the volume.
+
+# Initialize the various sprite groups.
 all_sprites = pygame.sprite.Group()
 players = pygame.sprite.Group()
+balls=pygame.sprite.Group()
+
 screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
 
-# Create the player and ball sprites, add them to sprite groups for 
-# ease of processing.
-n_players=2
+# Create the player sprites
+n_players=4
 for player_i in range(n_players):
     player_x_position=current_settings['PLAYER'+str(player_i+1)+"_X_POSITION"]
     player_color=current_settings['PLAYER'+str(player_i+1)+"_COLOR"]
     player_control=current_settings['PLAYER'+str(player_i+1)+"_CONTROL"]
-    if gc.CURVED_PADDLE:
-        player_o=curved_paddle.CurvedPaddle(player_x_position,player_color,player_i+1,player_control)
-    else:
-        player_o=player.Player(player_x_position,player_color,player_i+1,player_control)
-    players.add(player_o)
-    all_sprites.add(player_o)
+    if player_control != 'none':
+        if gc.CURVED_PADDLE:
+            player_o=curved_paddle.CurvedPaddle(player_x_position,player_color,player_i+1,player_control)
+        else:
+            player_o=player.Player(player_x_position,player_color,player_i+1,player_control)
+        players.add(player_o)
+        all_sprites.add(player_o)
 
-
-balls=pygame.sprite.Group()
+# Create the ball sprites
 for i in range(gc.BALL_NUMBER):
     ball_i=ball.Ball()
     balls.add(ball_i)
     all_sprites.add(ball_i)
 
+# Create the wall sprites. Left and right walls not needed if a full-height goal is requested.
 top_wall=wall.Wall("top",gc.SCREEN_WIDTH/2,gc.WALL_WIDTH/2,gc.SCREEN_WIDTH,gc.WALL_WIDTH)
 bottom_wall=wall.Wall("bottom",gc.SCREEN_WIDTH/2,gc.SCREEN_HEIGHT-gc.WALL_WIDTH/2,gc.SCREEN_WIDTH,gc.WALL_WIDTH)
 sub_wall_size=(gc.SCREEN_HEIGHT-2*gc.WALL_WIDTH-gc.GOAL_SIZE)/2+gc.WALL_WIDTH
@@ -97,24 +106,22 @@ game_state=0
 
 while running:
 
-    # Did the user click the window close button?
     for event in pygame.event.get():
+        # Did the user click the window close button?
         if event.type == pygame.QUIT:
             running = False
         elif event.type == gc.KEYDOWN:
-            if event.key == gc.K_ESCAPE:
+            if event.key == gc.K_ESCAPE:   # Esc quits
                 running = False
-            if event.key == gc.K_p:
+            if event.key == gc.K_p:     # p pauses/unpauses
                 if pause:
                     pause=False
                 else:
                     pause=True
-            if event.key == gc.K_RIGHTBRACKET:
+            if event.key == gc.K_RIGHTBRACKET:     # ] steps one frame at a time
                 step=True
-            if event.key == gc.K_r:
+            if event.key == gc.K_r:                # r resets the score
                 reset=True
-            if event.key == gc.K_DELETE and not exec_run:
-                os.execl(sys.executable,f'"{sys.executable}"',*sys.argv)
 
     # If paused, continuously skip over the game loop (except event processing).
     # If taking one step through the loop, don't pause but unset the step
@@ -124,8 +131,6 @@ while running:
         continue
     if step:
         step=False
-
-    pressed_keys = pygame.key.get_pressed()
 
     # For each ball, determine the position where the it will intersect with
     # the horizontal positions of player 1 and player 2. This is used by the
@@ -147,12 +152,12 @@ while running:
                 win_text=font.render('Player '+str(side+1)+' Wins!',True,(255,255,255))
                 game_state=1
                 time_ref_1=total_time
-
-
         ball_position_array.append((ball_i.x,ball_i.y))
 
 
     # Always allow player movement when human controlled. Only update the AI position when the ball is moving towards it.
+    # Pressed keys are used to control the players.
+    pressed_keys = pygame.key.get_pressed()
     for player in players:
         player_side=1 if player.rect.centerx < gc.SCREEN_WIDTH/2 else 2
         ball_side=1 if ball_i.speedx<0 else 2
@@ -182,17 +187,18 @@ while running:
         time_text=font.render(f'Time: {rounded_time}',True,(255,255,255))
         screen.blit(time_text, (gc.TIME_XPOS,gc.TIME_YPOS))
 
-#    debug_string=f'{ball_i.intercept:.1f} {player1.target:.1f} {gc.PLAYER_HEIGHT}'
+    #    debug_string=f'{ball_i.intercept:.1f} {player1.target:.1f} {gc.PLAYER_HEIGHT}'
     if debug_string != '':
         debug_text=font.render(debug_string,True,(255,255,255))
         screen.blit(debug_text, (gc.SCREEN_HEIGHT/2,gc.SCREEN_WIDTH/2))
 
-
+    # Show the trail of the ball, if requested. The trail resets with every point.
     if gc.SHOW_BALL_TRAIL:
         for ball_position in ball_position_array:
             if ball_position[0]>0 and ball_position[1]>0:
                 pygame.draw.circle(screen, (255,255,255),ball_position,1)
 
+    # Show the court center line, if requested.
     if not gc.CENTER_LINE_HIDE:
         for center_count in range(n_dash_center_line):
             y_pos=gc.SCREEN_HEIGHT/n_dash_center_line*center_count
@@ -246,20 +252,24 @@ while running:
 #          balls.add(ball_0)
 #          all_sprites.add(ball_0)
 
+        # If there are no balls, set a wait flag and a reference time. 
         if time_ref<total_time and not ball_wait:
             time_ref=total_time
             ball_wait=True
+        # If there are no balls and the specified wait time has elapsed, serve the next ball.
         if total_time-time_ref>gc.BALL_WAIT and ball_wait:
             ball_wait=False
             ball_0=ball.Ball()
             balls.add(ball_0)
             all_sprites.add(ball_0)
 
+    # If the game has been won by one of the players, display the end game message.. After 3 seconds, the game will close.
     if game_state==1:
         screen.blit(win_text, (gc.SCREEN_WIDTH/2-win_text.get_width()/2,gc.SCREEN_HEIGHT*0.53-win_text.get_height()/2))
         if total_time-time_ref_1>3:
             running=False
 
+    # If the user requested a score reset, set both scores to 0.
     if reset:
         score[0]=0
         score[1]=0
@@ -268,6 +278,7 @@ while running:
     # Update the display
     pygame.display.flip()
 
+    # Move the clock forward by a tick
     clock.tick(gc.TICK_FRAMERATE)
     total_time=total_time+1/gc.TICK_FRAMERATE
 

@@ -4,13 +4,9 @@ import pygame_menu
 import gameconstants as gc
 import presets
 
-def run_menu(title,screen,presets_dict,preset_default):
+def run_menu(title,screen,presets_dict,preset_default,fourplayers):
   global menu_run,original_pars
-  control_values=['arrows','wasd','computer']
   font_size=24
-  input_select_list=[]
-  for input_val in control_values:
-      input_select_list.append((input_val.capitalize(),input_val))
   menu_run=False
   menu=pygame_menu.Menu(title,800,600,theme=pygame_menu.themes.THEME_DEFAULT,onclose=pygame_menu.events.CLOSE)
   get_parameters()
@@ -39,8 +35,8 @@ def run_menu(title,screen,presets_dict,preset_default):
 #  menu.add.button('Save Preset',spmenu)
   menu.add.button('Quit',pygame_menu.events.EXIT,font_size=font_size)
   menu.add.label('',font_size=font_size)
-  widget=menu.add.dropselect(title='P1: ',items=input_select_list,onchange=set_input_drop,args=['PLAYER1_CONTROL'],default=control_values.index(original_pars['PLAYER1_CONTROL']),font_size=font_size-2,align=pygame_menu.locals.ALIGN_CENTER)
-  widget=menu.add.dropselect(title='P2: ',items=input_select_list,onchange=set_input_drop,args=['PLAYER2_CONTROL'],default=control_values.index(original_pars['PLAYER2_CONTROL']),font_size=font_size-2,align=pygame_menu.locals.ALIGN_CENTER)
+  menu.add.label('',font_size=font_size)
+  add_control_menu(menu,fourplayers)
   menu.add.label('',font_size=font_size)
   preset_input=menu.add.label('Loaded preset: '+preset_default,font_size=font_size)
   make_amenu(amenu)
@@ -49,6 +45,25 @@ def run_menu(title,screen,presets_dict,preset_default):
   make_spmenu(spmenu)
   menu.mainloop(screen)
   return menu_run,preset_input.get_title()[15:]
+
+def add_control_menu(menu,fourplayers):
+  global original_pars
+
+  control_values=['arrows','wasd','computer','none']
+  font_size=24
+  input_select_list=[]
+  for input_val in control_values:
+      input_select_list.append((input_val.capitalize(),input_val))
+  widget=menu.add.dropselect(title='P1: ',items=input_select_list,onchange=set_input_drop,args=['PLAYER1_CONTROL'],default=control_values.index(original_pars['PLAYER1_CONTROL']),font_size=font_size-2,align=pygame_menu.locals.ALIGN_LEFT,float=True)
+  widget.translate(gc.SCREEN_WIDTH/8,0)
+  widget=menu.add.dropselect(title='P2: ',items=input_select_list,onchange=set_input_drop,args=['PLAYER2_CONTROL'],default=control_values.index(original_pars['PLAYER2_CONTROL']),font_size=font_size-2,align=pygame_menu.locals.ALIGN_RIGHT,float=True)
+  widget.translate(-gc.SCREEN_WIDTH/8,0)
+  menu.add.label('',font_size=font_size)
+  if fourplayers:
+    widget=menu.add.dropselect(title='P3: ',items=input_select_list,onchange=set_input_drop,args=['PLAYER3_CONTROL'],default=control_values.index(original_pars['PLAYER3_CONTROL']),font_size=font_size-2,align=pygame_menu.locals.ALIGN_LEFT,float=True)
+    widget.translate(gc.SCREEN_WIDTH/8,0)
+    widget=menu.add.dropselect(title='P4: ',items=input_select_list,onchange=set_input_drop,args=['PLAYER4_CONTROL'],default=control_values.index(original_pars['PLAYER4_CONTROL']),font_size=font_size-2,align=pygame_menu.locals.ALIGN_RIGHT,float=True)
+    widget.translate(-gc.SCREEN_WIDTH/8,0)
 
 def make_spmenu(spmenu):
   label=spmenu.add.label('')
