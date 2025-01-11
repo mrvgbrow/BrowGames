@@ -3,6 +3,7 @@
 import pygame
 import math
 
+BALL_SQUARE=False
 BALL_FIX_XSPEED=True
 PLAYER_RADIUS=4.0
 SOUND_VOLUME=1.0

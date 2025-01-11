@@ -11,9 +11,12 @@ class Ball(pygame.sprite.Sprite):
     def __init__(self):
         super(Ball,self).__init__()
         self.surf=pygame.Surface((2*gc.BALL_RADIUS,2*gc.BALL_RADIUS))
-        self.surf.fill(gc.SCREEN_COLOR)
         self.surf.set_colorkey(gc.SCREEN_COLOR,gc.RLEACCEL)
-        pygame.draw.circle(self.surf, gc.BALL_COLOR,(gc.BALL_RADIUS,gc.BALL_RADIUS),gc.BALL_RADIUS)
+        if gc.BALL_SQUARE:
+            self.surf.fill(gc.BALL_COLOR)
+        else:
+            self.surf.fill(gc.SCREEN_COLOR)
+            pygame.draw.circle(self.surf, gc.BALL_COLOR,(gc.BALL_RADIUS,gc.BALL_RADIUS),gc.BALL_RADIUS)
         self.mask=pygame.mask.from_surface(self.surf)
         angle=random.random()*math.pi/2-math.pi/4+random.random()-0.5
         self.base_speed=gc.BALL_SPEED
