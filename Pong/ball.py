@@ -42,7 +42,7 @@ class Ball(pygame.sprite.Sprite):
             self.bounce_wall('down')
         if self.rect.bottom >= gc.SCREEN_HEIGHT-gc.WALL_WIDTH:
             self.bounce_wall('up')
-        if self.rect.right >= gc.SCREEN_WIDTH:
+        if self.rect.left >= gc.SCREEN_WIDTH:
             self.reset_speed()
             return 1
         self.x+=self.speedx
