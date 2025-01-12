@@ -55,13 +55,13 @@ class Player(pygame.sprite.Sprite):
         elif self.control == 'computer':
             recompute=False
             if not self.target or math.copysign(1,self.target.speedx) != math.copysign(1,self.target_position_x-self.target.rect.centerx):
+                if len(balls.sprites())==0:
+                    return
                 for ball in balls:
                     self.target=ball
                 random_x=True if gc.PADDLE_ALLOW_LEFTRIGHT else False
                 self.target_position_true,self.target_position_x=self.compute_target_position(random_x=random_x)
                 recompute=True
-                if not self.target:
-                    return
             error_distance=self.compute_error_distance()
             if recompute or random.random()<gc.AI_RANDOM_ADJUST:
                 self.target_position=self.target_position_true+2*(random.random()-0.5)*error_distance
