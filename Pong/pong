@@ -61,13 +61,14 @@ screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
 n_players=4
 for player_i in range(n_players):
     player_x_position=current_settings['PLAYER'+str(player_i+1)+"_X_POSITION"]
+    side=1 if player_x_position<gc.SCREEN_WIDTH/2 else 2
     player_color=current_settings['PLAYER'+str(player_i+1)+"_COLOR"]
     player_control=current_settings['PLAYER'+str(player_i+1)+"_CONTROL"]
     if player_control != 'none':
         if gc.CURVED_PADDLE:
-            player_o=curved_paddle.CurvedPaddle(player_x_position,player_color,player_i+1,player_control)
+            player_o=curved_paddle.CurvedPaddle(player_x_position,player_color,player_i+1,player_control,side)
         else:
-            player_o=player.Player(player_x_position,player_color,player_i+1,player_control)
+            player_o=player.Player(player_x_position,player_color,player_i+1,player_control,side)
         players.add(player_o)
         all_sprites.add(player_o)
 
@@ -160,9 +161,8 @@ while running:
     pressed_keys = pygame.key.get_pressed()
     mouse_relative = pygame.mouse.get_rel()
     for player in players:
-        player_side=1 if player.rect.centerx < gc.SCREEN_WIDTH/2 else 2
         ball_side=1 if ball_i.speedx<0 else 2
-        if not (ball_side!=player_side and player.control == 'computer'):
+        if not (ball_side!=player.side and player.control == 'computer'):
             player.update(pressed_keys,mouse_relative,balls)
 
 
@@ -269,6 +269,8 @@ while running:
             ball_0=ball.Ball()
             balls.add(ball_0)
             all_sprites.add(ball_0)
+            for player in players:
+                player.target=None
 
     # If the game has been won by one of the players, display the end game message.. After 3 seconds, the game will close.
     if game_state==1:

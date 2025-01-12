@@ -8,13 +8,15 @@ import physics
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self,x_position,color,player_id,control):
+    def __init__(self,x_position,color,player_id,control,side):
         super(Player,self).__init__()
         self.surf=pygame.Surface((gc.PLAYER_WIDTH,gc.PLAYER_HEIGHT))
         self.surf.fill(color)
         self.surf.set_colorkey(gc.SCREEN_COLOR)
+        self.side=side
         self.target=None
         self.target_position=None
+        self.target_position_x=x_position
         self.player_id=player_id
         self.control=control
         self.rect = self.surf.get_rect(
@@ -52,10 +54,11 @@ class Player(pygame.sprite.Sprite):
                 self.rect.move_ip(mouse_relative[0]/gc.MOUSE_SENSITIVITY,0)
         elif self.control == 'computer':
             recompute=False
-            if not self.target:
+            if not self.target or math.copysign(1,self.target.speedx) != math.copysign(1,self.target_position_x-self.target.rect.centerx):
                 for ball in balls:
                     self.target=ball
-                self.target_position_true=self.compute_target_position()
+                random_x=True if gc.PADDLE_ALLOW_LEFTRIGHT else False
+                self.target_position_true,self.target_position_x=self.compute_target_position(random_x=random_x)
                 recompute=True
                 if not self.target:
                     return
@@ -63,9 +66,12 @@ class Player(pygame.sprite.Sprite):
             if recompute or random.random()<gc.AI_RANDOM_ADJUST:
                 self.target_position=self.target_position_true+2*(random.random()-0.5)*error_distance
             if self.target_position>-error_distance and self.target_position<gc.SCREEN_HEIGHT+error_distance:
-                direction=self.target_position-self.rect.centery
-                if abs(direction) > gc.PLAYER_MOVESTEP:
-                    self.rect.move_ip(0,direction/abs(direction)*gc.PLAYER_MOVESTEP)
+                direction_y=self.target_position-self.rect.centery
+                direction_x=self.target_position_x-self.rect.centerx
+                if abs(direction_y) > gc.PLAYER_MOVESTEP:
+                    self.rect.move_ip(0,math.copysign(1,direction_y)*gc.PLAYER_MOVESTEP)
+                if abs(direction_x) > gc.PLAYER_MOVESTEP and gc.PADDLE_ALLOW_LEFTRIGHT:
+                    self.rect.move_ip(math.copysign(1,direction_x)*gc.PLAYER_MOVESTEP,0)
 
         if self.rect.top <= gc.WALL_WIDTH:
             self.rect.top=gc.WALL_WIDTH
@@ -94,21 +100,29 @@ class Player(pygame.sprite.Sprite):
         error_distance= gc.PLAYER_HEIGHT*gc.AI_ERROR_DISTANCE*(1+gc.AI_YSPEED_ERROR_FACTOR*abs(self.target.speedy)/gc.BALL_MAX_SPEED)
         return error_distance
 
-    def compute_target_position(self):
-        intercept=physics.find_intercept(self.target.speedx,self.target.speedy,self.target.rect.centerx,self.target.rect.centery,self.rect.centerx)
+    def compute_target_position(self,random_x=False):
+        if random_x:
+            margin_x=gc.SCREEN_WIDTH/8
+            if self.target.speedx>0:
+                move_x=self.target.rect.centerx+margin_x+random.random()*(gc.SCREEN_WIDTH-self.target.rect.centerx-margin_x)
+            else:
+                move_x=self.target.rect.centerx-margin_x-random.random()*(self.target.rect.centerx-margin_x)
+        else:
+            move_x=self.rect.centerx
+        intercept=physics.find_intercept(self.target.speedx,self.target.speedy,self.target.rect.centerx,self.target.rect.centery,move_x)
         if (intercept < gc.WALL_WIDTH or intercept > gc.SCREEN_HEIGHT-gc.WALL_WIDTH) and gc.AI_PREDICT_BOUNCE:
             intercept_x_0=physics.find_intercept(self.target.speedy,self.target.speedx,self.target.rect.centery,self.target.rect.centerx,gc.WALL_WIDTH)
             intercept_x_1=physics.find_intercept(self.target.speedy,self.target.speedx,self.target.rect.centery,self.target.rect.centerx,gc.SCREEN_HEIGHT-gc.WALL_WIDTH)
             if self.target.speedx>0:
                 if intercept_x_1 > intercept_x_0:
-                    intercept=physics.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_1,gc.SCREEN_HEIGHT-gc.WALL_WIDTH,self.rect.centerx)
+                    intercept=physics.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_1,gc.SCREEN_HEIGHT-gc.WALL_WIDTH,move_x)
                 else:
-                    intercept=physics.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_0,gc.WALL_WIDTH,self.rect.centerx)
+                    intercept=physics.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_0,gc.WALL_WIDTH,move_x)
             else:
                 if intercept_x_1 < intercept_x_0:
-                    intercept=physics.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_1,gc.SCREEN_HEIGHT-gc.WALL_WIDTH,self.rect.centerx)
+                    intercept=physics.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_1,gc.SCREEN_HEIGHT-gc.WALL_WIDTH,move_x)
                 else:
-                    intercept=physics.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_0,gc.WALL_WIDTH,self.rect.centerx)
+                    intercept=physics.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_0,gc.WALL_WIDTH,move_x)
             if intercept < 0 or intercept > gc.SCREEN_HEIGHT:
                 intercept=-1
-        return intercept
+        return intercept,move_x
