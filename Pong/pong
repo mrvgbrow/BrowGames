@@ -33,6 +33,10 @@ preset_default='Standard'
 presets.set_preset(presets_dict[preset_default])
 screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
 
+# Initialize mouse
+pygame.event.set_grab(True)
+pygame.mouse.set_visible(False)
+
 # Load the menu. Continue reloading the menu until an option is selected that requests
 # the game to load.
 menu_run=True
@@ -154,11 +158,12 @@ while running:
     # Always allow player movement when human controlled. Only update the AI position when the ball is moving towards it.
     # Pressed keys are used to control the players.
     pressed_keys = pygame.key.get_pressed()
+    mouse_relative = pygame.mouse.get_rel()
     for player in players:
         player_side=1 if player.rect.centerx < gc.SCREEN_WIDTH/2 else 2
         ball_side=1 if ball_i.speedx<0 else 2
         if not (ball_side!=player_side and player.control == 'computer'):
-            player.update(pressed_keys,balls)
+            player.update(pressed_keys,mouse_relative,balls)
 
 
     # Fill the background

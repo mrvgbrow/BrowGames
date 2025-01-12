@@ -49,7 +49,7 @@ def run_menu(title,screen,presets_dict,preset_default,fourplayers):
 def add_control_menu(menu,fourplayers):
   global original_pars
 
-  control_values=['arrows','wasd','computer','none']
+  control_values=['arrows','wasd','computer','mouse','none']
   font_size=24
   input_select_list=[]
   for input_val in control_values:

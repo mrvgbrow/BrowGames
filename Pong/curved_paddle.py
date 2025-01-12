@@ -25,7 +25,7 @@ class CurvedPaddle(pygame.sprite.Sprite):
         )
         self.draw(color)
 
-    def update(self, pressed_keys, balls):
+    def update(self, pressed_keys, mouse_relative,balls):
         if self.control == 'arrows':
             if pressed_keys[gc.K_UP]:
                 self.rect.move_ip(0,-gc.PLAYER_MOVESTEP)
@@ -46,6 +46,10 @@ class CurvedPaddle(pygame.sprite.Sprite):
                     self.rect.move_ip(-gc.PLAYER_MOVESTEP,0)
                 if pressed_keys[gc.K_d]:
                     self.rect.move_ip(gc.PLAYER_MOVESTEP,0)
+        elif self.control == 'mouse':
+            self.rect.move_ip(0,mouse_relative[1]/gc.MOUSE_SENSITIVITY)
+            if gc.PADDLE_ALLOW_LEFTRIGHT:
+                self.rect.move_ip(mouse_relative[0]/gc.MOUSE_SENSITIVITY,0)
         elif self.control == 'computer':
             recompute=False
             if not self.target:
