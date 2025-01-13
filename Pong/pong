@@ -14,7 +14,6 @@ import pygame
 import menu
 import presets
 import player
-import curved_paddle
 import random
 import math
 import datetime
@@ -33,9 +32,6 @@ preset_default='Standard'
 presets.set_preset(presets_dict[preset_default])
 screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
 
-# Initialize mouse
-pygame.event.set_grab(True)
-pygame.mouse.set_visible(False)
 
 # Load the menu. Continue reloading the menu until an option is selected that requests
 # the game to load.
@@ -64,6 +60,13 @@ for player_i in range(n_players):
     side=1 if player_x_position<gc.SCREEN_WIDTH/2 else 2
     player_color=current_settings['PLAYER'+str(player_i+1)+"_COLOR"]
     player_control=current_settings['PLAYER'+str(player_i+1)+"_CONTROL"]
+
+    # if any players are using the mouse, grab exclusive input from it and make it invisible
+    if player_control=='mouse': 
+        pygame.event.set_grab(True)
+        pygame.mouse.set_visible(False)
+
+    # Create the player instance and add it to the corresponding sprite group
     if player_control != 'none':
         paddle_type='curved' if gc.CURVED_PADDLE else 'normal'
         player_o=player.Player(player_x_position,player_color,player_i+1,player_control,side,paddle_type)
