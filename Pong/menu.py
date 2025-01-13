@@ -72,7 +72,7 @@ def make_spmenu(spmenu):
       presets.save_preset(widget.get_value())
       label.set_title('Saved!')
   spmenu.add.button('Save',save_preset_inmenu)
-  spmenu.add.button('Back',pygame_menu.events.BACK)
+  spmenu.add.button('Back',pygame_menu.events.BACK,background_color=(75,75,75),font_color=(255,255,255))
 
 def make_pmenu(pmenu,presets_dict,preset_input):
   font_size=24
@@ -87,7 +87,7 @@ def make_pmenu(pmenu,presets_dict,preset_input):
       button=pmenu.add.button(preset_name,select_preset,font_size=font_size)
       button.add_self_to_kwargs()
   pmenu.add.label('')
-  pmenu.add.button('Back',pygame_menu.events.BACK,font_size=font_size)
+  pmenu.add.button('Back',pygame_menu.events.BACK,font_size=font_size,background_color=(75,75,75),font_color=(255,255,255))
   return True
 
 def make_amenu(amenu):
@@ -106,14 +106,14 @@ def make_amenu(amenu):
   amenu.add.label('Version '+version_array2[1])
   amenu.add.label('Written by Nicholas A. Bond, 2024-2025')
   amenu.add.label('')
-  amenu.add.button('Back',pygame_menu.events.BACK,font_size=font_size)
+  amenu.add.button('Back',pygame_menu.events.BACK,font_size=font_size,background_color=(75,75,75),font_color=(255,255,255))
   return True
 
 def make_smenu(smenu):
   global original_pars
   font_size=17
   first_widget=[]
-  for par in original_pars:
+  for par in sorted(original_pars):
       value=getattr(gc,par)
       value=getattr(gc,par)
       if type(value) is bool:
@@ -122,8 +122,6 @@ def make_smenu(smenu):
           widget=smenu.add.text_input(par+': ',default=value,onchange=set_input,args=[par],input_type=pygame_menu.locals.INPUT_INT,font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
       elif type(value) is float:
           widget=smenu.add.text_input(par+': ',default=value,onchange=set_input,args=[par],input_type=pygame_menu.locals.INPUT_FLOAT,font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
-#      elif value in input_values:
-#          widget=smenu.add.dropselect(title=par+': ',items=input_select_list,onchange=set_input_drop,args=[par],default=input_values.index(value),font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
       elif type(value) is tuple:
           tmenu=pygame_menu.Menu(par,600,400,theme=pygame_menu.themes.THEME_DEFAULT)
           widget=smenu.add.button(par,tmenu,font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
@@ -135,7 +133,7 @@ def make_smenu(smenu):
       if not first_widget:
           first_widget=widget
   smenu.add.label('')
-  smenu.add.button('OK',pygame_menu.events.BACK)
+  widget=smenu.add.button('OK',pygame_menu.events.BACK,background_color=(75,75,75),font_color=(255,255,255))
   smenu.scroll_to_widget(first_widget)
 
 def get_parameters():
