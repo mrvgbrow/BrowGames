@@ -8,10 +8,17 @@ import physics
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self,x_position,color,player_id,control,side):
+    def __init__(self,x_position,color,player_id,control,side,paddle_type):
         super(Player,self).__init__()
-        self.surf=pygame.Surface((gc.PLAYER_WIDTH,gc.PLAYER_HEIGHT))
-        self.surf.fill(color)
+        self.type=paddle_type
+        if paddle_type=='curved':
+            self.real_height=min(gc.PLAYER_HEIGHT,math.sqrt(gc.PLAYER_RADIUS**2-(gc.PLAYER_RADIUS-2*gc.PLAYER_WIDTH)**2)*2) ###
+            width=gc.PLAYER_RADIUS
+        else:
+            self.real_height=gc.PLAYER_HEIGHT
+            width=gc.PLAYER_WIDTH
+        self.surf=pygame.Surface((width,self.real_height))
+        if paddle_type != 'curved': self.surf.fill(color)
         self.surf.set_colorkey(gc.SCREEN_COLOR)
         self.side=side
         self.target=None
@@ -25,7 +32,10 @@ class Player(pygame.sprite.Sprite):
                 0.5*gc.SCREEN_HEIGHT,
             )
         )
-        self.mask=pygame.mask.from_surface(self.surf)
+        if self.type=='curved':
+            self.curved_draw(color) 
+        else:
+            self.mask=pygame.mask.from_surface(self.surf)
 
     def update(self, pressed_keys, mouse_relative,balls):
         if self.control == 'arrows':
@@ -84,9 +94,17 @@ class Player(pygame.sprite.Sprite):
 
     def compute_anglechange(self,ballpos_y):
         location_on_paddle=ballpos_y-self.rect.centery
-        nominal_change=location_on_paddle/gc.PLAYER_HEIGHT*math.pi
-        adjusted_change=nominal_change*gc.PLAYER_CONTROL_FACTOR
-        return adjusted_change
+        if self.type=='curved':
+            if location_on_paddle>gc.PLAYER_RADIUS:
+                location_on_paddle=gc.PLAYER_RADIUS
+            elif location_on_paddle<-gc.PLAYER_RADIUS:
+                location_on_paddle=-gc.PLAYER_RADIUS
+            nominal_change=2*math.asin(location_on_paddle/gc.PLAYER_RADIUS)
+            return nominal_change
+        else:
+            nominal_change=location_on_paddle/gc.PLAYER_HEIGHT*math.pi
+            adjusted_change=nominal_change*gc.PLAYER_CONTROL_FACTOR
+            return adjusted_change
 
     def compute_original_angle(self,ballpos_y,speed_x):
         location_on_paddle=math.floor((ballpos_y-self.rect.centery)/gc.PLAYER_HEIGHT*8)
@@ -99,6 +117,13 @@ class Player(pygame.sprite.Sprite):
     def compute_error_distance(self):
         error_distance= gc.PLAYER_HEIGHT*gc.AI_ERROR_DISTANCE*(1+gc.AI_YSPEED_ERROR_FACTOR*abs(self.target.speedy)/gc.BALL_MAX_SPEED)
         return error_distance
+
+    def curved_draw(self,color):
+        pygame.draw.circle(self.surf,color,(0,self.surf.get_height()/2),gc.PLAYER_RADIUS)
+        pygame.draw.rect(self.surf,gc.SCREEN_COLOR,(0,0,self.surf.get_width()-2*gc.PLAYER_WIDTH,self.surf.get_height()))
+        if self.rect.centerx>gc.SCREEN_WIDTH/2:
+            self.surf=pygame.transform.flip(self.surf,True,False)
+        self.mask=pygame.mask.from_surface(self.surf)
 
     def compute_target_position(self,random_x=False):
         if random_x:

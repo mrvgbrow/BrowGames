@@ -65,10 +65,8 @@ for player_i in range(n_players):
     player_color=current_settings['PLAYER'+str(player_i+1)+"_COLOR"]
     player_control=current_settings['PLAYER'+str(player_i+1)+"_CONTROL"]
     if player_control != 'none':
-        if gc.CURVED_PADDLE:
-            player_o=curved_paddle.CurvedPaddle(player_x_position,player_color,player_i+1,player_control,side)
-        else:
-            player_o=player.Player(player_x_position,player_color,player_i+1,player_control,side)
+        paddle_type='curved' if gc.CURVED_PADDLE else 'normal'
+        player_o=player.Player(player_x_position,player_color,player_i+1,player_control,side,paddle_type)
         players.add(player_o)
         all_sprites.add(player_o)
 
