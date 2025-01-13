@@ -23,6 +23,7 @@ class Player(pygame.sprite.Sprite):
         self.side=side
         self.target=None
         self.target_position=None
+        self.target_position_true=0.0
         self.target_position_x=x_position
         self.player_id=player_id
         self.control=control
@@ -64,7 +65,8 @@ class Player(pygame.sprite.Sprite):
                 self.rect.move_ip(mouse_relative[0]*gc.MOUSE_SENSITIVITY,0)
         elif self.control == 'computer':
             recompute=False
-            if not self.target or math.copysign(1,self.target.speedx) != math.copysign(1,self.target_position_x-self.target.rect.centerx):
+#            if not self.target or (gc.PADDLE_ALLOW_LEFTRIGHT and math.copysign(1,self.target.speedx) != math.copysign(1,self.target_position_x-self.target.rect.centerx)):
+            if not self.target:
                 if len(balls.sprites())==0:
                     return
                 for ball in balls:
