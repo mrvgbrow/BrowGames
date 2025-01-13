@@ -31,10 +31,10 @@ MOUSE_SENSITIVITY=0.5
 
 # Paddle properties
 PLAYER_MOVESPEED=600
-PLAYER1_CONTROL='mouse'
-PLAYER2_CONTROL='arrows'
-PLAYER3_CONTROL='arrows'
-PLAYER4_CONTROL='arrows'
+PLAYER1_CONTROL='Mouse'
+PLAYER2_CONTROL='Arrows'
+PLAYER3_CONTROL='Arrows'
+PLAYER4_CONTROL='Arrows'
 PLAYER1_X_POSITION=0.05
 PLAYER2_X_POSITION=0.95
 PLAYER3_X_POSITION=0.25
@@ -96,6 +96,10 @@ from pygame.locals import (
     K_a,
     K_d,
     K_s,
+    K_i,
+    K_j,
+    K_k,
+    K_l,
     QUIT,
 )
 

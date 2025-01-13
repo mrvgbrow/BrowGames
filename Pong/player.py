@@ -39,7 +39,7 @@ class Player(pygame.sprite.Sprite):
             self.mask=pygame.mask.from_surface(self.surf)
 
     def update(self, pressed_keys, mouse_relative,balls):
-        if self.control == 'arrows':
+        if self.control == 'Arrows':
             if pressed_keys[gc.K_UP]:
                 self.rect.move_ip(0,-gc.PLAYER_MOVESTEP)
             if pressed_keys[gc.K_DOWN]:
@@ -49,7 +49,7 @@ class Player(pygame.sprite.Sprite):
                     self.rect.move_ip(-gc.PLAYER_MOVESTEP,0)
                 if pressed_keys[gc.K_RIGHT]:
                     self.rect.move_ip(gc.PLAYER_MOVESTEP,0)
-        elif self.control == 'wasd':
+        elif self.control == 'WASD':
             if pressed_keys[gc.K_w]:
                 self.rect.move_ip(0,-gc.PLAYER_MOVESTEP)
             if pressed_keys[gc.K_s]:
@@ -59,11 +59,21 @@ class Player(pygame.sprite.Sprite):
                     self.rect.move_ip(-gc.PLAYER_MOVESTEP,0)
                 if pressed_keys[gc.K_d]:
                     self.rect.move_ip(gc.PLAYER_MOVESTEP,0)
-        elif self.control == 'mouse':
+        elif self.control == 'IJKL':
+            if pressed_keys[gc.K_i]:
+                self.rect.move_ip(0,-gc.PLAYER_MOVESTEP)
+            if pressed_keys[gc.K_k]:
+                self.rect.move_ip(0,gc.PLAYER_MOVESTEP)
+            if gc.PADDLE_ALLOW_LEFTRIGHT:
+                if pressed_keys[gc.K_j]:
+                    self.rect.move_ip(-gc.PLAYER_MOVESTEP,0)
+                if pressed_keys[gc.K_l]:
+                    self.rect.move_ip(gc.PLAYER_MOVESTEP,0)
+        elif self.control == 'Mouse':
             self.rect.move_ip(0,mouse_relative[1]*gc.MOUSE_SENSITIVITY)
             if gc.PADDLE_ALLOW_LEFTRIGHT:
                 self.rect.move_ip(mouse_relative[0]*gc.MOUSE_SENSITIVITY,0)
-        elif self.control == 'computer':
+        elif self.control == 'Computer':
             recompute=False
 #            if not self.target or (gc.PADDLE_ALLOW_LEFTRIGHT and math.copysign(1,self.target.speedx) != math.copysign(1,self.target_position_x-self.target.rect.centerx)):
             if not self.target:

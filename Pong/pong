@@ -37,21 +37,26 @@ screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
 # the game to load.
 menu_run=True
 while menu_run:
-    menu_run,preset_out=menu.run_menu('Pong',screen,presets_dict,preset_default,True)
+    menu_run,preset_out,fullscreen=menu.run_menu('Pong',screen,presets_dict,preset_default,True)
 
 # Scale the selected game constants and extract them as a dictionary
 gc.scale_parameters()
 current_settings=presets.get_settings()
 
 font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE) # A pong-like font. Used in displayed text.
+font_message=pygame.font.Font(None,36) 
 pygame.mixer.music.set_volume(gc.SOUND_VOLUME)   # Set the volume.
 
 # Initialize the various sprite groups.
 all_sprites = pygame.sprite.Group()
 players = pygame.sprite.Group()
 balls=pygame.sprite.Group()
+walls=pygame.sprite.Group()
 
-screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
+if fullscreen:
+    screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT],pygame.FULLSCREEN)
+else:
+    screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
 
 # Create the player sprites
 n_players=4
@@ -62,16 +67,18 @@ for player_i in range(n_players):
     player_control=current_settings['PLAYER'+str(player_i+1)+"_CONTROL"]
 
     # if any players are using the mouse, grab exclusive input from it and make it invisible
-    if player_control=='mouse': 
+    if player_control=='Mouse': 
         pygame.event.set_grab(True)
         pygame.mouse.set_visible(False)
 
     # Create the player instance and add it to the corresponding sprite group
-    if player_control != 'none':
+    if player_control != 'None':
         paddle_type='curved' if gc.CURVED_PADDLE else 'normal'
         player_o=player.Player(player_x_position,player_color,player_i+1,player_control,side,paddle_type)
         players.add(player_o)
         all_sprites.add(player_o)
+#    if player_i == 0:
+#        player1=player_o
 
 # Create the ball sprites
 for i in range(gc.BALL_NUMBER):
@@ -91,7 +98,7 @@ if gc.GOAL_SIZE<gc.SCREEN_HEIGHT-2*gc.WALL_WIDTH:
     walls=[top_wall,bottom_wall,bottom_left_wall,bottom_right_wall,top_left_wall,top_right_wall]
     all_sprites.add(top_wall,bottom_wall,bottom_left_wall,top_left_wall,bottom_right_wall,top_right_wall)
 else:
-    walls=[top_wall,bottom_wall]
+    walls.add(top_wall,bottom_wall)
     all_sprites.add(top_wall,bottom_wall)
 
 # Initialize variables
@@ -149,9 +156,12 @@ while running:
         elif kill_case==1:
             score[0]+=1
             ball_i.kill()
+        elif kill_case==2:
+            for player in players:
+                player.target=None
         for side in range(2):
             if score[side]>=gc.SCORE_MAX:
-                win_text=font.render('Player '+str(side+1)+' Wins!',True,(255,255,255))
+                win_text=font_message.render('Player '+str(side+1)+' Wins!',True,(255,255,255))
                 game_state=1
                 time_ref_1=total_time
         ball_position_array.append((ball_i.x,ball_i.y))
@@ -163,7 +173,7 @@ while running:
     mouse_relative = pygame.mouse.get_rel()
     for player in players:
         ball_side=1 if ball_i.speedx<0 else 2
-        if not (ball_side!=player.side and player.control == 'computer'):
+        if not (ball_side!=player.side and player.control == 'Computer'):
             player.update(pressed_keys,mouse_relative,balls)
 
 
@@ -186,12 +196,12 @@ while running:
     # Render the clock, if requested
     if not gc.TIME_HIDE:
         rounded_time=float(int(total_time*100))/100.0
-        time_text=font.render(f'Time: {rounded_time}',True,(255,255,255))
+        time_text=font_message.render(f'Time: {rounded_time}',True,(255,255,255))
         screen.blit(time_text, (gc.TIME_XPOS,gc.TIME_YPOS))
 
-    #    debug_string=f'{ball_i.intercept:.1f} {player1.target:.1f} {gc.PLAYER_HEIGHT}'
+#    debug_string=f'{ball_i.speedx:.1f}'
     if debug_string != '':
-        debug_text=font.render(debug_string,True,(255,255,255))
+        debug_text=font_message.render(debug_string,True,(255,255,255))
         screen.blit(debug_text, (gc.SCREEN_HEIGHT/2,gc.SCREEN_WIDTH/2))
 
     # Show the trail of the ball, if requested. The trail resets with every point.
@@ -256,9 +266,11 @@ while running:
 #        for i in range(1):
 #          ball_0=ball.Ball()
 #          vertical_shift=-gc.PLAYER_HEIGHT/3.35+float(score_side2+score_side1)*gc.PLAYER_HEIGHT/10
-#          ball_0.shoot((gc.PLAYER1_X_POSITION/3,gc.SCREEN_HEIGHT-gc.WALL_WIDTH),10,300,130)
+#          ball_0.shoot((gc.SCREEN_WIDTH/2-10,gc.WALL_WIDTH),10,300,250)
 #          balls.add(ball_0)
 #          all_sprites.add(ball_0)
+#        for player in players:
+#            player.target=None
 
         # If there are no balls, set a wait flag and a reference time. 
         if time_ref<total_time and not ball_wait:
