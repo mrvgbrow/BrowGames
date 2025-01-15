@@ -1,0 +1,33 @@
+#!/c/Users/sp4ce/AppData/Local/Programs/Python/Python310/python
+
+import sys
+
+exec_run=False
+if getattr(sys,'frozen', False):
+    os.chdir(sys._MEIPASS)
+    exec_run=True
+
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide' 
+#os.environ['SDL_VIDEO_WINDOW_POS']="%d,%d" % (0,0)
+import pygame
+import menu0
+#import settings
+
+
+# Initialize the game, music, timer, and screen
+pygame.init()
+settings_dict={}
+#settings_dict=settings.load_settings()
+#settings.set_settings(settings_dict)
+screen = pygame.display.set_mode((800,600))
+
+# Load the menu. Continue reloading the menu until an option is selected that requests
+# the game to load.
+menu_run=True
+while menu_run:
+    menu_run=menu0.run_menu('BrowGames',screen,settings_dict)
+ 
+# Done! Time to quit.
+pygame.quit()
+
