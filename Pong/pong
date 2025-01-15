@@ -40,9 +40,9 @@ screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
 # the game to load.
 menu_run=True
 while menu_run:
-    menu_run,preset_out,fullscreen=menu.run_menu('Pong',screen,settings_dict,presets_dict,preset_set,True)
+    menu_run,preset_out=menu.run_menu('Pong',screen,settings_dict,presets_dict,preset_set,True)
     preset_set=preset_out
-
+ 
 # Scale the selected game constants and extract them as a dictionary
 gc.scale_parameters()
 current_parameters=presets.get_parameters()
@@ -57,7 +57,7 @@ players = pygame.sprite.Group()
 balls=pygame.sprite.Group()
 walls=pygame.sprite.Group()
 
-if fullscreen:
+if gc.FULLSCREEN_MODE:
     screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT],pygame.FULLSCREEN)
 else:
     screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])

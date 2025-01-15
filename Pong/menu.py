@@ -5,10 +5,9 @@ import gameconstants as gc
 import presets
 
 def run_menu(title,screen,settings_dict,presets_dict,preset_default,fourplayers):
-  global menu_run,original_pars,fullscreen
+  global menu_run,original_pars
   font_size=24
   menu_run=False
-  fullscreen=False
   menu=pygame_menu.Menu(title,800,600,theme=pygame_menu.themes.THEME_DEFAULT,onclose=pygame_menu.events.CLOSE)
   get_parameters()
   n_parameters=len(original_pars.keys())
@@ -36,7 +35,7 @@ def run_menu(title,screen,settings_dict,presets_dict,preset_default,fourplayers)
   make_pmenu(pmenu,presets_dict,preset_input)
   make_spmenu(spmenu)
   menu.mainloop(screen)
-  return menu_run,preset_input.get_title()[15:],fullscreen
+  return menu_run,preset_input.get_title()[15:]
 
 def add_control_menu(menu,fourplayers):
   global original_pars
@@ -102,12 +101,12 @@ def make_amenu(amenu):
   return True
 
 def make_smenu(smenu):
-  global original_pars,fullscreen
+  global original_pars
   font_size=24
   first_widget=[]
   widget=smenu.add.text_input('Screen Width: ',default=getattr(gc,'SCREEN_WIDTH'),onchange=set_input,args=['SCREEN_WIDTH'],input_type=pygame_menu.locals.INPUT_INT,font_size=font_size)
   widget=smenu.add.text_input('Screen Height: ',default=getattr(gc,'SCREEN_HEIGHT'),onchange=set_input,args=['SCREEN_HEIGHT'],input_type=pygame_menu.locals.INPUT_INT,font_size=font_size)
-  widget=smenu.add.toggle_switch('Fullscreen Mode',fullscreen,onchange=set_fullscreen,font_size=font_size)
+  widget=smenu.add.toggle_switch('Fullscreen Mode',getattr(gc,'FULLSCREEN_MODE'),onchange=set_input,args=['FULLSCREEN_MODE'],font_size=font_size)
   widget=smenu.add.range_slider('Volume: ',default=getattr(gc,'SOUND_VOLUME'),onchange=set_input,args=['SOUND_VOLUME'],increment=0.05,range_values=(0,1),font_size=font_size)
   widget=smenu.add.range_slider('Mouse Sensitivity: ',default=getattr(gc,'MOUSE_SENSITIVITY'),onchange=set_input,args=['MOUSE_SENSITIVITY'],increment=0.1,range_values=(0,5),font_size=font_size)
   smenu.add.label('')
@@ -156,10 +155,6 @@ def get_parameters():
 
 def set_input(input_value,args):
   setattr(gc,args[0],input_value)
-
-def set_fullscreen(input_value):
-  global fullscreen
-  fullscreen=input_value
 
 def set_input_drop(input_dict,input_value,args):
   setattr(gc,args[0],input_value)
