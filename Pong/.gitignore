@@ -11,3 +11,4 @@ dist/*
 old_versions/*
 build/*
 __pycache__/*
+.*.swp
