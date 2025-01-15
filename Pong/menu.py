@@ -4,8 +4,8 @@ import pygame_menu
 import gameconstants as gc
 import presets
 
-def run_menu(title,screen,presets_dict,preset_default,fourplayers):
-  global menu_run,original_pars,settings_pars,fullscreen
+def run_menu(title,screen,settings_dict,presets_dict,preset_default,fourplayers):
+  global menu_run,original_pars,fullscreen
   font_size=24
   menu_run=False
   fullscreen=False
@@ -31,7 +31,7 @@ def run_menu(title,screen,presets_dict,preset_default,fourplayers):
   menu.add.label('',font_size=font_size)
   preset_input=menu.add.label('Loaded preset: '+preset_default,font_size=font_size)
   make_amenu(amenu)
-  make_parmenu(parmenu)
+  make_parmenu(parmenu,presets_dict)
   make_smenu(smenu)
   make_pmenu(pmenu,presets_dict,preset_input)
   make_spmenu(spmenu)
@@ -74,7 +74,7 @@ def make_pmenu(pmenu,presets_dict,preset_input):
       presets.set_preset(presets_dict[widget.get_title()])
       menu_run=True
       pmenu.close()
-  for preset_key in presets_dict.keys():
+  for preset_key in sorted(list(presets_dict.keys())):
       preset_name=preset_key
       button=pmenu.add.button(preset_name,select_preset,font_size=font_size)
       button.add_self_to_kwargs()
@@ -102,7 +102,7 @@ def make_amenu(amenu):
   return True
 
 def make_smenu(smenu):
-  global original_pars,settings_pars,fullscreen
+  global original_pars,fullscreen
   font_size=24
   first_widget=[]
   widget=smenu.add.text_input('Screen Width: ',default=getattr(gc,'SCREEN_WIDTH'),onchange=set_input,args=['SCREEN_WIDTH'],input_type=pygame_menu.locals.INPUT_INT,font_size=font_size)
@@ -113,8 +113,8 @@ def make_smenu(smenu):
   smenu.add.label('')
   widget=smenu.add.button('OK',pygame_menu.events.BACK,background_color=(75,75,75),font_color=(255,255,255))
 
-def make_parmenu(parmenu):
-  global original_pars,settings_pars
+def make_parmenu(parmenu,presets_dict):
+  global original_pars
   font_size=17
   first_widget=[]
   for par in sorted(original_pars):
@@ -125,6 +125,12 @@ def make_parmenu(parmenu):
           widget=parmenu.add.text_input(par+': ',default=value,onchange=set_input,args=[par],input_type=pygame_menu.locals.INPUT_INT,font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
       elif type(value) is float:
           widget=parmenu.add.text_input(par+': ',default=value,onchange=set_input,args=[par],input_type=pygame_menu.locals.INPUT_FLOAT,font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
+      elif type(value) is str and '_CONTROL' not in par:
+          parvals=presets.get_parameter_values(presets_dict,par)
+          input_select_list=[]
+          for input_val in parvals:
+              input_select_list.append((input_val,input_val))
+          widget=parmenu.add.dropselect(title=par+': ',items=input_select_list,onchange=set_input_drop,args=[par],default=parvals.index(value),font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
       elif type(value) is tuple:
           tmenu=pygame_menu.Menu(par,600,400,theme=pygame_menu.themes.THEME_DEFAULT)
           widget=parmenu.add.button(par,tmenu,font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)

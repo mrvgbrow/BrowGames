@@ -14,11 +14,14 @@ class Player(pygame.sprite.Sprite):
         if paddle_type=='curved':
             self.real_height=min(gc.PLAYER_HEIGHT,math.sqrt(gc.PLAYER_RADIUS**2-(gc.PLAYER_RADIUS-2*gc.PLAYER_WIDTH)**2)*2) ###
             width=gc.PLAYER_RADIUS
+        elif paddle_type=='split':
+            width=gc.PLAYER_WIDTH
+            self.real_height=(gc.SCREEN_HEIGHT-2*gc.WALL_WIDTH)/2+gc.PLAYER_HEIGHT
         else:
             self.real_height=gc.PLAYER_HEIGHT
             width=gc.PLAYER_WIDTH
         self.surf=pygame.Surface((width,self.real_height))
-        if paddle_type != 'curved': self.surf.fill(color)
+        if paddle_type == 'normal': self.surf.fill(color)
         self.surf.set_colorkey(gc.SCREEN_COLOR)
         self.side=side
         self.target=None
@@ -35,6 +38,8 @@ class Player(pygame.sprite.Sprite):
         )
         if self.type=='curved':
             self.curved_draw(color) 
+        elif paddle_type=='split':
+            self.split_draw(color) 
         else:
             self.mask=pygame.mask.from_surface(self.surf)
 
@@ -88,21 +93,50 @@ class Player(pygame.sprite.Sprite):
             if recompute or random.random()<gc.AI_RANDOM_ADJUST:
                 self.target_position=self.target_position_true+2*(random.random()-0.5)*error_distance
             if self.target_position>-error_distance and self.target_position<gc.SCREEN_HEIGHT+error_distance:
-                direction_y=self.target_position-self.rect.centery
+                direction_y=self.compute_y_direction()
                 direction_x=self.target_position_x-self.rect.centerx
                 if abs(direction_y) > gc.PLAYER_MOVESTEP:
                     self.rect.move_ip(0,math.copysign(1,direction_y)*gc.PLAYER_MOVESTEP)
                 if abs(direction_x) > gc.PLAYER_MOVESTEP and gc.PADDLE_ALLOW_LEFTRIGHT:
                     self.rect.move_ip(math.copysign(1,direction_x)*gc.PLAYER_MOVESTEP,0)
 
+        self.enforce_boundaries()
+
+
+    # If a player moves outside the game boundaries, move them back in. All movement kept within the walls.
+    def enforce_boundaries(self):
         if self.rect.top <= gc.WALL_WIDTH:
             self.rect.top=gc.WALL_WIDTH
-        if self.rect.left <= gc.WALL_WIDTH:
-            self.rect.left=gc.WALL_WIDTH
+        if self.rect.left <= 0:
+            self.rect.left=0
         if self.rect.bottom > gc.SCREEN_HEIGHT-gc.WALL_WIDTH:
             self.rect.bottom=gc.SCREEN_HEIGHT-gc.WALL_WIDTH
-        if self.rect.right > gc.SCREEN_WIDTH-gc.WALL_WIDTH:
-            self.rect.right=gc.SCREEN_WIDTH-gc.WALL_WIDTH
+        if self.rect.right > gc.SCREEN_WIDTH:
+            self.rect.right=gc.SCREEN_WIDTH
+        if self.rect.left < gc.WALL_WIDTH or self.rect.right > gc.SCREEN_WIDTH-gc.WALL_WIDTH:
+            top_wall=gc.WALL_WIDTH+(gc.SCREEN_HEIGHT-2*gc.WALL_WIDTH-gc.GOAL_SIZE)/2
+            bottom_wall=gc.SCREEN_HEIGHT-gc.WALL_WIDTH-(gc.SCREEN_HEIGHT-2*gc.WALL_WIDTH-gc.GOAL_SIZE)/2
+            if top_wall-self.rect.top > 2*gc.PLAYER_MOVESTEP and self.rect.left<gc.WALL_WIDTH:
+                self.rect.left=gc.WALL_WIDTH
+            elif top_wall-self.rect.top > 2*gc.PLAYER_MOVESTEP and self.rect.right>gc.SCREEN_WIDTH-gc.WALL_WIDTH:
+                self.rect.right=gc.SCREEN_WIDTH-gc.WALL_WIDTH
+            elif self.rect.bottom-bottom_wall > 2*gc.PLAYER_MOVESTEP and self.rect.left<gc.WALL_WIDTH:
+                self.rect.left=gc.WALL_WIDTH
+            elif self.rect.bottom-bottom_wall > 2*gc.PLAYER_MOVESTEP and self.rect.right>gc.SCREEN_WIDTH-gc.WALL_WIDTH:
+                self.rect.right=gc.SCREEN_WIDTH-gc.WALL_WIDTH
+            elif self.rect.top < top_wall:
+                self.rect.top=top_wall
+            elif self.rect.bottom > bottom_wall:
+                self.rect.bottom=bottom_wall
+
+    def compute_y_direction(self):
+        if self.type=='split':
+            if self.target_position>gc.SCREEN_HEIGHT/2:
+                return self.target_position-self.rect.bottom+gc.PLAYER_HEIGHT/2
+            else:
+                return self.target_position-self.rect.top-gc.PLAYER_HEIGHT/2
+        else:
+            return self.target_position-self.rect.centery
 
     def compute_anglechange(self,ballpos_y):
         location_on_paddle=ballpos_y-self.rect.centery
@@ -119,12 +153,22 @@ class Player(pygame.sprite.Sprite):
             return adjusted_change
 
     def compute_original_angle(self,ballpos_y,speed_x):
-        location_on_paddle=math.floor((ballpos_y-self.rect.centery)/gc.PLAYER_HEIGHT*8)
+        location_on_paddle=self.compute_paddle_location(ballpos_y)
         if speed_x>0:
           original_angle=-math.pi/16*location_on_paddle-math.pi
         else:
           original_angle=math.pi/16*location_on_paddle
         return original_angle
+
+    def compute_paddle_location(self,ballpos_y):
+        if self.type=='split':
+            if ballpos_y > gc.SCREEN_HEIGHT/2:
+                location_on_paddle=math.floor((ballpos_y-(self.rect.bottom-gc.PLAYER_HEIGHT/2))/gc.PLAYER_HEIGHT*8)
+            else:
+                location_on_paddle=math.floor((ballpos_y-(self.rect.top+gc.PLAYER_HEIGHT/2))/gc.PLAYER_HEIGHT*8)
+        else:
+            location_on_paddle=math.floor((ballpos_y-self.rect.centery)/gc.PLAYER_HEIGHT*8)
+        return location_on_paddle
 
     def compute_error_distance(self):
         error_distance= gc.PLAYER_HEIGHT*gc.AI_ERROR_DISTANCE*(1+gc.AI_YSPEED_ERROR_FACTOR*abs(self.target.speedy)/gc.BALL_MAX_SPEED)
@@ -135,6 +179,11 @@ class Player(pygame.sprite.Sprite):
         pygame.draw.rect(self.surf,gc.SCREEN_COLOR,(0,0,self.surf.get_width()-2*gc.PLAYER_WIDTH,self.surf.get_height()))
         if self.rect.centerx>gc.SCREEN_WIDTH/2:
             self.surf=pygame.transform.flip(self.surf,True,False)
+        self.mask=pygame.mask.from_surface(self.surf)
+
+    def split_draw(self,color):
+        self.surf.fill(color)
+        pygame.draw.rect(self.surf,gc.SCREEN_COLOR,(0,gc.PLAYER_HEIGHT,gc.PLAYER_WIDTH,self.surf.get_height()-2*gc.PLAYER_HEIGHT))
         self.mask=pygame.mask.from_surface(self.surf)
 
     def compute_target_position(self,random_x=False):
