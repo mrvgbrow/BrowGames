@@ -53,16 +53,23 @@ def set_preset(preset_dict):
     for parameter in preset_dict:
         setattr(gc,parameter,preset_dict[parameter])
 
-def get_settings():
+def get_parameters():
     global ignore_pars
 
     parameters=gc.__dir__()
-    settings_dict={}
+    pars_dict={}
     for par in parameters:
         if par.upper() == par and par[:2] != 'K_' and par[:1] != '_' and not par in ignore_pars:
            value=getattr(gc,par)
-           settings_dict[par]=value
-    return settings_dict
+           pars_dict[par]=value
+    return pars_dict
+
+def get_parameter_values(pardict,par):
+    parlist=[]
+    for preset,preset_dict in pardict.items():
+        parlist.append(preset_dict[par])
+    return list(set(parlist))
+
 
 def save_preset(name):
     global ignore_pars

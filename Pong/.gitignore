@@ -6,6 +6,7 @@ text/future_changes.txt
 text/convert_info.txt
 text/prepare_release.notes
 text/blog.txt
+text/Game\ measurements.txt
 dist/*
 old_versions/*
 build/*

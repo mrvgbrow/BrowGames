@@ -1,8 +1,44 @@
-<h1>Version 1.2</h1>
+<h1>Version 2.0</h1>
 
 <p>This program is tunable version of the original Pong (1972). You can adjust the parameters (e.g., paddle size, ball speed) to change the game and experiment with different designs. It is a standalone executable so just remove the old version and replace it with this one.</p>
 
 <p>Please note that not all combinations of parameters will be playable and some will even crash the game. However, it will revert to the default parameters when you restart, so don't be shy about breaking the game from time to time.</p>
+
+<h2>New Features</h2>
+
+<ul>
+<li>Option to add up to four paddles at a time (including a 4-player option).</li>
+<li>Mouse support.</li>
+<li>Option to display the ball as a square instead of a circle.</li>
+<li>A configurable maximum score that will end the game.</li>
+<li>Choice to remove any paddle from the game. </li>
+<li>Presets that correspond to Hockey and Crazy Foot coin-ops.</li>
+<li>Optional IJKL keyboard controls.</li>
+<li>Fullscreen mode.</li>
+<li>Option to set a "split" paddle that amounts to two vertically separated paddles moving together.</li>
+</ul>
+<h2>Bug Fixes</h2>
+<ul>
+<li>Ball was bouncing backwards off the corners when the goal was full size. </li>
+<li>Ball was getting removed before completely exiting the screen on the right.</li>
+</ul>
+
+<h2>Improvements</h2>
+<ul>
+<li>Moved the player control settings to the main menu.</li>
+<li>Moved mouse, volume, and screen size settings to a separate menu from the game parameters.</li>
+<li>Eliminated redundant presets that only changed the number of players.</li>
+<li>The wait between serves was reduced to 2 seconds in standard 2-player mode.</li>
+<li>Computer player will now move in full 2-D when left/right motion is enabled.</li>
+<li>Appearance of Back and OK buttons now stands out from other menu options.</li>
+<li>Sorted the parameters and presets menus alphabetically.</li>
+<li>Made the original preset to be more like the original Pong.</li>
+<li>Boundary enforcement for the left/right walls.</li>
+<li>Distinct fonts for in-game messages and score.</li>
+</ul>
+
+<h1>Version 1.2</h1>
+
 
 <h2>New Features</h2>
 
@@ -35,12 +71,6 @@
 </ul>
 
 <h1>Version 1.1</h1>
-
-<p>This program is tunable version of the original Pong (1972). You can adjust the parameters (e.g., paddle size, ball speed) to change the game and experiment with different designs. It is a standalone executable so just remove the old version and replace it with this one.</p>
-
-<p>Please note that not all combinations of parameters will be playable and some will even crash the game. However, it will revert to the default parameters when you restart, so don't be shy about breaking the game from time to time.</p>
-
-<h2>New Features</h2>
 
 <ul>
 <li>Updated the AI to be more tunable, including an error rate that depends on ball speed.</li>

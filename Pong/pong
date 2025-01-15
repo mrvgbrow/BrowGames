@@ -13,6 +13,7 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
 import menu
 import presets
+import settings
 import player
 import random
 import math
@@ -28,8 +29,10 @@ pygame.font.init()
 pygame.mixer.music.load("ding.mp3")
 clock=pygame.time.Clock()
 presets_dict=presets.load_presets()
-preset_default='Standard'
-presets.set_preset(presets_dict[preset_default])
+settings_dict=settings.load_settings()
+settings.set_settings(settings_dict)
+preset_set='Standard'
+presets.set_preset(presets_dict[preset_set])
 screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
 
 
@@ -37,11 +40,12 @@ screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])
 # the game to load.
 menu_run=True
 while menu_run:
-    menu_run,preset_out,fullscreen=menu.run_menu('Pong',screen,presets_dict,preset_default,True)
+    menu_run,preset_out,fullscreen=menu.run_menu('Pong',screen,settings_dict,presets_dict,preset_set,True)
+    preset_set=preset_out
 
 # Scale the selected game constants and extract them as a dictionary
 gc.scale_parameters()
-current_settings=presets.get_settings()
+current_parameters=presets.get_parameters()
 
 font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE) # A pong-like font. Used in displayed text.
 font_message=pygame.font.Font(None,36) 
@@ -61,10 +65,11 @@ else:
 # Create the player sprites
 n_players=4
 for player_i in range(n_players):
-    player_x_position=current_settings['PLAYER'+str(player_i+1)+"_X_POSITION"]
+    player_x_position=current_parameters['PLAYER'+str(player_i+1)+"_X_POSITION"]
     side=1 if player_x_position<gc.SCREEN_WIDTH/2 else 2
-    player_color=current_settings['PLAYER'+str(player_i+1)+"_COLOR"]
-    player_control=current_settings['PLAYER'+str(player_i+1)+"_CONTROL"]
+    player_color=current_parameters['PLAYER'+str(player_i+1)+"_COLOR"]
+    player_control=current_parameters['PLAYER'+str(player_i+1)+"_CONTROL"]
+    paddle_type=current_parameters['PLAYER'+str(player_i+1)+"_PADDLE_TYPE"]
 
     # if any players are using the mouse, grab exclusive input from it and make it invisible
     if player_control=='Mouse': 
@@ -73,7 +78,6 @@ for player_i in range(n_players):
 
     # Create the player instance and add it to the corresponding sprite group
     if player_control != 'None':
-        paddle_type='curved' if gc.CURVED_PADDLE else 'normal'
         player_o=player.Player(player_x_position,player_color,player_i+1,player_control,side,paddle_type)
         players.add(player_o)
         all_sprites.add(player_o)
