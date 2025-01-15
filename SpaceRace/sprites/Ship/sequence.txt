@@ -1,0 +1,23 @@
+Name: Default
+Sequence: 000
+
+Name: Takeoff
+Sequence: 000,001,002,003,004
+
+Name: Burn
+Sequence: 004,005,006
+
+Name: Deburn
+Sequence: 004,003,002,001,000
+
+Name: DefaultPower
+Sequence: 000,007,008,009
+
+Name: TakeoffPower
+Sequence: 000,012,013,014
+
+Name: BurnPower
+Sequence: 004,010,012,011
+
+Name: DeburnPower
+Sequence: 004,014,013,012
