@@ -5,6 +5,10 @@ import sys
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide' 
 #os.environ['SDL_VIDEO_WINDOW_POS']="%d,%d" % (0,0)
 import pygame
+import menu
+import presets
+import settings
+import datetime
 import timer
 import time
 import player
@@ -20,8 +24,26 @@ gc.gc=gc.process_game_arguments(sys.argv,gc.gc,sdict)
 
 pygame.init()
 pygame.font.init()
+presets_dict=presets.load_presets()
+settings_dict=settings.load_settings()
+settings.set_settings(settings_dict)
+preset_set='Standard'
+presets.set_preset(presets_dict[preset_set])
 
-screen = pygame.display.set_mode([gc.gc['FULL_WIDTH'], gc.gc['FULL_HEIGHT']])
+screen = pygame.display.set_mode((800,600))
+
+# Load the menu. Continue reloading the menu until an option is selected that requests
+# the game to load.
+menu_run=True
+while menu_run:
+    menu_run,preset_out=menu.run_menu('Space Race',screen,settings_dict,presets_dict,preset_set,False)
+    preset_set=preset_out
+ 
+# Scale the selected game constants and extract them as a dictionary
+gc.scale_parameters()
+current_parameters=presets.get_parameters()
+
+screen = pygame.display.set_mode((gc.gc['FULL_WIDTH'],gc.gc['FULL_HEIGHT']))
 screen_rect=pygame.Rect((gc.gc['LEFT'],gc.gc['TOP']),(gc.gc['SCREEN_WIDTH'],gc.gc['SCREEN_HEIGHT']))
 boundary=bg.Boundary(screen_rect)
 boundary2=bg.Boundary(screen_rect,bounce=[True,False,True,False])
@@ -59,7 +81,7 @@ for height in range(int(asteroid_start),gc.gc['TOP'],-int(gc.gc['ASTEROID_SEPARA
     direction*=-1
 
 running = True
-pause=True
+pause=False
 total_time=0
 score_player=[0,0]
 step=False

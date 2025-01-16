@@ -22,10 +22,13 @@ def read_preset_file(preset_file):
         preset_line=preset_line.replace('\n','').replace('\r','')
         if 'pygame.locals' in preset_line:
             break
-        if '=' in preset_line:
+        if '=' in preset_line and '{' not in preset_line:
             parts=preset_line.split('=',1)
             parameter_name=parts[0]
             parameter_value=parts[1]
+            if '[' in parameter_name:
+                parparts=parameter_name.split("\'",2)
+                parameter_name=parparts[1]
             if parameter_value == 'True' or parameter_value == 'False':
                 parameter_value=True if parameter_value=='True' else False
             elif "\'" in parameter_value:
@@ -52,6 +55,7 @@ def read_preset_file(preset_file):
 def set_preset(preset_dict):
     for parameter in preset_dict:
         setattr(gc,parameter,preset_dict[parameter])
+        gc.gc[parameter]=preset_dict[parameter]
 
 def get_parameters():
     global ignore_pars

@@ -54,21 +54,17 @@ gc['FULL_HEIGHT']=1000
 gc['FULL_WIDTH']=1446
 gc['SCREEN_HEIGHT']=900
 gc['SCREEN_WIDTH']=1446
-gc['TOP']=gc['FULL_HEIGHT']-gc['SCREEN_HEIGHT']
-gc['LEFT']=gc['FULL_WIDTH']-gc['SCREEN_WIDTH']
 gc['FONT_SIZE']=54
 gc['SCREEN_COLOR']=(0,0,0)
-gc['SOUND_VOLUME']=1
+gc['SOUND_VOLUME']=1.0
 gc['GRAVITY']=0.1
 gc['START_COUNTDOWN']=3
 
 # Timing
 gc['TICK_FRAMERATE']=60
-gc['TIMER_DURATION']=gc['TICK_FRAMERATE']*60
-gc['TIMER_POSITION']=[gc['SCREEN_WIDTH']*0.5,gc['TOP']+gc['FULL_HEIGHT']/10]
-gc['TIMER_DIMENSIONS']=[15,gc['FULL_HEIGHT']-gc['TIMER_POSITION'][1]]
+gc['TIMER_DURATION']=60
 gc['TIMER_COLOR']=(255,255,255)
-gc['TIMER_LENGTH']=gc['SCREEN_WIDTH']*0.9
+gc['TIMER_LENGTH']=0.9
 
 # Scoring 
 gc['SCORE_XPOS']=250
@@ -80,9 +76,9 @@ gc['SCORE_CANISTER']=0
 # Player properties
 gc['PLAYER_MOVESTEP']=3
 gc['PLAYER_VELSTEP']=0.2
-gc['PLAYER_SCALE']=6
-gc['PLAYER_Y_START']=gc['TOP']+gc['SCREEN_HEIGHT']*0.9
-gc['PLAYER1_CONTROL']='asdw'
+gc['PLAYER_SCALE']=6.0
+gc['PLAYER_Y_START']=0.9
+gc['PLAYER1_CONTROL']='WASD'
 gc['PLAYER2_CONTROL']='arrows'
 gc['PLAYER1_COLOR']=(255,255,255,255)
 gc['PLAYER2_COLOR']=(255,255,255,255)
@@ -92,18 +88,18 @@ gc['PLAYER_ANIM_PACE']=4
 gc['POWER_STEPS']=180
 
 # Asteroid properties
-gc['ASTEROID_SPEED']=3
-gc['ASTEROID_SPEED_SPREAD']=1
+gc['ASTEROID_SPEED']=3.0
+gc['ASTEROID_SPEED_SPREAD']=1.0
 gc['ASTEROID_SEPARATION']=22
-gc['ASTEROID_IMPULSE']=0
+gc['ASTEROID_IMPULSE']=0.0
 gc['ASTEROID_COLOR']=(200,200,200,255)
-gc['ASTEROID_SCALE']=5
+gc['ASTEROID_SCALE']=5.0
 
 # Canister properties
-gc['CANISTER_SPEED']=gc['ASTEROID_SPEED']
+gc['CANISTER_SPEED']=1.0
 gc['CANISTER_FRACTION']=0.22
 gc['CANISTER_COLOR']=(255,255,255,255)
-gc['CANISTER_SCALE']=3
+gc['CANISTER_SCALE']=3.0
 
 # Import pygame.locals for easier access to key coordinates,
 # Updated to conform to flake8 and black standards,
@@ -134,3 +130,13 @@ from pygame.locals import (
     K_RSHIFT,
 )
 
+def scale_parameters():
+    global gc
+    gc['TOP']=gc['FULL_HEIGHT']-gc['SCREEN_HEIGHT']
+    gc['LEFT']=gc['FULL_WIDTH']-gc['SCREEN_WIDTH']
+    gc['TIMER_POSITION']=[gc['SCREEN_WIDTH']*0.5,gc['TOP']+gc['FULL_HEIGHT']/10]
+    gc['TIMER_DIMENSIONS']=[15,gc['FULL_HEIGHT']-gc['TIMER_POSITION'][1]]
+    gc['TIMER_DURATION']*=gc['TICK_FRAMERATE']
+    gc['TIMER_LENGTH']*=gc['SCREEN_WIDTH']
+    gc['PLAYER_Y_START']=gc['TOP']+gc['SCREEN_HEIGHT']*gc['PLAYER_Y_START']
+    gc['CANISTER_SPEED']*=gc['ASTEROID_SPEED']

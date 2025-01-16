@@ -3,14 +3,14 @@
 import gameconstants as gc
 
 keycons = {
-        'arrows' : {
+        'Arrows' : {
             'up' : gc.K_UP, 
             'down' : gc.K_DOWN,
             'left' : gc.K_LEFT, 
             'right' : gc.K_RIGHT,
             'shoot' : gc.K_RCTRL,
         },
-        'asdw' : {
+        'WASD' : {
             'up' : gc.K_w,
             'down' : gc.K_s, 
             'left' : gc.K_a,
