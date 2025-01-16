@@ -11,22 +11,23 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide' 
 #os.environ['SDL_VIDEO_WINDOW_POS']="%d,%d" % (0,0)
 import pygame
-import menu
-import presets
-import settings
-import player
+import pong_menu as menu
+import pong_presets as presets
+import pong_settings as settings
+import pong_player as player
 import random
 import math
 import datetime
-import ball
-import wall
-import gameconstants as gc
+import pong_ball as ball
+import pong_wall as wall
+import pong_gameconstants as gc
 
 
 # Initialize the game, music, timer, and screen
+__location__=os.path.realpath(os.path.join(os.getcwd(),os.path.dirname(__file__)))
 pygame.init()
 pygame.font.init()
-pygame.mixer.music.load("ding.mp3")
+pygame.mixer.music.load(os.path.join(__location__,"ding.mp3"))
 clock=pygame.time.Clock()
 presets_dict=presets.load_presets()
 settings_dict=settings.load_settings()
@@ -47,7 +48,7 @@ while menu_run:
 gc.scale_parameters()
 current_parameters=presets.get_parameters()
 
-font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE) # A pong-like font. Used in displayed text.
+font=pygame.font.Font(os.path.join(__location__,"pong-score-extended.ttf"),gc.FONT_SIZE) # A pong-like font. Used in displayed text.
 font_message=pygame.font.Font(None,36) 
 pygame.mixer.music.set_volume(gc.SOUND_VOLUME)   # Set the volume.
 

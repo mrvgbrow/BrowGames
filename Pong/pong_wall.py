@@ -3,8 +3,8 @@
 import pygame
 import random
 import math
-import physics
-import gameconstants as gc
+import pong_physics as physics
+import pong_gameconstants as gc
 
 
 class Wall(pygame.sprite.Sprite):
