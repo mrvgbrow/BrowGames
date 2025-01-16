@@ -114,7 +114,7 @@ def make_smenu(smenu):
 
 def make_parmenu(parmenu,presets_dict):
   global original_pars
-  font_size=17
+  font_size=16
   first_widget=[]
   for par in sorted(original_pars):
       value=getattr(gc,par)
