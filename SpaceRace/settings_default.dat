@@ -1,0 +1,7 @@
+#!/c/Users/sp4ce/AppData/Local/Programs/Python/Python310/python
+
+MOUSE_SENSITIVITY=2.0
+SOUND_VOLUME=1.0
+SCREEN_HEIGHT=600
+SCREEN_WIDTH=800
+FULLSCREEN_MODE=False
