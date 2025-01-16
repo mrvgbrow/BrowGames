@@ -5,20 +5,21 @@ import sys
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide' 
 #os.environ['SDL_VIDEO_WINDOW_POS']="%d,%d" % (0,0)
 import pygame
-import menu
-import presets
-import settings
+import spacerace_menu as menu
+import spacerace_presets as presets
+import spacerace_settings as settings
 import datetime
-import timer
+import spacerace_timer as timer
 import time
-import player
+import spacerace_player as player
 import random
 import timeit
-import asteroid
-import gameconstants as gc
-import background as bg
-import gameobject as go
+import spacerace_asteroid as asteroid
+import spacerace_gameconstants as gc
+import spacerace_background as bg
+import spacerace_gameobject as go
 
+__location__=os.path.realpath(os.path.join(os.getcwd(),os.path.dirname(__file__)))
 gc.gc,sdict=gc.make_shortcuts(gc.gc)
 gc.gc=gc.process_game_arguments(sys.argv,gc.gc,sdict)
 
@@ -51,6 +52,7 @@ boundary2=bg.Boundary(screen_rect,bounce=[True,False,True,False])
 ENDGAME = pygame.USEREVENT + 1
 clock=pygame.time.Clock()
 font=pygame.font.Font(None,gc.gc['FONT_SIZE'])
+font_pong=pygame.font.Font(os.path.join(__location__,"pong-score-extended.ttf"),gc.FONT_SIZE) # A pong-like font. Used in displayed text.
 font_end=pygame.font.SysFont('times',gc.gc['FONT_SIZE']*3)
 
 # Make the player sprites
@@ -67,7 +69,7 @@ all_sprites.add(player1,player2)
 
 asteroid_start=gc.gc['FULL_HEIGHT']-(gc.gc['FULL_HEIGHT']-gc.gc['PLAYER_Y_START'])*2.5
 direction=1
-for height in range(int(asteroid_start),gc.gc['TOP'],-int(gc.gc['ASTEROID_SEPARATION'])):
+for height in range(int(asteroid_start),int(gc.gc['TOP']),-int(gc.gc['ASTEROID_SEPARATION'])):
     x_position=random.random()*gc.gc['SCREEN_WIDTH']
     asteroid_speed=(random.random()-0.5)*gc.gc['ASTEROID_SPEED_SPREAD']+gc.gc['ASTEROID_SPEED']
     if random.random()>gc.gc['CANISTER_FRACTION'] or height<gc.gc['TOP']+0.2*gc.gc['SCREEN_HEIGHT']:
@@ -198,7 +200,7 @@ while running:
 
     # Display the score in the corner
     score_text=font.render(f'Player 1: {score_player[0]}  Player 2: {score_player[1]}',True,gc.gc['SCORE_COLOR'])
-    screen.blit(score_text, (gc.gc['SCORE_XPOS']-score_text.get_width()/2,gc.gc['SCORE_YPOS']+score_text.get_height()/2))
+    screen.blit(score_text, (gc.gc['SCORE_P1_XPOS']-score_text.get_width()/2,gc.gc['SCORE_P1_YPOS']+score_text.get_height()/2))
 
     # Update the message to the user
     game_text=font_end.render(game_message,True,(255,255,255))

@@ -2,8 +2,8 @@
 
 import pygame
 import random
-import gameconstants as gc
-import spritefunctions as sf
+import spacerace_gameconstants as gc
+import spacerace_spritefunctions as sf
 
 
 class GameObject(pygame.sprite.Sprite):

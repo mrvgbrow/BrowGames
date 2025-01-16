@@ -1,10 +1,10 @@
 #!/c/Users/sp4ce/AppData/Local/Programs/Python/Python310/python
 
 import pygame
-import gameconstants as gc
-import gameobject as go
-import spritefunctions as sf
-import controls as ctrl
+import spacerace_gameconstants as gc
+import spacerace_gameobject as go
+import spacerace_spritefunctions as sf
+import spacerace_controls as ctrl
 
 def decide_move(sprite_move,sprites_avoid,movestep,nsteps=1):
     prect=[sprite_move.rect.left,sprite_move.rect.right,sprite_move.rect.top+movestep,sprite_move.rect.bottom+movestep]

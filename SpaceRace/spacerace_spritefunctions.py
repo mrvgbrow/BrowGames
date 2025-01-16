@@ -3,7 +3,7 @@
 import os
 import math
 import pygame
-import genutils as genu
+import spacerace_genutils as genu
 
 def fill(surface,color):
     w, h = surface.get_size()

@@ -3,9 +3,9 @@
 import pygame
 import random
 import math
-import physics
-import gameobject as go
-import gameconstants as gc
+import spacerace_physics as physics
+import spacerace_gameobject as go
+import spacerace_gameconstants as gc
 
 
 class Asteroid(go.GameObject):

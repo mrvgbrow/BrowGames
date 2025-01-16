@@ -1,8 +1,8 @@
 #!/c/Users/sp4ce/AppData/Local/Programs/Python/Python310/python
 
 import pygame_menu
-import gameconstants as gc
-import presets
+import spacerace_gameconstants as gc
+import spacerace_presets as presets
 
 def run_menu(title,screen,settings_dict,presets_dict,preset_default,fourplayers):
   global menu_run,original_pars

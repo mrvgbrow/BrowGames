@@ -52,8 +52,8 @@ gc={}
 # General
 gc['FULL_HEIGHT']=1000
 gc['FULL_WIDTH']=1446
-gc['SCREEN_HEIGHT']=900
-gc['SCREEN_WIDTH']=1446
+gc['SCREEN_HEIGHT']=0.9
+gc['SCREEN_WIDTH']=1.0
 gc['FONT_SIZE']=54
 gc['SCREEN_COLOR']=(0,0,0)
 gc['SOUND_VOLUME']=1.0
@@ -67,8 +67,10 @@ gc['TIMER_COLOR']=(255,255,255)
 gc['TIMER_LENGTH']=0.9
 
 # Scoring 
-gc['SCORE_XPOS']=250
-gc['SCORE_YPOS']=25
+gc['SCORE_P1_XPOS']=250
+gc['SCORE_P1_YPOS']=25
+gc['SCORE_P2_XPOS']=250
+gc['SCORE_P2_YPOS']=25
 gc['SCORE_COLOR']=(255,255,255)
 gc['SCORE_TOP']=1
 gc['SCORE_CANISTER']=0
@@ -132,6 +134,8 @@ from pygame.locals import (
 
 def scale_parameters():
     global gc
+    gc['SCREEN_HEIGHT']*=gc['FULL_HEIGHT']
+    gc['SCREEN_WIDTH']*=gc['FULL_WIDTH']
     gc['TOP']=gc['FULL_HEIGHT']-gc['SCREEN_HEIGHT']
     gc['LEFT']=gc['FULL_WIDTH']-gc['SCREEN_WIDTH']
     gc['TIMER_POSITION']=[gc['SCREEN_WIDTH']*0.5,gc['TOP']+gc['FULL_HEIGHT']/10]

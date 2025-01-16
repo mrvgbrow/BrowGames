@@ -1,8 +1,8 @@
 #!/c/Users/sp4ce/AppData/Local/Programs/Python/Python310/python
 
 import pygame
-import gameconstants as gc
-import spritefunctions as sf
+import spacerace_gameconstants as gc
+import spacerace_spritefunctions as sf
 
 class Boundary(pygame.Rect):
     def __init__(self,rect,bounce=[False,False,False,False],wrap=[False,False,False,False],stop=[False,False,False,False]):

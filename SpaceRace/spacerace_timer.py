@@ -1,7 +1,7 @@
 #!/c/Users/sp4ce/AppData/Local/Programs/Python/Python310/python
 
 import pygame
-import gameconstants as gc
+import spacerace_gameconstants as gc
 
 
 class Timer(pygame.sprite.Sprite):
