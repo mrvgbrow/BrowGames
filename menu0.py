@@ -3,11 +3,12 @@
 import pygame_menu
 
 def run_menu(title,screen,settings_dict):
-  global menu_run
+  global menu_run,game_select
+  game_select='None'
   font_size=36
   menu_run=False
   menu=pygame_menu.Menu(title,800,600,theme=pygame_menu.themes.THEME_DEFAULT,onclose=pygame_menu.events.CLOSE)
-  gmenu=pygame_menu.Menu('Game List',800,600,theme=pygame_menu.themes.THEME_DEFAULT)
+  gmenu=pygame_menu.Menu('Game List',800,600,theme=pygame_menu.themes.THEME_DEFAULT,onclose=pygame_menu.events.CLOSE)
   amenu=pygame_menu.Menu('About',800,600,theme=pygame_menu.themes.THEME_DEFAULT)
 #  smenu=pygame_menu.Menu('Settings',800,600,theme=pygame_menu.themes.THEME_DEFAULT)
   menu.add.button('Select Game',gmenu,font_size=font_size)
@@ -19,7 +20,7 @@ def run_menu(title,screen,settings_dict):
 #  make_smenu(smenu)
   make_gmenu(gmenu)
   menu.mainloop(screen)
-  return menu_run
+  return menu_run,game_select
 
 def make_amenu(amenu):
   font_size=36
@@ -41,10 +42,17 @@ def make_amenu(amenu):
   return True
 
 def make_gmenu(gmenu):
+  global game_select
   font_size=36
   game_list=read_game_list()
+  def set_game_select(widget=None):
+      global game_select
+      if widget != None:
+          game_select=widget.get_title()
+          gmenu.close()
   for game in game_list:
-      widget=gmenu.add.button(game.capitalize(),pygame_menu.events.BACK,font_size=font_size)
+      button=gmenu.add.button(game.capitalize(),set_game_select,font_size=font_size)
+      button.add_self_to_kwargs()
   gmenu.add.label('')
   widget=gmenu.add.button('Back',pygame_menu.events.BACK,background_color=(75,75,75),font_color=(255,255,255))
 
@@ -66,9 +74,9 @@ def set_input_drop(input_dict,input_value,args):
   setattr(gc,args[0],input_value)
 
 def read_game_list():
-    game_list=[]
-    game_file='game_list.dat'
-    gamelist_lines=open(game_file,'r')
-    for gamelist_line in gamelist_lines:
-        game_list.append(gamelist_line.rstrip())
-    return game_list
+  game_list=[]
+  game_file='game_list.dat'
+  gamelist_lines=open(game_file,'r')
+  for gamelist_line in gamelist_lines:
+      game_list.append(gamelist_line.rstrip())
+  return game_list

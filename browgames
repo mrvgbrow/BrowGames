@@ -11,9 +11,11 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide' 
 #os.environ['SDL_VIDEO_WINDOW_POS']="%d,%d" % (0,0)
 import pygame
+import pong
 import menu0
 #import settings
 
+sys.path=list(filter(lambda a: 'NickGames' not in a, sys.path))
 
 # Initialize the game, music, timer, and screen
 pygame.init()
@@ -26,7 +28,12 @@ screen = pygame.display.set_mode((800,600))
 # the game to load.
 menu_run=True
 while menu_run:
-    menu_run=menu0.run_menu('BrowGames',screen,settings_dict)
+    menu_run,game=menu0.run_menu('BrowGames',screen,settings_dict)
+
+#if game != 'None':
+#    sys.path.append(game)
+#    game_module = __import__(game+'.'+game.lower(),fromlist=[None])
+#    sys.path.remove(game)
  
 # Done! Time to quit.
 pygame.quit()
