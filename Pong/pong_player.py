@@ -3,8 +3,8 @@
 import pygame
 import random
 import math
-import pong_gameconstants as gc
-import pong_physics as physics
+from . import pong_gameconstants as gc
+import physics
 
 
 class Player(pygame.sprite.Sprite):

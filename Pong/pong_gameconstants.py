@@ -2,6 +2,7 @@
 
 import pygame
 import math
+import settings
 
 # General
 FONT_SIZE=36
@@ -107,7 +108,12 @@ from pygame.locals import (
 )
 
 def scale_parameters():
-    global PLAYER_HEIGHT,PLAYER_WIDTH,PLAYER1_X_POSITION,PLAYER2_X_POSITION,PLAYER_RADIUS,BALL_SPEED,PLAYER_MOVESTEP,TICK_FRAMERATE,BALL_SPEED_INCREASE,BALL_MAX_SPEED,WALL_WIDTH,GOAL_SIZE,SCORE_YPOS,PLAYER3_X_POSITION,PLAYER4_X_POSITION
+    global PLAYER_HEIGHT,PLAYER_WIDTH,PLAYER1_X_POSITION,PLAYER2_X_POSITION,PLAYER_RADIUS,BALL_SPEED,PLAYER_MOVESTEP,TICK_FRAMERATE,BALL_SPEED_INCREASE,BALL_MAX_SPEED,WALL_WIDTH,GOAL_SIZE,SCORE_YPOS,PLAYER3_X_POSITION,PLAYER4_X_POSITION,SCREEN_WIDTH,SCREEN_HEIGHT,MOUSE_SENSITIVITY,SOUND_VOLUME,FULLSCREEN_MODE
+    SCREEN_WIDTH=settings.SCREEN_WIDTH
+    SCREEN_HEIGHT=settings.SCREEN_HEIGHT
+    SOUND_VOLUME=settings.SOUND_VOLUME
+    MOUSE_SENSITIVITY=settings.MOUSE_SENSITIVITY
+    FULLSCREEN_MODE=settings.FULLSCREEN_MODE
     PLAYER_HEIGHT=PLAYER_HEIGHT*SCREEN_HEIGHT
     PLAYER_WIDTH*=SCREEN_WIDTH
     PLAYER1_X_POSITION*=SCREEN_WIDTH
@@ -122,3 +128,15 @@ def scale_parameters():
     WALL_WIDTH*=SCREEN_HEIGHT
     GOAL_SIZE=GOAL_SIZE*(SCREEN_HEIGHT-2*WALL_WIDTH)
     SCORE_YPOS*=SCREEN_HEIGHT
+
+def set_preset(preset_dict):
+    for parameter in preset_dict:
+        globals()[parameter]=preset_dict[parameter]
+#        setattr(gc,parameter,preset_dict[parameter])
+
+def get_parameters(parameter_list):
+    pars_dict={}
+    for par in parameter_list:
+       value=globals()[par]
+       pars_dict[par]=value
+    return pars_dict

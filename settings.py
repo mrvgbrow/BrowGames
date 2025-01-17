@@ -2,7 +2,6 @@
 
 import glob
 import os
-import pong_gameconstants as gc
 __location__=os.path.realpath(os.path.join(os.getcwd(),os.path.dirname(__file__)))
 
 
@@ -46,5 +45,5 @@ def read_settings_file(settings_file):
 
 def set_settings(settings_dict):
     for parameter in settings_dict:
-        setattr(gc,parameter,settings_dict[parameter])
+        globals()[parameter]=settings_dict[parameter]
 

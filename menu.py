@@ -1,16 +1,16 @@
 #!/c/Users/sp4ce/AppData/Local/Programs/Python/Python310/python
 
 import pygame_menu
-import pong_gameconstants as gc
-import pong_presets as presets
+import presets
+import settings
 
 def run_menu(title,screen,settings_dict,presets_dict,preset_default,fourplayers):
-  global menu_run,original_pars
+  global menu_run,current_pars
   font_size=24
   menu_run=False
   menu=pygame_menu.Menu(title,800,600,theme=pygame_menu.themes.THEME_DEFAULT,onclose=pygame_menu.events.CLOSE)
-  get_parameters()
-  n_parameters=len(original_pars.keys())
+  current_pars=presets_dict[preset_default]
+  n_parameters=len(current_pars.keys())
   n_rows=int(n_parameters/2)+2
   amenu=pygame_menu.Menu('About',800,600,theme=pygame_menu.themes.THEME_DEFAULT)
   smenu=pygame_menu.Menu('Settings',800,600,theme=pygame_menu.themes.THEME_DEFAULT)
@@ -38,23 +38,23 @@ def run_menu(title,screen,settings_dict,presets_dict,preset_default,fourplayers)
   return menu_run,preset_input.get_title()[15:]
 
 def add_control_menu(menu,fourplayers):
-  global original_pars
+  global current_pars
 
   control_values=['Arrows','WASD','IJKL','Computer','Mouse','None']
   font_size=24
   input_select_list=[]
   for input_val in control_values:
       input_select_list.append((input_val,input_val))
-  widget=menu.add.dropselect(title='P1: ',items=input_select_list,onchange=set_input_drop,args=['PLAYER1_CONTROL'],default=control_values.index(original_pars['PLAYER1_CONTROL']),font_size=font_size-2,align=pygame_menu.locals.ALIGN_LEFT,float=True)
-  widget.translate(gc.SCREEN_WIDTH/8,0)
-  widget=menu.add.dropselect(title='P2: ',items=input_select_list,onchange=set_input_drop,args=['PLAYER2_CONTROL'],default=control_values.index(original_pars['PLAYER2_CONTROL']),font_size=font_size-2,align=pygame_menu.locals.ALIGN_RIGHT,float=True)
-  widget.translate(-gc.SCREEN_WIDTH/8,0)
+  widget=menu.add.dropselect(title='P1: ',items=input_select_list,onchange=set_input_drop,args=['PLAYER1_CONTROL'],default=control_values.index(current_pars['PLAYER1_CONTROL']),font_size=font_size-2,align=pygame_menu.locals.ALIGN_LEFT,float=True)
+  widget.translate(settings.SCREEN_WIDTH/8,0)
+  widget=menu.add.dropselect(title='P2: ',items=input_select_list,onchange=set_input_drop,args=['PLAYER2_CONTROL'],default=control_values.index(current_pars['PLAYER2_CONTROL']),font_size=font_size-2,align=pygame_menu.locals.ALIGN_RIGHT,float=True)
+  widget.translate(-settings.SCREEN_WIDTH/8,0)
   menu.add.label('',font_size=font_size)
   if fourplayers:
-    widget=menu.add.dropselect(title='P3: ',items=input_select_list,onchange=set_input_drop,args=['PLAYER3_CONTROL'],default=control_values.index(original_pars['PLAYER3_CONTROL']),font_size=font_size-2,align=pygame_menu.locals.ALIGN_LEFT,float=True)
-    widget.translate(gc.SCREEN_WIDTH/8,0)
-    widget=menu.add.dropselect(title='P4: ',items=input_select_list,onchange=set_input_drop,args=['PLAYER4_CONTROL'],default=control_values.index(original_pars['PLAYER4_CONTROL']),font_size=font_size-2,align=pygame_menu.locals.ALIGN_RIGHT,float=True)
-    widget.translate(-gc.SCREEN_WIDTH/8,0)
+    widget=menu.add.dropselect(title='P3: ',items=input_select_list,onchange=set_input_drop,args=['PLAYER3_CONTROL'],default=control_values.index(current_pars['PLAYER3_CONTROL']),font_size=font_size-2,align=pygame_menu.locals.ALIGN_LEFT,float=True)
+    widget.translate(settings.SCREEN_WIDTH/8,0)
+    widget=menu.add.dropselect(title='P4: ',items=input_select_list,onchange=set_input_drop,args=['PLAYER4_CONTROL'],default=control_values.index(current_pars['PLAYER4_CONTROL']),font_size=font_size-2,align=pygame_menu.locals.ALIGN_RIGHT,float=True)
+    widget.translate(-settings.SCREEN_WIDTH/8,0)
 
 def make_spmenu(spmenu):
   label=spmenu.add.label('')
@@ -70,7 +70,6 @@ def make_pmenu(pmenu,presets_dict,preset_input):
   def select_preset(widget=None):
       global menu_run
       preset_input.set_title('Loaded Preset: '+widget.get_title())
-      presets.set_preset(presets_dict[widget.get_title()])
       menu_run=True
       pmenu.close()
   for preset_key in sorted(list(presets_dict.keys())):
@@ -101,23 +100,23 @@ def make_amenu(amenu):
   return True
 
 def make_smenu(smenu):
-  global original_pars
+  global current_pars
   font_size=24
   first_widget=[]
-  widget=smenu.add.text_input('Screen Width: ',default=getattr(gc,'SCREEN_WIDTH'),onchange=set_input,args=['SCREEN_WIDTH'],input_type=pygame_menu.locals.INPUT_INT,font_size=font_size)
-  widget=smenu.add.text_input('Screen Height: ',default=getattr(gc,'SCREEN_HEIGHT'),onchange=set_input,args=['SCREEN_HEIGHT'],input_type=pygame_menu.locals.INPUT_INT,font_size=font_size)
-  widget=smenu.add.toggle_switch('Fullscreen Mode',getattr(gc,'FULLSCREEN_MODE'),onchange=set_input,args=['FULLSCREEN_MODE'],font_size=font_size)
-  widget=smenu.add.range_slider('Volume: ',default=getattr(gc,'SOUND_VOLUME'),onchange=set_input,args=['SOUND_VOLUME'],increment=0.05,range_values=(0,1),font_size=font_size)
-  widget=smenu.add.range_slider('Mouse Sensitivity: ',default=getattr(gc,'MOUSE_SENSITIVITY'),onchange=set_input,args=['MOUSE_SENSITIVITY'],increment=0.1,range_values=(0,5),font_size=font_size)
+  widget=smenu.add.text_input('Screen Width: ',default=getattr(settings,'SCREEN_WIDTH'),onchange=set_input,args=['SCREEN_WIDTH'],input_type=pygame_menu.locals.INPUT_INT,font_size=font_size)
+  widget=smenu.add.text_input('Screen Height: ',default=getattr(settings,'SCREEN_HEIGHT'),onchange=set_input,args=['SCREEN_HEIGHT'],input_type=pygame_menu.locals.INPUT_INT,font_size=font_size)
+  widget=smenu.add.toggle_switch('Fullscreen Mode',getattr(settings,'FULLSCREEN_MODE'),onchange=set_input,args=['FULLSCREEN_MODE'],font_size=font_size)
+  widget=smenu.add.range_slider('Volume: ',default=getattr(settings,'SOUND_VOLUME'),onchange=set_input,args=['SOUND_VOLUME'],increment=0.05,range_values=(0,1),font_size=font_size)
+  widget=smenu.add.range_slider('Mouse Sensitivity: ',default=getattr(settings,'MOUSE_SENSITIVITY'),onchange=set_input,args=['MOUSE_SENSITIVITY'],increment=0.1,range_values=(0,5),font_size=font_size)
   smenu.add.label('')
   widget=smenu.add.button('OK',pygame_menu.events.BACK,background_color=(75,75,75),font_color=(255,255,255))
 
 def make_parmenu(parmenu,presets_dict):
-  global original_pars
+  global current_pars
   font_size=16
   first_widget=[]
-  for par in sorted(original_pars):
-      value=getattr(gc,par)
+  for par in sorted(current_pars):
+      value=current_pars[par]
       if type(value) is bool:
           widget=parmenu.add.toggle_switch(par,value,onchange=set_input,args=[par],font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
       elif type(value) is int:
@@ -144,30 +143,24 @@ def make_parmenu(parmenu,presets_dict):
   widget=parmenu.add.button('OK',pygame_menu.events.BACK,background_color=(75,75,75),font_color=(255,255,255))
   parmenu.scroll_to_widget(first_widget)
 
-def get_parameters():
-  global original_pars
-  parameters=gc.__dir__()
-  ignore_pars=['QUIT','KEYDOWN','KEYUP','RLEACCEL','SOUND_VOLUME','MOUSE_SENSITIVITY','SCREEN_HEIGHT','SCREEN_WIDTH']
-  original_pars={}
-  for par in parameters:
-      if par.upper() == par and par[:2] != 'K_' and par[:1] != '_' and not par in ignore_pars:
-          original_pars[par]=getattr(gc,par)
-
 def set_input(input_value,args):
-  setattr(gc,args[0],input_value)
+  global current_pars
+  current_pars[args[0]]=input_value
 
 def set_input_drop(input_dict,input_value,args):
-  setattr(gc,args[0],input_value)
+  global current_pars
+  current_pars[args[0]]=input_value
 
 def set_input_subvalue(input_value,args):
-  tup=getattr(gc,args[0])
+  global current_pars
+  tup=current_pars[args[0]]
   tup_vals=[tup[0],tup[1],tup[2]]
   tup_vals[args[1]]=input_value
   new_tup=(tup_vals[0],tup_vals[1],tup_vals[2])
-  setattr(gc,args[0],new_tup)
+  current_pars[args[0]]=new_tup
 
 def load_original_parameters():
-  global original_pars
-  for par in original_pars:
-      setattr(gc,par,original_pars[par])
+  global current_pars
+  for par in current_pars:
+      setattr(gc,par,current_pars[par])
 

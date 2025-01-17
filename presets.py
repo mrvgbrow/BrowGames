@@ -1,15 +1,14 @@
 #!/c/Users/sp4ce/AppData/Local/Programs/Python/Python310/python
 
 import glob
-import pong_gameconstants as gc
 import os
 
 ignore_pars=['QUIT','KEYDOWN','KEYUP','RLEACCEL']
 __location__=os.path.realpath(os.path.join(os.getcwd(),os.path.dirname(__file__)))
 
-def load_presets():
+def load_presets(game):
     global __location__
-    preset_files=glob.glob(os.path.join(__location__,'presets/gc_*'))
+    preset_files=glob.glob(os.path.join(__location__,game+'/presets/gc_*'))
     all_presets={}
     for preset_file in preset_files:
         preset_dict=read_preset_file(preset_file)
@@ -52,20 +51,6 @@ def read_preset_file(preset_file):
             preset_dict[parameter_name]=parameter_value
     return preset_dict
 
-def set_preset(preset_dict):
-    for parameter in preset_dict:
-        setattr(gc,parameter,preset_dict[parameter])
-
-def get_parameters():
-    global ignore_pars
-
-    parameters=gc.__dir__()
-    pars_dict={}
-    for par in parameters:
-        if par.upper() == par and par[:2] != 'K_' and par[:1] != '_' and not par in ignore_pars:
-           value=getattr(gc,par)
-           pars_dict[par]=value
-    return pars_dict
 
 def get_parameter_values(pardict,par):
     parlist=[]
