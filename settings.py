@@ -4,6 +4,9 @@ import glob
 import os
 __location__=os.path.realpath(os.path.join(os.getcwd(),os.path.dirname(__file__)))
 
+MOUSE_SENSITIVITY=2.0
+FULLSCREEN_MODE=False
+SOUND_VOLUME=1.0
 
 def load_settings():
     global __location__

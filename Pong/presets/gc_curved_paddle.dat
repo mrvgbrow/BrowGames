@@ -3,6 +3,8 @@
 import pygame
 import math
 
+SCREEN_WIDTH=800
+SCREEN_HEIGHT=600
 PLAYER4_PADDLE_TYPE='curved'
 PLAYER3_PADDLE_TYPE='curved'
 PLAYER2_PADDLE_TYPE='curved'

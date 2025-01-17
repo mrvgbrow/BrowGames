@@ -34,6 +34,7 @@ def run(preset_init):
     settings.set_settings(settings_dict)
     preset_set=preset_init
     gc.set_preset(presets_dict[preset_set])
+    gc.scale_parameters()
     screen = pygame.display.set_mode((800,600))
     
     
@@ -41,17 +42,18 @@ def run(preset_init):
     # the game to load.
     menu_run=True
     while menu_run:
-        menu_run,preset_out=menu.run_menu('Pong',screen,settings_dict,presets_dict,preset_set,True)
+        menu_run,preset_out,current_pars=menu.run_menu('Pong',screen,settings_dict,presets_dict,preset_set,True)
         gc.set_preset(presets_dict[preset_out])
         preset_set=preset_out
      
     # Scale the selected game constants and extract them as a dictionary
+    gc.set_preset(current_pars)
     gc.scale_parameters()
     current_parameters=gc.get_parameters(list(presets_dict[preset_set].keys()))
     
     font=pygame.font.Font(os.path.join(__location__,"pong-score-extended.ttf"),gc.FONT_SIZE) # A pong-like font. Used in displayed text.
     font_message=pygame.font.Font(None,36) 
-    pygame.mixer.music.set_volume(gc.SOUND_VOLUME)   # Set the volume.
+    pygame.mixer.music.set_volume(settings.SOUND_VOLUME)   # Set the volume.
     
     # Initialize the various sprite groups.
     all_sprites = pygame.sprite.Group()
@@ -59,7 +61,7 @@ def run(preset_init):
     balls=pygame.sprite.Group()
     walls=pygame.sprite.Group()
     
-    if gc.FULLSCREEN_MODE:
+    if settings.FULLSCREEN_MODE:
         screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT],pygame.FULLSCREEN)
     else:
         screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT])

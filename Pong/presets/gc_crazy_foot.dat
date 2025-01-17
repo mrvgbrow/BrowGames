@@ -3,6 +3,8 @@
 import pygame
 import math
 
+SCREEN_WIDTH=800
+SCREEN_HEIGHT=600
 PLAYER4_PADDLE_TYPE='normal'
 PLAYER3_PADDLE_TYPE='normal'
 PLAYER2_PADDLE_TYPE='normal'
