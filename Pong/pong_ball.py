@@ -3,7 +3,7 @@
 import pygame
 import random
 import math
-import physics
+import genutils
 from . import pong_gameconstants as gc
 
 
@@ -20,7 +20,7 @@ class Ball(pygame.sprite.Sprite):
         self.mask=pygame.mask.from_surface(self.surf)
         angle=random.random()*math.pi/2-math.pi/4+random.random()-0.5
         self.base_speed=gc.BALL_SPEED
-        self.speedx,self.speedy=physics.angle_to_coords(angle,self.base_speed)
+        self.speedx,self.speedy=genutils.angle_to_coords(angle,self.base_speed)
         self.speedx=math.copysign(1,random.random()-0.5)*self.speedx # Randomize the direction of the serve
         self.anglechange(0.0)
         self.player_hit=0
@@ -63,7 +63,7 @@ class Ball(pygame.sprite.Sprite):
     def shoot(self,target,speed,distance,direction):
         self.base_speed=speed
         direction=direction*math.pi/180
-        self.speedx,self.speedy=physics.angle_to_coords(direction,speed)
+        self.speedx,self.speedy=genutils.angle_to_coords(direction,speed)
         self.x=target[0]-distance*math.cos(direction)
         self.rect.centerx=self.x
         self.y=target[1]-distance*math.sin(direction)
@@ -81,8 +81,8 @@ class Ball(pygame.sprite.Sprite):
         pygame.mixer.music.play(loops=1)
 
     def anglechange(self,angle_change):
-        angle_old,speed=physics.coords_to_angle(self.speedx,self.speedy)
-        angle=physics.angle_to_atan2_range(angle_old+angle_change)
+        angle_old,speed=genutils.coords_to_angle(self.speedx,self.speedy)
+        angle=genutils.angle_to_atan2_range(angle_old+angle_change)
         angle_mid=angle
         if abs(math.pi/2-angle) < gc.BALL_MINANGLE_DEGREES*math.pi/180.0:
             angle=math.pi/2+math.copysign(1,angle-math.pi/2)*gc.BALL_MINANGLE_DEGREES*math.pi/180.0
@@ -95,33 +95,33 @@ class Ball(pygame.sprite.Sprite):
 #        print('before/middle/after ',angle*180/math.pi,angle_mid*180/math.pi,angle_old*180/math.pi)
         if gc.BALL_FIX_XSPEED:
             speed=speed*abs(1/math.cos(angle))
-        self.speedx,self.speedy=physics.angle_to_coords(angle,speed)
+        self.speedx,self.speedy=genutils.angle_to_coords(angle,speed)
 
     def set_angle(self,angle_set):
-        angle_old,speed=physics.coords_to_angle(self.speedx,self.speedy)
+        angle_old,speed=genutils.coords_to_angle(self.speedx,self.speedy)
         self.base_speed+=gc.BALL_SPEED_INCREASE
         speed=min(self.base_speed,gc.BALL_MAX_SPEED)
         if gc.BALL_FIX_XSPEED:
             speed=speed*abs(1/math.cos(angle_set))
-        self.speedx,self.speedy=physics.angle_to_coords(angle_set,speed)
+        self.speedx,self.speedy=genutils.angle_to_coords(angle_set,speed)
 
     def reset_speed(self):
         self.base_speed=gc.BALL_SPEED
 
     def update_intercept(self,x_position):
-        self.intercept=physics.find_intercept(self.speedx,self.speedy,self.rect.centerx,self.rect.centery,x_position)
+        self.intercept=genutils.find_intercept(self.speedx,self.speedy,self.rect.centerx,self.rect.centery,x_position)
         if (self.intercept < gc.WALL_WIDTH or self.intercept > gc.SCREEN_HEIGHT-gc.WALL_WIDTH) and gc.AI_PREDICT_BOUNCE:
-            intercept_x_0=physics.find_intercept(self.speedy,self.speedx,self.rect.centery,self.rect.centerx,gc.WALL_WIDTH)
-            intercept_x_1=physics.find_intercept(self.speedy,self.speedx,self.rect.centery,self.rect.centerx,gc.SCREEN_HEIGHT-gc.WALL_WIDTH)
+            intercept_x_0=genutils.find_intercept(self.speedy,self.speedx,self.rect.centery,self.rect.centerx,gc.WALL_WIDTH)
+            intercept_x_1=genutils.find_intercept(self.speedy,self.speedx,self.rect.centery,self.rect.centerx,gc.SCREEN_HEIGHT-gc.WALL_WIDTH)
             if self.speedx>0:
                 if intercept_x_1 > intercept_x_0:
-                    self.intercept=physics.find_intercept(self.speedx,-self.speedy,intercept_x_1,gc.SCREEN_HEIGHT-gc.WALL_WIDTH,x_position)
+                    self.intercept=genutils.find_intercept(self.speedx,-self.speedy,intercept_x_1,gc.SCREEN_HEIGHT-gc.WALL_WIDTH,x_position)
                 else:
-                    self.intercept=physics.find_intercept(self.speedx,-self.speedy,intercept_x_0,gc.WALL_WIDTH,x_position)
+                    self.intercept=genutils.find_intercept(self.speedx,-self.speedy,intercept_x_0,gc.WALL_WIDTH,x_position)
             else:
                 if intercept_x_1 < intercept_x_0:
-                    self.intercept=physics.find_intercept(self.speedx,-self.speedy,intercept_x_1,gc.SCREEN_HEIGHT-gc.WALL_WIDTH,x_position)
+                    self.intercept=genutils.find_intercept(self.speedx,-self.speedy,intercept_x_1,gc.SCREEN_HEIGHT-gc.WALL_WIDTH,x_position)
                 else:
-                    self.intercept=physics.find_intercept(self.speedx,-self.speedy,intercept_x_0,gc.WALL_WIDTH,x_position)
+                    self.intercept=genutils.find_intercept(self.speedx,-self.speedy,intercept_x_0,gc.WALL_WIDTH,x_position)
             if self.intercept < 0 or self.intercept > gc.SCREEN_HEIGHT:
                 self.intercept=-1

@@ -4,7 +4,7 @@ import pygame
 import random
 import math
 from . import pong_gameconstants as gc
-import physics
+import genutils
 
 
 class Player(pygame.sprite.Sprite):
@@ -195,20 +195,20 @@ class Player(pygame.sprite.Sprite):
                 move_x=self.target.rect.centerx-margin_x-random.random()*(self.target.rect.centerx-margin_x)
         else:
             move_x=self.rect.centerx
-        intercept=physics.find_intercept(self.target.speedx,self.target.speedy,self.target.rect.centerx,self.target.rect.centery,move_x)
+        intercept=genutils.find_intercept(self.target.speedx,self.target.speedy,self.target.rect.centerx,self.target.rect.centery,move_x)
         if (intercept < gc.WALL_WIDTH or intercept > gc.SCREEN_HEIGHT-gc.WALL_WIDTH) and gc.AI_PREDICT_BOUNCE:
-            intercept_x_0=physics.find_intercept(self.target.speedy,self.target.speedx,self.target.rect.centery,self.target.rect.centerx,gc.WALL_WIDTH)
-            intercept_x_1=physics.find_intercept(self.target.speedy,self.target.speedx,self.target.rect.centery,self.target.rect.centerx,gc.SCREEN_HEIGHT-gc.WALL_WIDTH)
+            intercept_x_0=genutils.find_intercept(self.target.speedy,self.target.speedx,self.target.rect.centery,self.target.rect.centerx,gc.WALL_WIDTH)
+            intercept_x_1=genutils.find_intercept(self.target.speedy,self.target.speedx,self.target.rect.centery,self.target.rect.centerx,gc.SCREEN_HEIGHT-gc.WALL_WIDTH)
             if self.target.speedx>0:
                 if intercept_x_1 > intercept_x_0:
-                    intercept=physics.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_1,gc.SCREEN_HEIGHT-gc.WALL_WIDTH,move_x)
+                    intercept=genutils.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_1,gc.SCREEN_HEIGHT-gc.WALL_WIDTH,move_x)
                 else:
-                    intercept=physics.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_0,gc.WALL_WIDTH,move_x)
+                    intercept=genutils.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_0,gc.WALL_WIDTH,move_x)
             else:
                 if intercept_x_1 < intercept_x_0:
-                    intercept=physics.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_1,gc.SCREEN_HEIGHT-gc.WALL_WIDTH,move_x)
+                    intercept=genutils.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_1,gc.SCREEN_HEIGHT-gc.WALL_WIDTH,move_x)
                 else:
-                    intercept=physics.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_0,gc.WALL_WIDTH,move_x)
+                    intercept=genutils.find_intercept(self.target.speedx,-self.target.speedy,intercept_x_0,gc.WALL_WIDTH,move_x)
             if intercept < 0 or intercept > gc.SCREEN_HEIGHT:
                 intercept=-1
         return intercept,move_x

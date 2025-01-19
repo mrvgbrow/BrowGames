@@ -3,7 +3,6 @@
 import pygame
 import random
 import math
-import physics
 from . import pong_gameconstants as gc
 
 
