@@ -334,3 +334,15 @@ def sign(value):
     else:
         return 1
 
+def randsign():
+    return 1 if random.random() <0.5 else -1
+
+def check_array_coords(array,coords):
+    for idx,dim in enumerate(array.shape):
+        if coords[idx]<0 or coords[idx]>=dim:
+            return False
+    return True
+
+def angle_to_atan2_range(angle):
+    return math.atan2(math.sin(angle),math.cos(angle))
+

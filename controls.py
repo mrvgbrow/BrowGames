@@ -1,6 +1,6 @@
 #!/c/Users/sp4ce/AppData/Local/Programs/Python/Python310/python
 
-import spacerace_gameconstants as gc
+import gameconstants as gc
 
 keycons = {
         'Arrows' : {

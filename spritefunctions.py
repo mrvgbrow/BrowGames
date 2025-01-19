@@ -3,7 +3,7 @@
 import os
 import math
 import pygame
-import spacerace_genutils as genu
+import genutils as genu
 
 def fill(surface,color):
     w, h = surface.get_size()
@@ -21,11 +21,12 @@ def rot_center(image, angle, x, y):
     return rotated_image, new_rect
 
 class Sequence():
-    def __init__(self,sprite_name=None,name=None,opacity=[],images=[],rotation=[],trans_x=[],trans_y=[],delay=[],frozen=False,loop=0,color=None,flip_x=[],flip_y=[],scale=None,pace=None,next_sequence=None):
+    def __init__(self,sprite_name=None,name=None,opacity=[],images=[],rotation=[],trans_x=[],trans_y=[],delay=[],frozen=False,loop=0,color=None,flip_x=[],flip_y=[],scale=None,pace=None,next_sequence=None,angle0=0,nrotations=1,image_path=''):
         self.sprite_name=sprite_name
         self.name=name
+        self.image_path=image_path
         self.next_sequence=next_sequence
-        self.path='sprites/'+self.sprite_name+'/'
+        self.path=os.path.join(image_path,'sprites',self.sprite_name)
         self.empty=False
         if sprite_name and name:
             if not self.read_sequence():
@@ -36,6 +37,8 @@ class Sequence():
         if not rotation:
             rotations=[0]*len(self.images)
         self.rotation=rotation
+        self.nrotations=nrotations
+        self.angle0=angle0
         if not trans_x:
             trans_x=[0]*len(self.images)
         self.trans_x=trans_x
@@ -180,12 +183,20 @@ class Sequence():
     def build_surfaces(self,color,scale_factor):
         self.surfaces=[]
         self.masks=[]
+        rotations=[]
+        if self.nrotations>1:
+            rotation_interval=90.0/self.nrotations
+            for k in range(self.nrotations):
+                rotations.append(rotation_interval*k)
         for i in range(len(self.images)):
-            surf=pygame.image.load(self.path+self.images[i]).convert_alpha()
+            surf=pygame.image.load(os.path.join(self.path,self.images[i])).convert_alpha()
+            rect0=surf.get_rect(top=0,left=0)
             if color:
                 fill(surf,color)
             if scale_factor:
                 surf=pygame.transform.scale_by(surf,scale_factor)
+            if self.angle0!=0:
+                surf,rect=rot_center(surf,self.angle0,rect0.centerx,rect0.centery)
             self.masks.append([])
             self.surfaces.append([])
             for j in range(4):
@@ -198,8 +209,10 @@ class Sequence():
     def read_sequence(self):
         if not self.sprite_name or not self.name:
             return False
-        sequence_file='sprites/'+self.sprite_name+'/sequence.txt'
+        sequence_file=os.path.join(self.image_path,'sprites',self.sprite_name,'sequence.txt')
         if os.path.isfile(sequence_file)==0:
+            print("Sequence file ",sequence_file," not found")
+            print(self.image_path)
             return False
         f=open(sequence_file,'r')
         found=False
@@ -300,6 +313,14 @@ def bounce_sprite(sprite,collide_point):
     sprite.speedx=v.x
     sprite.speedy=v.y
 
+def bounce_gameobject(sprite,angle):
+    v=sprite.velocity
+    v.rotate_rad_ip(angle)
+    v.x*=-1
+    v.rotate_rad_ip(-angle)
+    sprite.velocity=v
+
+
 def average_collision_point(left,right):
     offset=(right.rect[0]-left.rect[0],right.rect[1]-left.rect[1])
     overlap=left.mask.overlap(right.mask,offset)
@@ -315,3 +336,33 @@ def decide_move(sprite_move,sprites_avoid,movestep):
         if erect.left<=prect[1] and erect.right>=prect[0] and erect.top<=prect[3] and erect.bottom>=prect[2]:
             return False
     return True
+
+def collide_mask_check(sprite1,sprite2):
+    if pygame.sprite.collide_rect(sprite1,sprite2):
+        collided=pygame.sprite.collide_mask(sprite1,sprite2)
+        return collided or []
+    return []
+
+def collide_check_all(sprite1,sprites):
+    collided=[]
+    do_reset=False
+    if sprite1.check_collide_counter():
+        for sprite2 in sprites:
+            if sprite2.check_collide_counter() and collide_mask_check(sprite1,sprite2):
+                collided+=[sprite2]
+                sprite2.reset_collide()
+                sprite1.reset_collide()
+    return collided
+
+def collide_avpts_all(sprite1,sprites):
+    collided=[]
+    avpts=[]
+    if sprite1.check_collide_counter():
+        for sprite2 in sprites:
+            if sprite2.check_collide_counter():
+                avpt=average_collision_point(sprite1,sprite2)
+                if avpt:
+                    collided+=[sprite2]
+                    avpts+=[avpt]
+    return collided,avpts
+
