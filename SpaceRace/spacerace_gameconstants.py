@@ -50,10 +50,10 @@ def process_game_arguments(args,gmdict,sdict):
 
 gc={}
 # General
-gc['FULL_HEIGHT']=1000
-gc['FULL_WIDTH']=1446
-gc['SCREEN_HEIGHT']=0.9
-gc['SCREEN_WIDTH']=1.0
+gc['SCREEN_HEIGHT']=1000
+gc['SCREEN_WIDTH']=1446
+gc['GAME_HEIGHT']=0.9
+gc['GAME_WIDTH']=1.0
 gc['FONT_SIZE']=54
 gc['SCREEN_COLOR']=(0,0,0)
 gc['SOUND_VOLUME']=1.0
@@ -64,13 +64,14 @@ gc['START_COUNTDOWN']=3
 gc['TICK_FRAMERATE']=60
 gc['TIMER_DURATION']=60
 gc['TIMER_COLOR']=(255,255,255)
-gc['TIMER_LENGTH']=0.9
+gc['TIMER_WIDTH']=0.01
+gc['TIMER_BOTTOM']=0.01
+gc['TIMER_TOP']=0.01
 
 # Scoring 
-gc['SCORE_P1_XPOS']=250
-gc['SCORE_P1_YPOS']=25
-gc['SCORE_P2_XPOS']=250
-gc['SCORE_P2_YPOS']=25
+gc['SCORE_P1_XPOS']=0.2
+gc['SCORE_YPOS']=0.9
+gc['SCORE_P2_XPOS']=0.8
 gc['SCORE_COLOR']=(255,255,255)
 gc['SCORE_TOP']=1
 gc['SCORE_CANISTER']=0
@@ -81,6 +82,8 @@ gc['PLAYER_VELSTEP']=0.2
 gc['PLAYER_SCALE']=6.0
 gc['PLAYER_Y_START']=0.9
 gc['PLAYER1_CONTROL']='WASD'
+gc['PLAYER1_X_POSITION']=0.25
+gc['PLAYER2_X_POSITION']=0.75
 gc['PLAYER2_CONTROL']='arrows'
 gc['PLAYER1_COLOR']=(255,255,255,255)
 gc['PLAYER2_COLOR']=(255,255,255,255)
@@ -88,14 +91,19 @@ gc['PLAYER1_STEPS_ANTICIPATE']=20
 gc['PLAYER2_STEPS_ANTICIPATE']=20
 gc['PLAYER_ANIM_PACE']=4
 gc['POWER_STEPS']=180
+gc['PLAYER_COLLISION_RESET']=True
+gc['PLAYER_ANIMATE']=False
 
 # Asteroid properties
 gc['ASTEROID_SPEED']=3.0
 gc['ASTEROID_SPEED_SPREAD']=1.0
-gc['ASTEROID_SEPARATION']=22
+gc['ASTEROID_SEPARATION']=0.013
 gc['ASTEROID_IMPULSE']=0.0
 gc['ASTEROID_COLOR']=(200,200,200,255)
 gc['ASTEROID_SCALE']=5.0
+gc['ASTEROID_OLD_TYPE']=True
+gc['ASTEROID_MAX_HEIGHT']=0.03
+gc['ASTEROID_REVIVE_TIME']=3.0
 
 # Canister properties
 gc['CANISTER_SPEED']=1.0
@@ -134,13 +142,35 @@ from pygame.locals import (
 
 def scale_parameters():
     global gc
-    gc['SCREEN_HEIGHT']*=gc['FULL_HEIGHT']
-    gc['SCREEN_WIDTH']*=gc['FULL_WIDTH']
-    gc['TOP']=gc['FULL_HEIGHT']-gc['SCREEN_HEIGHT']
-    gc['LEFT']=gc['FULL_WIDTH']-gc['SCREEN_WIDTH']
-    gc['TIMER_POSITION']=[gc['SCREEN_WIDTH']*0.5,gc['TOP']+gc['FULL_HEIGHT']/10]
-    gc['TIMER_DIMENSIONS']=[15,gc['FULL_HEIGHT']-gc['TIMER_POSITION'][1]]
+    gc['GAME_HEIGHT']*=gc['SCREEN_HEIGHT']
+    gc['GAME_WIDTH']*=gc['SCREEN_WIDTH']
+    gc['TOP']=gc['SCREEN_HEIGHT']-gc['GAME_HEIGHT']
+    gc['LEFT']=gc['SCREEN_WIDTH']-gc['GAME_WIDTH']
+    gc['PLAYER_Y_START']=gc['TOP']+gc['GAME_HEIGHT']*gc['PLAYER_Y_START']
+    gc['PLAYER1_X_POSITION']*=gc['GAME_WIDTH']
+    gc['PLAYER2_X_POSITION']*=gc['GAME_WIDTH']
+    gc['TIMER_BOTTOM']*=gc['GAME_HEIGHT']
+    gc['TIMER_TOP']*=gc['GAME_HEIGHT']
+    gc['TIMER_POSITION']=[gc['SCREEN_WIDTH']*0.5,gc['TIMER_TOP']]
+    gc['TIMER_DIMENSIONS']=[gc['TIMER_WIDTH']*gc['GAME_WIDTH'],gc['TIMER_BOTTOM']-gc['TIMER_TOP']]
     gc['TIMER_DURATION']*=gc['TICK_FRAMERATE']
-    gc['TIMER_LENGTH']*=gc['SCREEN_WIDTH']
-    gc['PLAYER_Y_START']=gc['TOP']+gc['SCREEN_HEIGHT']*gc['PLAYER_Y_START']
+    gc['SCORE_P1_XPOS']*=gc['GAME_WIDTH']
+    gc['SCORE_P2_XPOS']*=gc['GAME_WIDTH']
+    gc['SCORE_YPOS']*=gc['GAME_HEIGHT']
     gc['CANISTER_SPEED']*=gc['ASTEROID_SPEED']
+    gc['ASTEROID_MAX_HEIGHT']*=gc['GAME_HEIGHT']
+    gc['ASTEROID_SEPARATION']*=gc['GAME_HEIGHT']
+    gc['ASTEROID_REVIVE_TIME']=int(gc['TICK_FRAMERATE']*gc['ASTEROID_REVIVE_TIME'])
+
+def set_preset(preset_dict):
+    global gc
+    for parameter in preset_dict:
+        gc[parameter]=preset_dict[parameter]
+
+def get_parameters(parameter_list):
+    global gc
+    pars_dict={}
+    for par in parameter_list:
+       value=gc[par]
+       pars_dict[par]=value
+    return pars_dict
