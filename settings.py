@@ -50,3 +50,9 @@ def set_settings(settings_dict):
     for parameter in settings_dict:
         globals()[parameter]=settings_dict[parameter]
 
+def get_settings(settings_list):
+    settings_dict={}
+    for setting in settings_list:
+       value=globals()[setting]
+       settings_dict[setting]=value
+    return settings_dict
