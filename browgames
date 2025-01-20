@@ -12,27 +12,43 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 #os.environ['SDL_VIDEO_WINDOW_POS']="%d,%d" % (0,0)
 import pygame
 from Pong import pong
+from SpaceRace import spacerace
 import menu0
-#import settings
+import settings
 
-# Initialize the game, music, timer, and screen
+all_quit=False
 pygame.init()
 settings_dict={}
-#settings_dict=settings.load_settings()
-#settings.set_settings(settings_dict)
-screen = pygame.display.set_mode((800,600))
+settings_dict=settings.load_settings()
+settings.set_settings(settings_dict)
 
-# Load the menu. Continue reloading the menu until an option is selected that requests
-# the game to load.
-menu_run=True
-while menu_run:
-    menu_run,game=menu0.run_menu('BrowGames',screen,settings_dict)
+while not all_quit:
+    # Initialize the game, music, timer, and screen
+    screen = pygame.display.set_mode((800,600))
 
-if game == 'Pong':
-    pong.run("Original")
-#elif game == 'Pong Doubles':
-#    pong.run("Standard")
+    # Load the menu. Continue reloading the menu until an option is selected that requests
+    # the game to load.
+    if len(sys.argv) == 1:
+        quickstart=False
+        menu_run=True
+        while menu_run:
+            menu_run,game,all_quit,settings_dict=menu0.run_menu('BrowGames',screen,settings_dict)
+            settings.set_settings(settings_dict)
+    else:
+        game=sys.argv[1]
+        quickstart=True
+
+    if game == 'Pong':
+        settings_dict=pong.run("Original",settings_dict,quickstart=quickstart)
+    elif game == 'Space Race':
+        settings_dict=spacerace.run("Original",settings_dict,quickstart=quickstart)
+    elif game == 'Pong Doubles':
+        settings_dict=pong.run("Doubles",settings_dict,quickstart=quickstart)
+    elif game == 'Pong Soccer':
+        settings_dict=pong.run("Pong Soccer",settings_dict,quickstart=quickstart)
+    elif game == 'Crazy Foot':
+        settings_dict=pong.run("Crazy Foot",settings_dict,quickstart=quickstart)
+
+    if quickstart:
+        all_quit=True
  
-# Done! Time to quit.
-pygame.quit()
-

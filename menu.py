@@ -3,28 +3,36 @@
 import pygame_menu
 import presets
 import settings
+button_color=(255,229,180)
+button_text=(25,25,25)
 
 def run_menu(title,screen,settings_dict,presets_dict,preset_default,fourplayers):
-  global menu_run,current_pars,current_settings
+  global menu_run,current_pars,current_settings,back_to_main
   font_size=24
   menu_run=False
-  menu=pygame_menu.Menu(title,800,600,theme=pygame_menu.themes.THEME_DEFAULT,onclose=pygame_menu.events.CLOSE)
+  back_to_main=False
+  browtheme=pygame_menu.Theme(background_color=(255,255,255,255), title_font_shadow=True,title_background_color=(50,0,100,255),selection_color=(25,25,180,255))
+  menu=pygame_menu.Menu(title,800,600,theme=browtheme,onclose=pygame_menu.events.CLOSE)
   current_pars=presets_dict[preset_default]
   n_parameters=len(current_pars.keys())
   n_rows=int(n_parameters/2)+2
   current_settings=settings_dict
-  amenu=pygame_menu.Menu('About',800,600,theme=pygame_menu.themes.THEME_DEFAULT)
-  smenu=pygame_menu.Menu('Settings',800,600,theme=pygame_menu.themes.THEME_DEFAULT)
-  parmenu=pygame_menu.Menu('Game Parameters',800,600,theme=pygame_menu.themes.THEME_DEFAULT,columns=2,rows=n_rows)
-  pmenu=pygame_menu.Menu('Presets',800,600,theme=pygame_menu.themes.THEME_DEFAULT,onclose=pygame_menu.events.CLOSE)
-  spmenu=pygame_menu.Menu('Save Preset',800,600,theme=pygame_menu.themes.THEME_DEFAULT)
+  amenu=pygame_menu.Menu('About',800,600,theme=browtheme)
+  smenu=pygame_menu.Menu('Settings',800,600,theme=browtheme)
+  parmenu=pygame_menu.Menu('Game Parameters',800,600,theme=browtheme,columns=2,rows=n_rows)
+  pmenu=pygame_menu.Menu('Presets',800,600,theme=browtheme,onclose=pygame_menu.events.CLOSE)
+  spmenu=pygame_menu.Menu('Save Preset',800,600,theme=browtheme)
   menu.add.button('Play with Current Settings',pygame_menu.events.CLOSE,font_size=font_size)
   menu.add.button('Presets',pmenu,font_size=font_size)
   menu.add.button('Settings',smenu,font_size=font_size)
   menu.add.button('Game Parameters',parmenu,font_size=font_size)
 #  menu.add.button('About',amenu,font_size=font_size)
 #  menu.add.button('Save Preset',spmenu)
-  menu.add.button('Quit',pygame_menu.events.EXIT,font_size=font_size)
+  def send_back_to_main():
+      global back_to_main
+      back_to_main=True
+      menu.close()
+  menu.add.button('Back to Main Menu',send_back_to_main,font_size=font_size)
   menu.add.label('',font_size=font_size)
   menu.add.label('',font_size=font_size)
   add_control_menu(menu,fourplayers)
@@ -37,7 +45,7 @@ def run_menu(title,screen,settings_dict,presets_dict,preset_default,fourplayers)
   make_spmenu(spmenu)
   menu.mainloop(screen)
   settings.set_settings(current_settings)
-  return menu_run,preset_input.get_title()[15:],current_pars
+  return back_to_main,menu_run,preset_input.get_title()[15:],current_pars
 
 def add_control_menu(menu,fourplayers):
   global current_pars
@@ -59,15 +67,17 @@ def add_control_menu(menu,fourplayers):
     widget.translate(-100,0)
 
 def make_spmenu(spmenu):
+  global button_color, button_text
   label=spmenu.add.label('')
   widget=spmenu.add.text_input('Preset Name: ',default='')
   def save_preset_inmenu():
       presets.save_preset(widget.get_value())
       label.set_title('Saved!')
   spmenu.add.button('Save',save_preset_inmenu)
-  spmenu.add.button('Back',pygame_menu.events.BACK,background_color=(75,75,75),font_color=(255,255,255))
+  spmenu.add.button('Back',pygame_menu.events.BACK,background_color=button_color,font_color=button_text,border_width=2)
 
 def make_pmenu(pmenu,presets_dict,preset_input):
+  global button_color, button_text
   font_size=24
   def select_preset(widget=None):
       global menu_run
@@ -79,10 +89,11 @@ def make_pmenu(pmenu,presets_dict,preset_input):
       button=pmenu.add.button(preset_name,select_preset,font_size=font_size)
       button.add_self_to_kwargs()
   pmenu.add.label('')
-  pmenu.add.button('Back',pygame_menu.events.BACK,font_size=font_size,background_color=(75,75,75),font_color=(255,255,255))
+  pmenu.add.button('Back',pygame_menu.events.BACK,font_size=font_size,background_color=button_color,font_color=button_text,border_width=2)
   return True
 
 def make_amenu(amenu):
+  global button_color, button_text
   font_size=24
   readme_file="text/instructions.md"
   readme_file_lines=open(readme_file,"r")
@@ -98,11 +109,11 @@ def make_amenu(amenu):
   amenu.add.label('Version '+version_array2[1])
   amenu.add.label('Written by Nicholas A. Bond, 2024-2025')
   amenu.add.label('')
-  amenu.add.button('Back',pygame_menu.events.BACK,font_size=font_size,background_color=(75,75,75),font_color=(255,255,255))
+  amenu.add.button('Back',pygame_menu.events.BACK,font_size=font_size,background_color=button_color,font_color=button_text,border_width=2)
   return True
 
 def make_smenu(smenu):
-  global current_pars
+  global current_pars,button_color,button_text
   font_size=24
   first_widget=[]
 #  widget=smenu.add.text_input('Screen Width: ',default=getattr(settings,'SCREEN_WIDTH'),onchange=set_input_settings,args=['SCREEN_WIDTH'],input_type=pygame_menu.locals.INPUT_INT,font_size=font_size)
@@ -111,10 +122,10 @@ def make_smenu(smenu):
   widget=smenu.add.range_slider('Volume: ',default=getattr(settings,'SOUND_VOLUME'),onchange=set_input_settings,args=['SOUND_VOLUME'],increment=0.05,range_values=(0,1),font_size=font_size)
   widget=smenu.add.range_slider('Mouse Sensitivity: ',default=getattr(settings,'MOUSE_SENSITIVITY'),onchange=set_input_settings,args=['MOUSE_SENSITIVITY'],increment=0.1,range_values=(0,5),font_size=font_size)
   smenu.add.label('')
-  widget=smenu.add.button('OK',pygame_menu.events.BACK,background_color=(75,75,75),font_color=(255,255,255))
+  widget=smenu.add.button('OK',pygame_menu.events.BACK,background_color=button_color,font_color=button_text,border_width=2)
 
 def make_parmenu(parmenu,presets_dict):
-  global current_pars
+  global current_pars,button_color,button_text
   font_size=16
   first_widget=[]
   for par in sorted(current_pars):
@@ -142,7 +153,7 @@ def make_parmenu(parmenu,presets_dict):
       if not first_widget:
           first_widget=widget
   parmenu.add.label('')
-  widget=parmenu.add.button('OK',pygame_menu.events.BACK,background_color=(75,75,75),font_color=(255,255,255))
+  widget=parmenu.add.button('OK',pygame_menu.events.BACK,background_color=button_color,font_color=button_text,border_width=2)
   parmenu.scroll_to_widget(first_widget)
 
 def set_input(input_value,args):
@@ -170,3 +181,5 @@ def load_original_parameters():
   for par in current_pars:
       setattr(gc,par,current_pars[par])
 
+def fuckyou():
+    print('fuckyou')

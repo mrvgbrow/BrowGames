@@ -22,15 +22,13 @@ from .import pong_ball as ball
 from .import pong_wall as wall
 from .import pong_gameconstants as gc
 
-def run(preset_init):
+def run(preset_init,settings_dict,quickstart=False):
     # Initialize the game, music, timer, and screen
     __location__=os.path.realpath(os.path.join(os.getcwd(),os.path.dirname(__file__)))
     pygame.init()
     pygame.font.init()
-    pygame.mixer.music.load(os.path.join(__location__,"ding.mp3"))
     clock=pygame.time.Clock()
     presets_dict=presets.load_presets('Pong')
-    settings_dict=settings.load_settings()
     settings.set_settings(settings_dict)
     preset_set=preset_init
     gc.set_preset(presets_dict[preset_set])
@@ -40,18 +38,22 @@ def run(preset_init):
     
     # Load the menu. Continue reloading the menu until an option is selected that requests
     # the game to load.
-    menu_run=True
-    while menu_run:
-        menu_run,preset_out,current_pars=menu.run_menu('Pong',screen,settings_dict,presets_dict,preset_set,True)
-        gc.set_preset(presets_dict[preset_out])
-        preset_set=preset_out
+    if not quickstart:
+        menu_run=True
+        while menu_run:
+            back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Pong',screen,settings_dict,presets_dict,preset_set,True)
+            if back_to_main:
+                return settings_dict
+            gc.set_preset(presets_dict[preset_out])
+            preset_set=preset_out
      
-    # Scale the selected game constants and extract them as a dictionary
-    gc.set_preset(current_pars)
-    gc.scale_parameters()
+        # Scale the selected game constants and extract them as a dictionary
+        gc.set_preset(current_pars)
+        gc.scale_parameters()
     current_parameters=gc.get_parameters(list(presets_dict[preset_set].keys()))
     
-    font=pygame.font.Font(os.path.join(__location__,"pong-score-extended.ttf"),gc.FONT_SIZE) # A pong-like font. Used in displayed text.
+    pygame.mixer.music.load(os.path.join(__location__,"ding.mp3"))
+    font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE) # A pong-like font. Used in displayed text.
     font_message=pygame.font.Font(None,36) 
     pygame.mixer.music.set_volume(settings.SOUND_VOLUME)   # Set the volume.
     
@@ -321,8 +323,5 @@ def run(preset_init):
     
     # Stop the sound effects
     pygame.mixer.music.stop()
-    pygame.mixer.quit()
-    
-    # Done! Time to quit.
-    pygame.quit()
+    return settings_dict
     

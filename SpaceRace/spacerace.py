@@ -19,7 +19,7 @@ from . import spacerace_asteroid as asteroid
 import background as bg
 import gameobject as go
 
-def run(preset_init,quickstart=False):
+def run(preset_init,settings_dict,quickstart=False):
     __location__=os.path.realpath(os.path.join(os.getcwd(),os.path.dirname(__file__)))
     gc.gc,sdict=gc.make_shortcuts(gc.gc)
     gc.gc=gc.process_game_arguments(sys.argv,gc.gc,sdict)
@@ -27,7 +27,6 @@ def run(preset_init,quickstart=False):
     pygame.init()
     pygame.font.init()
     presets_dict=presets.load_presets('SpaceRace')
-    settings_dict=settings.load_settings()
     settings.set_settings(settings_dict)
     preset_set=preset_init
     gc.set_preset(presets_dict[preset_set])
@@ -39,7 +38,9 @@ def run(preset_init,quickstart=False):
     if not quickstart:
         menu_run=True
         while menu_run:
-            menu_run,preset_out,current_pars=menu.run_menu('Space Race',screen,settings_dict,presets_dict,preset_set,False)
+            back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Space Race',screen,settings_dict,presets_dict,preset_set,False)
+            if back_to_main:
+                return settings_dict
             if menu_run:
                 gc.set_preset(presets_dict[preset_out])
             preset_set=preset_out
@@ -64,7 +65,7 @@ def run(preset_init,quickstart=False):
     ENDGAME = pygame.USEREVENT + 1
     clock=pygame.time.Clock()
     font=pygame.font.Font(None,gc.gc['FONT_SIZE'])
-    font_pong=pygame.font.Font(os.path.join(__location__,"pong-score-extended.ttf"),gc.gc['FONT_SIZE']) # A pong-like font. Used in displayed text.
+    font_pong=pygame.font.Font("pong-score-extended.ttf",gc.gc['FONT_SIZE']) # A pong-like font. Used in displayed text.
     font_end=pygame.font.SysFont('times',gc.gc['FONT_SIZE']*3)
     score_text_sample=font_pong.render(f'0',True,gc.gc['SCORE_COLOR'])
     
@@ -250,6 +251,5 @@ def run(preset_init,quickstart=False):
                 game_message='Draw!'
             pygame.time.set_timer(ENDGAME, 2000,loops=1)
             game_state=0
+    return settings_dict
     
-    # Done! Time to quit.
-    pygame.quit()
