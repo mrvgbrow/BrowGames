@@ -67,7 +67,7 @@ def run(preset_init,settings_dict,quickstart=False):
     clock=pygame.time.Clock()
     font=pygame.font.Font(None,gc.gc['FONT_SIZE'])
     font_pong=pygame.font.Font("pong-score-extended.ttf",gc.gc['FONT_SIZE']) # A pong-like font. Used in displayed text.
-    font_end=pygame.font.SysFont('times',gc.gc['FONT_SIZE']*3)
+    font_end=pygame.font.SysFont('times',gc.gc['FONT_SIZE'])
     score_text_sample=font_pong.render(f'0',True,gc.gc['SCORE_COLOR'])
     
     # Make the player sprites
