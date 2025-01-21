@@ -6,13 +6,14 @@ button_color=(255,229,180)
 button_text=(25,25,25)
 
 def run_menu(title,screen,settings_dict):
-  global menu_run,game_select
+  global menu_run,game_select,current_sets
   game_select='None'
   font_size=36
   menu_run=False
   all_quit=False
   browtheme=pygame_menu.Theme(background_color=(255,255,255,255), title_font_shadow=True,title_background_color=(50,0,100,255),selection_color=(25,25,180,255),widget_font_color=(25,25,25,255))
   menu=pygame_menu.Menu(title,800,600,theme=browtheme,onclose=pygame_menu.events.CLOSE)
+  current_sets=settings_dict
   gmenu=pygame_menu.Menu('Game List',800,600,theme=browtheme,onclose=pygame_menu.events.CLOSE)
   amenu=pygame_menu.Menu('About',800,600,theme=browtheme)
   smenu=pygame_menu.Menu('Settings',800,600,theme=browtheme)
@@ -26,8 +27,7 @@ def run_menu(title,screen,settings_dict):
   make_smenu(smenu)
   make_gmenu(gmenu)
   menu.mainloop(screen)
-  settings_dict=settings.get_settings(list(settings_dict.keys()))
-  return menu_run,game_select,all_quit,settings_dict
+  return menu_run,game_select,all_quit,current_sets
 
 def make_amenu(amenu):
   global button_color,button_text
@@ -66,20 +66,22 @@ def make_gmenu(gmenu):
   widget=gmenu.add.button('Back',pygame_menu.events.BACK,background_color=button_color,font_color=button_text,border_width=2)
 
 def make_smenu(smenu):
-  global button_color,button_text
+  global button_color,button_text,current_sets
   font_size=36
   first_widget=[]
-  widget=smenu.add.toggle_switch('Fullscreen Mode',getattr(settings,'FULLSCREEN_MODE'),onchange=set_input,args=['FULLSCREEN_MODE'],font_size=font_size)
-  widget=smenu.add.range_slider('Volume: ',default=getattr(settings,'SOUND_VOLUME'),onchange=set_input,args=['SOUND_VOLUME'],increment=0.05,range_values=(0,1),font_size=font_size)
-  widget=smenu.add.range_slider('Mouse Sensitivity: ',default=getattr(settings,'MOUSE_SENSITIVITY'),onchange=set_input,args=['MOUSE_SENSITIVITY'],increment=0.1,range_values=(0,5),font_size=font_size)
+  widget=smenu.add.toggle_switch('Fullscreen Mode',current_sets['FULLSCREEN_MODE'],onchange=set_input,args=['FULLSCREEN_MODE'],font_size=font_size)
+  widget=smenu.add.range_slider('Volume: ',default=current_sets['SOUND_VOLUME'],onchange=set_input,args=['SOUND_VOLUME'],increment=0.05,range_values=(0,1),font_size=font_size)
+  widget=smenu.add.range_slider('Mouse Sensitivity: ',default=current_sets['MOUSE_SENSITIVITY'],onchange=set_input,args=['MOUSE_SENSITIVITY'],increment=0.1,range_values=(0,5),font_size=font_size)
   smenu.add.label('')
   widget=smenu.add.button('OK',pygame_menu.events.BACK,background_color=button_color,font_color=button_text,border_width=2)
 
 def set_input(input_value,args):
-  setattr(settings,args[0],input_value)
+  global current_sets
+  current_sets[args[0]]=input_value
 
 def set_input_drop(input_dict,input_value,args):
-  setattr(settings,args[0],input_value)
+  global current_sets
+  current_sets[args[0]]=input_value
 
 def read_game_list():
   game_list=[]

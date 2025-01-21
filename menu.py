@@ -6,7 +6,7 @@ import settings
 button_color=(255,229,180)
 button_text=(25,25,25)
 
-def run_menu(title,screen,settings_dict,presets_dict,preset_default,fourplayers):
+def run_menu(title,screen,settings_dict,presets_dict,preset_default,fourplayers,mouse_allowed):
   global menu_run,current_pars,current_settings,back_to_main
   font_size=24
   menu_run=False
@@ -35,7 +35,7 @@ def run_menu(title,screen,settings_dict,presets_dict,preset_default,fourplayers)
   menu.add.button('Back to Main Menu',send_back_to_main,font_size=font_size)
   menu.add.label('',font_size=font_size)
   menu.add.label('',font_size=font_size)
-  add_control_menu(menu,fourplayers)
+  add_control_menu(menu,fourplayers,mouse_allowed)
   menu.add.label('',font_size=font_size)
   preset_input=menu.add.label('Loaded preset: '+preset_default,font_size=font_size)
 #  make_amenu(amenu)
@@ -47,10 +47,11 @@ def run_menu(title,screen,settings_dict,presets_dict,preset_default,fourplayers)
   settings.set_settings(current_settings)
   return back_to_main,menu_run,preset_input.get_title()[15:],current_pars
 
-def add_control_menu(menu,fourplayers):
+def add_control_menu(menu,fourplayers,mouse_allowed):
   global current_pars
 
-  control_values=['Arrows','WASD','IJKL','Computer','Mouse','None']
+  control_values=['Arrows','WASD','IJKL','Computer','None']
+  if mouse_allowed: control_values.insert(3,'Mouse')
   font_size=24
   input_select_list=[]
   for input_val in control_values:
@@ -113,14 +114,14 @@ def make_amenu(amenu):
   return True
 
 def make_smenu(smenu):
-  global current_pars,button_color,button_text
+  global current_settings,button_color,button_text
   font_size=24
   first_widget=[]
 #  widget=smenu.add.text_input('Screen Width: ',default=getattr(settings,'SCREEN_WIDTH'),onchange=set_input_settings,args=['SCREEN_WIDTH'],input_type=pygame_menu.locals.INPUT_INT,font_size=font_size)
 #  widget=smenu.add.text_input('Screen Height: ',default=getattr(settings,'SCREEN_HEIGHT'),onchange=set_input_settings,args=['SCREEN_HEIGHT'],input_type=pygame_menu.locals.INPUT_INT,font_size=font_size)
-  widget=smenu.add.toggle_switch('Fullscreen Mode',getattr(settings,'FULLSCREEN_MODE'),onchange=set_input_settings,args=['FULLSCREEN_MODE'],font_size=font_size)
-  widget=smenu.add.range_slider('Volume: ',default=getattr(settings,'SOUND_VOLUME'),onchange=set_input_settings,args=['SOUND_VOLUME'],increment=0.05,range_values=(0,1),font_size=font_size)
-  widget=smenu.add.range_slider('Mouse Sensitivity: ',default=getattr(settings,'MOUSE_SENSITIVITY'),onchange=set_input_settings,args=['MOUSE_SENSITIVITY'],increment=0.1,range_values=(0,5),font_size=font_size)
+  widget=smenu.add.toggle_switch('Fullscreen Mode',current_settings['FULLSCREEN_MODE'],onchange=set_input_settings,args=['FULLSCREEN_MODE'],font_size=font_size)
+  widget=smenu.add.range_slider('Volume: ',default=current_settings['SOUND_VOLUME'],onchange=set_input_settings,args=['SOUND_VOLUME'],increment=0.05,range_values=(0,1),font_size=font_size)
+  widget=smenu.add.range_slider('Mouse Sensitivity: ',default=current_settings['MOUSE_SENSITIVITY'],onchange=set_input_settings,args=['MOUSE_SENSITIVITY'],increment=0.1,range_values=(0,5),font_size=font_size)
   smenu.add.label('')
   widget=smenu.add.button('OK',pygame_menu.events.BACK,background_color=button_color,font_color=button_text,border_width=2)
 
@@ -171,9 +172,14 @@ def set_input_drop(input_dict,input_value,args):
 def set_input_subvalue(input_value,args):
   global current_pars
   tup=current_pars[args[0]]
-  tup_vals=[tup[0],tup[1],tup[2]]
-  tup_vals[args[1]]=input_value
-  new_tup=(tup_vals[0],tup_vals[1],tup_vals[2])
+  if len(tup)==3:
+      tup_vals=[tup[0],tup[1],tup[2]]
+      tup_vals[args[1]]=input_value
+      new_tup=(tup_vals[0],tup_vals[1],tup_vals[2])
+  else:
+      tup_vals=[tup[0],tup[1],tup[2],tup[3]]
+      tup_vals[args[1]]=input_value
+      new_tup=(tup_vals[0],tup_vals[1],tup_vals[2],tup_vals[3])
   current_pars[args[0]]=new_tup
 
 def load_original_parameters():
@@ -181,5 +187,3 @@ def load_original_parameters():
   for par in current_pars:
       setattr(gc,par,current_pars[par])
 
-def fuckyou():
-    print('fuckyou')

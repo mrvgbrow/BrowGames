@@ -1,6 +1,5 @@
 */__init__.py
 scores.dat
-*.spec
 gif/*
 zip.script
 text/future_changes.txt

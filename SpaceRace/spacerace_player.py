@@ -3,6 +3,7 @@
 import pygame
 import os
 from . import spacerace_gameconstants as gc
+import settings
 import gameobject as go
 import spritefunctions as sf
 import controls as ctrl
@@ -53,7 +54,7 @@ class PlayerShip(go.GameObject):
                 if gravity==0:
                     self.position.y-=self.move_speed
                 else:
-                    self.velocity.y-=gc.gc['PLAYER_VELSTEP']
+                    self.velocity.y-=gc.gc['PLAYER_ACCELERATION']
             if self.sequence.name=='Burn':
                 self.set_sequence('Deburn')
             if self.sequence.name=='BurnPower':
@@ -67,7 +68,7 @@ class PlayerShip(go.GameObject):
             if gravity==0:
                 self.position.y-=self.move_speed
             else:
-                self.velocity.y-=gc.gc['PLAYER_VELSTEP']
+                self.velocity.y-=gc.gc['PLAYER_ACCELERATION']
         elif pressed_keys[ctrl.keycons[self.control]['down']]:
             if gravity==0:
                 self.position.y+=self.move_speed
@@ -102,7 +103,7 @@ class PlayerShip(go.GameObject):
         if power and self.powerup:
             return
         if power:
-            self.power_counter=gc.gc['POWER_STEPS']
+            self.power_counter=gc.gc['POWERUP_TIME']
             sequence_name=self.sequence.name+'Power'
         else:
             self.power_counter=0

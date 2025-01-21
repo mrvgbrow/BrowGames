@@ -4,9 +4,10 @@ import glob
 import os
 __location__=os.path.realpath(os.path.join(os.getcwd(),os.path.dirname(__file__)))
 
-MOUSE_SENSITIVITY=2.0
-FULLSCREEN_MODE=False
-SOUND_VOLUME=1.0
+sets={}
+sets['MOUSE_SENSITIVITY']=2.0
+sets['FULLSCREEN_MODE']=False
+sets['SOUND_VOLUME']=1.0
 
 def load_settings():
     global __location__
@@ -47,12 +48,14 @@ def read_settings_file(settings_file):
     return settings_dict
 
 def set_settings(settings_dict):
-    for parameter in settings_dict:
-        globals()[parameter]=settings_dict[parameter]
+    global sets
+    for setting in settings_dict:
+        sets[setting]=settings_dict[setting]
 
 def get_settings(settings_list):
-    settings_dict={}
+    global sets
+    sets_dict={}
     for setting in settings_list:
-       value=globals()[setting]
-       settings_dict[setting]=value
-    return settings_dict
+       value=sets[setting]
+       sets_dict[setting]=value
+    return sets_dict

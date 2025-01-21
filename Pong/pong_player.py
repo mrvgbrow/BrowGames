@@ -2,6 +2,7 @@
 
 import pygame
 import random
+import settings
 import math
 from . import pong_gameconstants as gc
 import genutils
@@ -75,9 +76,9 @@ class Player(pygame.sprite.Sprite):
                 if pressed_keys[gc.K_l]:
                     self.rect.move_ip(gc.PLAYER_MOVESTEP,0)
         elif self.control == 'Mouse':
-            self.rect.move_ip(0,mouse_relative[1]*gc.MOUSE_SENSITIVITY)
+            self.rect.move_ip(0,mouse_relative[1]*settings.sets['MOUSE_SENSITIVITY'])
             if gc.PADDLE_ALLOW_LEFTRIGHT:
-                self.rect.move_ip(mouse_relative[0]*gc.MOUSE_SENSITIVITY,0)
+                self.rect.move_ip(mouse_relative[0]*settings.sets['MOUSE_SENSITIVITY'],0)
         elif self.control == 'Computer':
             recompute=False
 #            if not self.target or (gc.PADDLE_ALLOW_LEFTRIGHT and math.copysign(1,self.target.speedx) != math.copysign(1,self.target_position_x-self.target.rect.centerx)):

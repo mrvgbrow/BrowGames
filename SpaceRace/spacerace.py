@@ -38,7 +38,8 @@ def run(preset_init,settings_dict,quickstart=False):
     if not quickstart:
         menu_run=True
         while menu_run:
-            back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Space Race',screen,settings_dict,presets_dict,preset_set,False)
+            back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Space Race',screen,settings_dict,presets_dict,preset_set,False,False)
+            settings.set_settings(settings_dict)
             if back_to_main:
                 return settings_dict
             if menu_run:
@@ -49,7 +50,7 @@ def run(preset_init,settings_dict,quickstart=False):
         gc.set_preset(current_pars)
         gc.scale_parameters()
     
-    if settings.FULLSCREEN_MODE:
+    if settings.sets['FULLSCREEN_MODE']:
         screen = pygame.display.set_mode((gc.gc['SCREEN_WIDTH'],gc.gc['SCREEN_HEIGHT']),pygame.FULLSCREEN)
     else:
         screen = pygame.display.set_mode((gc.gc['SCREEN_WIDTH'],gc.gc['SCREEN_HEIGHT']))
@@ -71,14 +72,20 @@ def run(preset_init,settings_dict,quickstart=False):
     
     # Make the player sprites
     asteroids=pygame.sprite.Group()
+    players=pygame.sprite.Group()
     bursts=pygame.sprite.Group()
     canisters=pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
 
     
-    player1=spacerace_player.PlayerShip('Ship',(gc.gc['PLAYER1_X_POSITION'],gc.gc['PLAYER_Y_START']),scale=gc.gc['PLAYER_SCALE'],control=gc.gc['PLAYER1_CONTROL'],move_speed=gc.gc['PLAYER_MOVESTEP'],player_side=1,pace=gc.gc['PLAYER_ANIM_PACE'],boundary=boundary2,image_path=__location__)
-    player2=spacerace_player.PlayerShip('Ship',(gc.gc['PLAYER2_X_POSITION'],gc.gc['PLAYER_Y_START']),scale=gc.gc['PLAYER_SCALE'],control=gc.gc['PLAYER2_CONTROL'],move_speed=gc.gc['PLAYER_MOVESTEP'],player_side=2,pace=gc.gc['PLAYER_ANIM_PACE'],boundary=boundary2,image_path=__location__)
-    all_sprites.add(player1,player2)
+    if gc.gc['PLAYER1_CONTROL']!='None':
+        player1=spacerace_player.PlayerShip('Ship',(gc.gc['PLAYER1_X_POSITION'],gc.gc['PLAYER_Y_START']),scale=gc.gc['PLAYER_SCALE'],control=gc.gc['PLAYER1_CONTROL'],move_speed=gc.gc['PLAYER_SPEED'],player_side=1,pace=gc.gc['PLAYER_ANIM_PACE'],boundary=boundary2,image_path=__location__) #,color=gc.gc['PLAYER1_COLOR'])
+        all_sprites.add(player1)
+        players.add(player1)
+    if gc.gc['PLAYER2_CONTROL']!='None':
+        player2=spacerace_player.PlayerShip('Ship',(gc.gc['PLAYER2_X_POSITION'],gc.gc['PLAYER_Y_START']),scale=gc.gc['PLAYER_SCALE'],control=gc.gc['PLAYER2_CONTROL'],move_speed=gc.gc['PLAYER_SPEED'],player_side=2,pace=gc.gc['PLAYER_ANIM_PACE'],boundary=boundary2,image_path=__location__) #,color=gc.gc['PLAYER2_COLOR'])
+        all_sprites.add(player2)
+        players.add(player2)
 
     timer_bar=timer.Timer(gc.gc['TIMER_POSITION'],(gc.gc['TIMER_DIMENSIONS'][0],gc.gc['TIMER_DIMENSIONS'][1]),gc.gc['TIMER_DURATION'],color=gc.gc['TIMER_COLOR'],orientation='down')
 
@@ -158,50 +165,32 @@ def run(preset_init,settings_dict,quickstart=False):
             burst_i.update()
     
         # Update the player position 
-        for player in [player1,player2]:
+        for player in players:
             if game_state==1:
                 player.update(pressed_keys,asteroids,gc.gc['GRAVITY'])
                 if player.rect.bottom<0:
                     score_player[player.player_side-1]+=1
                     player.reset(wrap=True)
     
-        asteroids_hit=pygame.sprite.spritecollide(player1,asteroids,False,collided=pygame.sprite.collide_mask)
-        if asteroids_hit:
-            if gc.gc['PLAYER_COLLISION_RESET']:
-                player1.reset()
-            else:
-                for asteroid_i in asteroids_hit:
-                    burst_i=go.Burst('Burst',(asteroid_i.position.x,asteroid_i.position.y),pace=1,scale=6,image_path=__location__)
-                    bursts.add(burst_i)
-                    all_sprites.add(burst_i)
-                    asteroid_i.kill()
-                    if not player1.powerup:
-                        player1.update_motion(impulse=[gc.gc['ASTEROID_IMPULSE']*asteroid_i.velocity.x/abs(asteroid_i.velocity.x),-2*player1.velocity.y])
+        for player in players:
+            asteroids_hit=pygame.sprite.spritecollide(player,asteroids,False,collided=pygame.sprite.collide_mask)
+            if asteroids_hit:
+                if gc.gc['PLAYER_COLLISION_RESET']:
+                    player.reset()
+                else:
+                    for asteroid_i in asteroids_hit:
+                        burst_i=go.Burst('Burst',(asteroid_i.position.x,asteroid_i.position.y),pace=1,scale=6,image_path=__location__)
+                        bursts.add(burst_i)
+                        all_sprites.add(burst_i)
+                        asteroid_i.kill()
+                        if not player.powerup:
+                            player.update_motion(impulse=[gc.gc['ASTEROID_HORIZONTAL_IMPULSE']*asteroid_i.velocity.x/abs(asteroid_i.velocity.x),-2*player.velocity.y])
     
-        asteroids_hit=pygame.sprite.spritecollide(player2,asteroids,False,collided=pygame.sprite.collide_mask)
-        if asteroids_hit:
-            if gc.gc['PLAYER_COLLISION_RESET']:
-                player2.reset()
-            else:
-                for asteroid_i in asteroids_hit:
-                    burst_i=go.Burst('Burst',(asteroid_i.position.x,asteroid_i.position.y),pace=1,scale=6,image_path=__location__)
-                    bursts.add(burst_i)
-                    all_sprites.add(burst_i)
-                    asteroid_i.kill()
-                    if not player2.powerup:
-                        player2.update_motion(impulse=[gc.gc['ASTEROID_IMPULSE']*asteroid_i.velocity.x/abs(asteroid_i.velocity.x),-2*player2.velocity.y])
-    
-        canisters_hit=pygame.sprite.spritecollide(player1,canisters,False,collided=pygame.sprite.collide_mask)
-        if canisters_hit:
-            for canister_i in canisters_hit:
-                canister_i.kill(fullkill=True)
-                player1.set_powerup()
-    
-        canisters_hit=pygame.sprite.spritecollide(player2,canisters,False,collided=pygame.sprite.collide_mask)
-        if canisters_hit:
-            for canister_i in canisters_hit:
-                canister_i.kill(fullkill=True)
-                player2.set_powerup()
+            canisters_hit=pygame.sprite.spritecollide(player,canisters,False,collided=pygame.sprite.collide_mask)
+            if canisters_hit:
+                for canister_i in canisters_hit:
+                    canister_i.kill(fullkill=True)
+                    player.set_powerup()
     
         if game_state==1:
             timer_bar.update()
