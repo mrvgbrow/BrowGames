@@ -1,6 +1,7 @@
 #!/c/Users/sp4ce/AppData/Local/Programs/Python/Python310/python
 
 import sys
+import gameutils
 import os
 
 exec_run=False
@@ -13,11 +14,11 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
 import menu
 import presets
+import gameutils
 import settings
 from .import pong_player
 import random
 import math
-import datetime
 from .import pong_ball as ball
 from .import pong_wall as wall
 from .import pong_gameconstants as gc
@@ -25,9 +26,7 @@ from .import pong_gameconstants as gc
 def run(preset_init,settings_dict,quickstart=False):
     # Initialize the game, music, timer, and screen
     __location__=os.path.realpath(os.path.join(os.getcwd(),os.path.dirname(__file__)))
-    pygame.init()
-    pygame.font.init()
-    clock=pygame.time.Clock()
+    clock=gameutils.browgame_init(font=True,clock=True)
     presets_dict=presets.load_presets('Pong')
     settings.set_settings(settings_dict)
     preset_set=preset_init
@@ -80,9 +79,8 @@ def run(preset_init,settings_dict,quickstart=False):
     
         # if any players are using the mouse, grab exclusive input from it and make it invisible
         if player_control=='Mouse': 
-            pygame.event.set_grab(True)
-            pygame.mouse.set_visible(False)
-    
+            gameutils.mouse_init() 
+
         # Create the player instance and add it to the corresponding sprite group
         if player_control != 'None':
             player_o=pong_player.Player(player_x_position,player_color,player_i+1,player_control,side,paddle_type)
@@ -130,22 +128,7 @@ def run(preset_init,settings_dict,quickstart=False):
     
     while running:
     
-        for event in pygame.event.get():
-            # Did the user click the window close button?
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == gc.KEYDOWN:
-                if event.key == gc.K_ESCAPE:   # Esc quits
-                    running = False
-                if event.key == gc.K_p:     # p pauses/unpauses
-                    if pause:
-                        pause=False
-                    else:
-                        pause=True
-                if event.key == gc.K_RIGHTBRACKET:     # ] steps one frame at a time
-                    step=True
-                if event.key == gc.K_r:                # r resets the score
-                    reset=True
+        running,pause,step,reset=gameutils.process_standard_events(running,pause)
     
         # If paused, continuously skip over the game loop (except event processing).
         # If taking one step through the loop, don't pause but unset the step
@@ -153,8 +136,7 @@ def run(preset_init,settings_dict,quickstart=False):
         if pause and not step:
             pygame.time.delay(16)
             continue
-        if step:
-            step=False
+        if step:  step=False
     
         # For each ball, determine the position where the it will intersect with
         # the horizontal positions of player 1 and player 2. This is used by the
@@ -188,12 +170,7 @@ def run(preset_init,settings_dict,quickstart=False):
                 player.update(pressed_keys,mouse_relative,balls)
     
     
-        # Fill the background
-        screen.fill(gc.SCREEN_COLOR)
-    
-        # Render all sprites on the screen
-        for entity in all_sprites:
-            screen.blit(entity.surf,entity.rect)
+        gameutils.render(screen,all_sprites,gc.SCREEN_COLOR)
     
         # Render the score, if requested 
         if not gc.SCORE_HIDE:
@@ -206,14 +183,9 @@ def run(preset_init,settings_dict,quickstart=False):
     
         # Render the clock, if requested
         if not gc.TIME_HIDE:
-            rounded_time=float(int(total_time*100))/100.0
-            time_text=font_message.render(f'Time: {rounded_time}',True,(255,255,255))
-            screen.blit(time_text, (gc.TIME_XPOS,gc.TIME_YPOS))
-    
-    #    debug_string=f'{ball_i.speedx:.1f}'
-        if debug_string != '':
-            debug_text=font_message.render(debug_string,True,(255,255,255))
-            screen.blit(debug_text, (gc.SCREEN_HEIGHT/2,gc.SCREEN_WIDTH/2))
+            gameutils.show_time(total_time,font_message,screen,(gc.TIME_XPOS,gc.TIME_YPOS)) 
+
+        gameutils.show_debug("",font_message,screen,(gc.SCREEN_HEIGHT/2,gc.SCREEN_WIDTH/2))
     
         # Show the trail of the ball, if requested. The trail resets with every point.
         if gc.SHOW_BALL_TRAIL:
@@ -312,16 +284,9 @@ def run(preset_init,settings_dict,quickstart=False):
         pygame.display.flip()
     
         # Move the clock forward by a tick
-        clock.tick(gc.TICK_FRAMERATE)
-        total_time=total_time+1/gc.TICK_FRAMERATE
+        total_time=gameutils.advance_clock(clock,gc.TICK_FRAMERATE,total_time)
     
-    # Print the game time and score to a table to keep track of high scores
-    original_stdout = sys.stdout
-    with open('scores.dat','a') as f:
-        sys.stdout = f
-        print('%s, Player1 (%s): %d,  Player2 (%s): %d,  Game Time: %.2f seconds' % (datetime.datetime.now(),gc.PLAYER1_CONTROL,score[0],gc.PLAYER2_CONTROL,score[1],total_time))
-        sys.stdout=original_stdout
-    
+    gameutils.append_scores('Pong',[gc.PLAYER1_CONTROL,gc.PLAYER2_CONTROL],score,total_time)
     # Stop the sound effects
     pygame.mixer.music.stop()
     return settings_dict

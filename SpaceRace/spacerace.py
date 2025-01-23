@@ -15,6 +15,7 @@ import time
 from . import spacerace_player 
 import random
 import timeit
+import gameutils
 from . import spacerace_asteroid as asteroid
 import background as bg
 import gameobject as go
@@ -24,10 +25,8 @@ def run(preset_init,settings_dict,quickstart=False):
     gc.gc,sdict=gc.make_shortcuts(gc.gc)
     gc.gc=gc.process_game_arguments(sys.argv,gc.gc,sdict)
     
-    pygame.init()
-    pygame.font.init()
+    gameutils.browgame_init(font=True)
     presets_dict=presets.load_presets('SpaceRace')
-    settings.set_settings(settings_dict)
     preset_set=preset_init
     gc.set_preset(presets_dict[preset_set])
     gc.scale_parameters()
@@ -50,10 +49,7 @@ def run(preset_init,settings_dict,quickstart=False):
         gc.set_preset(current_pars)
         gc.scale_parameters()
     
-    if settings.sets['FULLSCREEN_MODE']:
-        screen = pygame.display.set_mode((gc.gc['SCREEN_WIDTH'],gc.gc['SCREEN_HEIGHT']),pygame.FULLSCREEN)
-    else:
-        screen = pygame.display.set_mode((gc.gc['SCREEN_WIDTH'],gc.gc['SCREEN_HEIGHT']))
+    screen=gameutils.set_screen(gc.gc)
     
     # The asteroid wrap horizontally, but with a delay. Defining a larger rectangle for their motion
     # to account for this.
@@ -118,20 +114,7 @@ def run(preset_init,settings_dict,quickstart=False):
     while running:
     
     
-        # Did the user click the window close button?
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT or event.type == ENDGAME:
-                running = False
-            elif event.type == gc.KEYDOWN:
-                if event.key == gc.K_ESCAPE:
-                    running = False
-                if event.key == gc.K_p:
-                    if pause:
-                        pause=False
-                    else:
-                        pause=True
-                if event.key == gc.K_RIGHTBRACKET:
-                    step=True
+        running,pause,step,reset=gameutils.process_standard_events(running,pause,endgame=ENDGAME)
     
         # If paused, continuously skip over the game loop (except event processing).
         # If taking one step through the loop, don't pause but unset the step
@@ -198,12 +181,7 @@ def run(preset_init,settings_dict,quickstart=False):
         if timer_bar.time_left==0 and game_state==1:
             game_state=2
     
-        # Fill the background
-        screen.fill(gc.gc['SCREEN_COLOR'])
-    
-        # Update all sprites
-        for entity in all_sprites:
-            screen.blit(entity.surf,entity.rect)
+        gameutils.render(screen,all_sprites,gc.gc['SCREEN_COLOR'])
     
         if game_state==1:
             screen.blit(timer_bar.surf,timer_bar.rect)
@@ -227,8 +205,7 @@ def run(preset_init,settings_dict,quickstart=False):
     
         # Only run the timer if the game is still going
         if game_state==1 or game_state==3:
-            clock.tick(gc.gc['TICK_FRAMERATE'])
-            total_time=total_time+1/gc.gc['TICK_FRAMERATE']
+            total_time=gameutils.advance_clock(clock,gc.gc['TICK_FRAMERATE'],total_time)
     
         # Game finished
         if game_state==2:

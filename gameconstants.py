@@ -93,6 +93,7 @@ from pygame.locals import (
     K_s,
     K_q,
     K_d,
+    K_r,
     K_w,
     KEYDOWN,
     KEYUP,
