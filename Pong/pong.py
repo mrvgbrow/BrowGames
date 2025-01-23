@@ -32,30 +32,23 @@ def run(preset_init,settings_dict,quickstart=False):
     preset_set=preset_init
     gc.set_preset(presets_dict[preset_set])
     gc.scale_parameters()
-    screen = pygame.display.set_mode((800,600))
     
     
     # Load the menu. Continue reloading the menu until an option is selected that requests
     # the game to load.
     if not quickstart:
-        menu_run=True
-        while menu_run:
-            back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Pong',screen,settings_dict,presets_dict,preset_set,True,True)
-            settings.set_settings(settings_dict)
-            if back_to_main:
-                return settings_dict
-            gc.set_preset(presets_dict[preset_out])
-            preset_set=preset_out
+        back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Pong',settings_dict,presets_dict,preset_set,True,True)
+        if back_to_main:
+            return settings_dict
      
         # Scale the selected game constants and extract them as a dictionary
         gc.set_preset(current_pars)
         gc.scale_parameters()
     current_parameters=gc.get_parameters(list(presets_dict[preset_set].keys()))
     
-    pygame.mixer.music.load(os.path.join(__location__,"ding.mp3"))
     font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE) # A pong-like font. Used in displayed text.
     font_message=pygame.font.Font(None,36) 
-    pygame.mixer.music.set_volume(settings.sets['SOUND_VOLUME'])   # Set the volume.
+    gameutils.init_sound(__location__,["ding.mp3"])
     
     # Initialize the various sprite groups.
     all_sprites = pygame.sprite.Group()
@@ -189,9 +182,7 @@ def run(preset_init,settings_dict,quickstart=False):
     
         # Show the trail of the ball, if requested. The trail resets with every point.
         if gc.SHOW_BALL_TRAIL:
-            for ball_position in ball_position_array:
-                if ball_position[0]>0 and ball_position[1]>0:
-                    pygame.draw.circle(screen, (255,255,255),ball_position,1)
+            gameutils.draw_trail(screen,ball_position_array)
     
         # Show the court center line, if requested.
         if not gc.CENTER_LINE_HIDE:

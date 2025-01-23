@@ -1,5 +1,6 @@
 
 import pygame
+import os
 import settings
 import datetime
 import sys
@@ -69,3 +70,12 @@ def process_standard_events(running,pause,step=False,reset=False,endgame=None):
                 reset=True
     return running,pause,step,reset
 
+def init_sound(path,sound_files):
+    for sound_file in sound_files:
+        pygame.mixer.music.load(os.path.join(path,sound_file))
+    pygame.mixer.music.set_volume(settings.sets['SOUND_VOLUME'])   # Set the volume.
+
+def draw_trail(screen,position_array):
+    for position in position_array:
+        if position[0]>0 and position[1]>0:
+            pygame.draw.circle(screen, (255,255,255),position,1)

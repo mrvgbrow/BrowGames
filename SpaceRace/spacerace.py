@@ -25,25 +25,18 @@ def run(preset_init,settings_dict,quickstart=False):
     gc.gc,sdict=gc.make_shortcuts(gc.gc)
     gc.gc=gc.process_game_arguments(sys.argv,gc.gc,sdict)
     
-    gameutils.browgame_init(font=True)
+    clock=gameutils.browgame_init(font=True,clock=True)
     presets_dict=presets.load_presets('SpaceRace')
     preset_set=preset_init
     gc.set_preset(presets_dict[preset_set])
     gc.scale_parameters()
-    screen = pygame.display.set_mode((800,600))
     
     # Load the menu. Continue reloading the menu until an option is selected that requests
     # the game to load.
     if not quickstart:
-        menu_run=True
-        while menu_run:
-            back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Space Race',screen,settings_dict,presets_dict,preset_set,False,False)
-            settings.set_settings(settings_dict)
-            if back_to_main:
-                return settings_dict
-            if menu_run:
-                gc.set_preset(presets_dict[preset_out])
-            preset_set=preset_out
+        back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Space Race',settings_dict,presets_dict,preset_set,False,False)
+        if back_to_main:
+            return settings_dict
      
         # Scale the selected game constants and extract them as a dictionary
         gc.set_preset(current_pars)
@@ -60,7 +53,6 @@ def run(preset_init,settings_dict,quickstart=False):
     boundary2=bg.Boundary(screen_rect,bounce=[True,False,True,False])
     
     ENDGAME = pygame.USEREVENT + 1
-    clock=pygame.time.Clock()
     font=pygame.font.Font(None,gc.gc['FONT_SIZE'])
     font_pong=pygame.font.Font("pong-score-extended.ttf",gc.gc['FONT_SIZE']) # A pong-like font. Used in displayed text.
     font_end=pygame.font.SysFont('times',gc.gc['FONT_SIZE'])
