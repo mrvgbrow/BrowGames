@@ -229,3 +229,46 @@ class Tracer(pygame.Surface):
                 surfarr[position[0]-self.width:position[0]+self.width,
                         position[1]-self.width:position[1]+self.width]=self.map_rgb(self.color)
 
+class Life_Counter():
+    def __init__(self,position,init_lives,direction,life_size,separation=None,max_lives=None,color=(255,255,255),file=None):
+        self.current_count=init_lives
+        self.direction=direction
+        self.separation=separation if separation else life_size[0]*1.5
+        self.position=position
+        self.max_lives=max_lives
+        self.color=color
+        self.life_size=life_size
+        self.life_markers=[]
+        for i in range(init_lives):
+            life_marker=self.get_marker(i)
+            self.life_markers.append(life_marker)
+
+    def get_marker(self,count):
+        if self.direction=='right':
+            x_pos=self.position[0]+self.life_size[0]/2+self.separation*count
+            y_pos=self.position[1]+self.life_size[1]/2
+        elif self.direction=='left':
+            x_pos=self.position[0]-self.life_size[0]/2-self.separation*count
+            y_pos=self.position[1]+self.life_size[1]/2
+        elif self.direction=='down':
+            x_pos=self.position[0]+self.life_size[0]/2
+            y_pos=self.position[1]+self.life_size[1]/2+self.separation*count
+        else:
+            x_pos=self.position[0]+self.life_size[0]/2
+            y_pos=self.position[1]-self.life_size[1]/2-self.separation*count
+        return ObjectFill((x_pos,y_pos),self.life_size,color=self.color)
+
+    def increment_counter(self):
+        if not self.max_lives or self.current_count<self.max_lives:
+            new_marker=self.get_marker(self.current_count)
+            self.life_markers.append(new_marker)
+            self.current_count+=1
+
+    def decrement_counter(self):
+        if self.current_count>0:
+            self.current_count-=1
+            removed_life=self.life_markers.pop()
+            
+    def blit(self,screen):
+        for marker_i in self.life_markers:
+            screen.blit(marker_i.surf,marker_i.rect)
