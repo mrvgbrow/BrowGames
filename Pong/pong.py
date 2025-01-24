@@ -24,7 +24,7 @@ from .import pong_wall as wall
 from .import pong_gameconstants as gc
 
 def run(preset_init,settings_dict,quickstart=False):
-    # Initialize the game, music, timer, and screen
+    # Initialize the game, timer, and fonts
     __location__=os.path.realpath(os.path.join(os.getcwd(),os.path.dirname(__file__)))
     clock=gameutils.browgame_init(font=True,clock=True)
     presets_dict=presets.load_presets('Pong')

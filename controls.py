@@ -16,6 +16,13 @@ keycons = {
             'left' : gc.K_a,
             'right' : gc.K_d,
             'shoot' : gc.K_LCTRL,
+        },
+        'IJKL' : {
+            'up' : gc.K_i,
+            'down' : gc.K_k, 
+            'left' : gc.K_j,
+            'right' : gc.K_l,
+            'shoot' : gc.K_RCTRL,
         }
 }
 
