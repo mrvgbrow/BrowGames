@@ -13,6 +13,7 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
 from Pong import pong
 from SpaceRace import spacerace
+from QuadraPong import quadrapong
 import menu0
 import settings
 
@@ -48,6 +49,8 @@ while not all_quit:
         settings_dict=pong.run("Pong Soccer",settings_dict,quickstart=quickstart)
     elif game == 'Crazy Foot':
         settings_dict=pong.run("Crazy Foot",settings_dict,quickstart=quickstart)
+    elif game == 'Quadrapong':
+        settings_dict=quadrapong.run("Original",settings_dict,quickstart=quickstart)
 
     if quickstart:
         all_quit=True
