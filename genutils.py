@@ -326,7 +326,10 @@ def coords_to_angle(coordx,coordy):
     return math.atan2(coordy,coordx),(coordx*coordx+coordy*coordy)**0.5
 
 def find_intercept(speedx,speedy,x,y,x0):
-    return y+(x0-x)*speedy/speedx
+    if speedx!=0:
+        return y+(x0-x)*speedy/speedx
+    else:
+        return None
 
 def sign(value):
     if value<0:
@@ -345,4 +348,7 @@ def check_array_coords(array,coords):
 
 def angle_to_atan2_range(angle):
     return math.atan2(math.sin(angle),math.cos(angle))
+
+def find_ballistic(speedx,speedy,x,y,y0,acceleration):
+    return x+(-speedy+(speedy**2+2*acceleration*(y0-y))**0.5)/acceleration*speedx
 
