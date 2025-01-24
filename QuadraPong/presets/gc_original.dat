@@ -1,0 +1,111 @@
+#!/c/Users/sp4ce/AppData/Local/Programs/Python/Python310/python
+
+import pygame
+import math
+
+# General
+SCREEN_HEIGHT=800
+SCREEN_WIDTH=800
+FONT_SIZE=36
+SCREEN_COLOR=(0,0,0)
+SOUND_VOLUME=1
+SCREEN_PAD=0.075
+ORIGINAL_BOUNCE=True
+
+# Timing
+TICK_FRAMERATE=120
+
+# Scoring 
+SCORE_BOUNCE=10
+SCORE_HIDE=False
+
+# Paddle properties
+PLAYER_MOVESPEED=600
+PLAYER1_CONTROL='Computer'
+PLAYER2_CONTROL='Computer'
+PLAYER3_CONTROL='Computer'
+PLAYER4_CONTROL='Computer'
+PADDLE_WIDTH=0.022
+PADDLE_LENGTH=0.067
+PLAYER1_COLOR=(0,150,150)
+PLAYER2_COLOR=(150,150,0)
+PLAYER3_COLOR=(150,0,150)
+PLAYER4_COLOR=(0,0,150)
+PADDLE_WALL_OFFSET=0.05
+PADDLE_CONTROL_FACTOR=0.3
+PADDLE_RADIUS=3.0
+PADDLE_TYPE='normal'
+
+# Ball properties
+BALL_NUMBER=1
+BALL_SPEED=600
+BALL_SPEED_INCREASE=100
+BALL_MAX_SPEED=900
+BALL_SQUARE=True
+SHOW_BALL_TRAIL=True
+BALL_RADIUS=7
+BALL_COLOR=(100,200,100)
+
+# AI Properties
+AI_PADDLE_SHIFT=1.5
+AI_ERROR_DISTANCE=0.8
+AI_RANDOM_ADJUST=0.02
+AI_YSPEED_ERROR_FACTOR=0.0
+
+# Wall properties
+WALL_WIDTH=0.02
+WALL_LENGTH=0.15
+WALL_COLOR=(200,200,200)
+
+# Import pygame.locals for easier access to key coordinates
+# Updated to conform to flake8 and black standards
+from pygame.locals import (
+    RLEACCEL,
+    K_UP,
+    K_DOWN,
+    K_LEFT,
+    K_RIGHT,
+    K_ESCAPE,
+    K_LEFTBRACKET,
+    K_RIGHTBRACKET,
+    KEYDOWN,
+    KEYUP,
+    K_p,
+    K_w,
+    K_r,
+    K_DELETE,
+    K_a,
+    K_d,
+    K_s,
+    K_i,
+    K_j,
+    K_k,
+    K_l,
+    QUIT,
+)
+def scale_parameters():
+    global PLAYER_RADIUS,BALL_SPEED,PLAYER_MOVESTEP,TICK_FRAMERATE,BALL_SPEED_INCREASE,BALL_MAX_SPEED,WALL_WIDTH,SCORE_YPOS,SCREEN_WIDTH,SCREEN_HEIGHT,PADDLE_LIMIT,WALL_LENGTH,PADDLE_LENGTH,PADDLE_WIDTH,SCREEN_PAD
+    PADDLE_LENGTH*=SCREEN_HEIGHT
+    PADDLE_WIDTH*=SCREEN_HEIGHT
+    PLAYER_RADIUS*=PADDLE_WIDTH
+    PLAYER_MOVESTEP=PLAYER_MOVESPEED/TICK_FRAMERATE
+    BALL_SPEED/=TICK_FRAMERATE
+    BALL_SPEED_INCREASE/=TICK_FRAMERATE
+    BALL_MAX_SPEED/=TICK_FRAMERATE
+    WALL_WIDTH*=SCREEN_HEIGHT
+    WALL_LENGTH*=SCREEN_HEIGHT
+    SCREEN_PAD*=SCREEN_HEIGHT
+    PADDLE_WALL_OFFSET*=SCREEN_HEIGHT
+    PADDLE_LIMIT=SCREEN_PAD+WALL_WIDTH
+
+def set_preset(preset_dict):
+    for parameter in preset_dict:
+        globals()[parameter]=preset_dict[parameter]
+
+def get_parameters(parameter_list):
+    pars_dict={}
+    for par in parameter_list:
+       value=globals()[par]
+       pars_dict[par]=value
+    return pars_dict
+
