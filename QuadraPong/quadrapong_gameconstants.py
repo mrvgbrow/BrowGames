@@ -16,7 +16,7 @@ ORIGINAL_BOUNCE=True
 TICK_FRAMERATE=120
 
 # Scoring 
-SCORE_BOUNCE=10
+LIVES_START=5
 SCORE_HIDE=False
 
 # Paddle properties

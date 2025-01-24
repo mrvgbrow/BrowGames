@@ -9,22 +9,24 @@ from . import quadrapong_gameconstants as gc
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self,color,player_side,control):
+    def __init__(self,color,player_side,control,paddle_type):
         super(Player,self).__init__()
+        real_length=min(gc.PADDLE_LENGTH,math.sqrt(gc.PADDLE_RADIUS**2-(gc.PADDLE_RADIUS-2*gc.PADDLE_WIDTH)**2)*2)
         if player_side==2 or player_side==4:
             self.orientation='horizontal'
-            ysize=gc.PADDLE_WIDTH
-            xsize=gc.PADDLE_LENGTH
+            ysize=gc.PADDLE_WIDTH if paddle_type=='normal' else gc.PADDLE_RADIUS
+            xsize=gc.PADDLE_LENGTH if paddle_type=='normal' else real_length
             position=[0.5*gc.SCREEN_WIDTH,math.copysign(1,3-player_side)*gc.PADDLE_WALL_OFFSET+gc.SCREEN_PAD+(player_side-2)/2*(gc.SCREEN_HEIGHT-2*gc.SCREEN_PAD)]
         else:
             self.orientation='vertical'
-            xsize=gc.PADDLE_WIDTH
-            ysize=gc.PADDLE_LENGTH
+            xsize=gc.PADDLE_WIDTH if paddle_type=='normal' else gc.PADDLE_RADIUS
+            ysize=gc.PADDLE_LENGTH if paddle_type=='normal' else real_length
             position=[math.copysign(1,2-player_side)*gc.PADDLE_WALL_OFFSET+gc.SCREEN_PAD+(player_side-1)/2*(gc.SCREEN_WIDTH-2*gc.SCREEN_PAD),0.5*gc.SCREEN_HEIGHT]
         collision_directions=['right','down','left','up']
         self.collision_direction=collision_directions[player_side-1]
+        self.type=paddle_type
         self.surf=pygame.Surface((xsize,ysize))
-        self.surf.fill(color)
+        if paddle_type=='normal': self.surf.fill(color)
         self.control=control
         self.surf.set_colorkey(gc.SCREEN_COLOR)
         self.reset_target()
@@ -35,6 +37,7 @@ class Player(pygame.sprite.Sprite):
                 position[1],
             )
         )
+        if paddle_type=='curved': self.curved_draw(color)
         self.mask=pygame.mask.from_surface(self.surf)
 
     def update(self, pressed_keys):
@@ -74,6 +77,19 @@ class Player(pygame.sprite.Sprite):
         error_distance= gc.PADDLE_LENGTH*gc.AI_ERROR_DISTANCE*(1+gc.AI_YSPEED_ERROR_FACTOR*abs(self.target_ball_obj.speedy)/gc.BALL_MAX_SPEED)
         return error_distance
 
+    def curved_draw(self,color):
+        if self.orientation=='vertical':
+            pygame.draw.circle(self.surf,color,(0,self.surf.get_height()/2),gc.PADDLE_RADIUS)
+            pygame.draw.rect(self.surf,gc.SCREEN_COLOR,(0,0,self.surf.get_width()-2*gc.PADDLE_WIDTH,self.surf.get_height()))
+        else:
+            pygame.draw.circle(self.surf,color,(self.surf.get_width()/2,0),gc.PADDLE_RADIUS)
+            pygame.draw.rect(self.surf,gc.SCREEN_COLOR,(0,0,self.surf.get_width(),self.surf.get_height()-2*gc.PADDLE_WIDTH))
+        if self.player_side==3:
+            self.surf=pygame.transform.flip(self.surf,True,False)
+        elif self.player_side==4:
+            self.surf=pygame.transform.flip(self.surf,False,True)
+        self.mask=pygame.mask.from_surface(self.surf)
+
     def compute_original_angle(self,ballpos,ball_speed):
         location_on_paddle=self.compute_paddle_location(ballpos)
         if self.orientation=='vertical':
@@ -99,7 +115,14 @@ class Player(pygame.sprite.Sprite):
             location_on_paddle=ballpos[1]-self.rect.centery
         else:
             location_on_paddle=ballpos[0]-self.rect.centerx
-        nominal_change=location_on_paddle/gc.PADDLE_LENGTH*math.pi
+        if self.type=='curved':
+            if location_on_paddle>gc.PLAYER_RADIUS:
+                location_on_paddle=gc.PLAYER_RADIUS
+            elif location_on_paddle<-gc.PLAYER_RADIUS:
+                location_on_paddle=-gc.PLAYER_RADIUS
+            nominal_change=2*math.asin(location_on_paddle/gc.PADDLE_RADIUS)
+        else:
+            nominal_change=location_on_paddle/gc.PADDLE_LENGTH*math.pi
         if self.player_side==2 or self.player_side==3:
             nominal_change*=-1
         adjusted_change=nominal_change*gc.PADDLE_CONTROL_FACTOR

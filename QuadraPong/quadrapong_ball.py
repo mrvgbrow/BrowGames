@@ -32,19 +32,19 @@ class Ball(pygame.sprite.Sprite):
 
     def update(self,score):
         player_scored=None
-        if self.rect.bottom <= 0:
+        if self.rect.bottom <= gc.SCREEN_PAD-gc.WALL_WIDTH/2:
             score[1]-=1
             player_scored=1
             self.kill()
-        elif self.rect.right < 0:
+        elif self.rect.right < gc.SCREEN_PAD-gc.WALL_WIDTH/2:
             score[0]-=1
             player_scored=0
             self.kill()
-        elif self.rect.left>gc.SCREEN_WIDTH:
+        elif self.rect.left>gc.SCREEN_WIDTH-gc.SCREEN_PAD+gc.WALL_WIDTH/2:
             score[2]-=1
             player_scored=2
             self.kill()
-        elif self.rect.top > gc.SCREEN_HEIGHT:
+        elif self.rect.top > gc.SCREEN_HEIGHT-gc.SCREEN_PAD+gc.WALL_WIDTH/2:
             score[3]-=1
             player_scored=3
             self.kill()
