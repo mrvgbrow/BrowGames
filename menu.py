@@ -138,24 +138,26 @@ def make_parmenu(parmenu,presets_dict):
   first_widget=[]
   for par in sorted(current_pars):
       value=current_pars[par]
+      par_display=par.replace('_',' ').title()
       if type(value) is bool:
-          widget=parmenu.add.toggle_switch(par,value,onchange=set_input,args=[par],font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
+          widget=parmenu.add.toggle_switch(par_display,value,onchange=set_input,args=[par],font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
       elif type(value) is int:
-          widget=parmenu.add.text_input(par+': ',default=value,onchange=set_input,args=[par],input_type=pygame_menu.locals.INPUT_INT,font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
+          widget=parmenu.add.text_input(par_display+': ',default=value,onchange=set_input,args=[par],input_type=pygame_menu.locals.INPUT_INT,font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
       elif type(value) is float:
-          widget=parmenu.add.text_input(par+': ',default=value,onchange=set_input,args=[par],input_type=pygame_menu.locals.INPUT_FLOAT,font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
+          widget=parmenu.add.text_input(par_display+': ',default=value,onchange=set_input,args=[par],input_type=pygame_menu.locals.INPUT_FLOAT,font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
       elif type(value) is str and '_CONTROL' not in par:
           parvals=presets.get_parameter_values(presets_dict,par)
           input_select_list=[]
           for input_val in parvals:
               input_select_list.append((input_val,input_val))
-          widget=parmenu.add.dropselect(title=par+': ',items=input_select_list,onchange=set_input_drop,args=[par],default=parvals.index(value),font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
+          widget=parmenu.add.dropselect(title=par_display+': ',items=input_select_list,onchange=set_input_drop,args=[par],default=parvals.index(value),font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
       elif type(value) is tuple:
           tmenu=pygame_menu.Menu(par,600,400,theme=pygame_menu.themes.THEME_DEFAULT)
-          widget=parmenu.add.button(par,tmenu,font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
+          widget=parmenu.add.button(par_display,tmenu,font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
           index=0
+          color_set=['Red','Green','Blue','Alpha']
           for subvalue in value:
-              tmenu.add.text_input(par+': ',default=subvalue,onchange=set_input_subvalue,args=[par,index],input_type=pygame_menu.locals.INPUT_INT)
+              tmenu.add.text_input(color_set[index]+': ',default=subvalue,onchange=set_input_subvalue,args=[par,index],input_type=pygame_menu.locals.INPUT_INT)
               index+=1
           tmenu.add.button('OK',pygame_menu.events.BACK)
       if not first_widget:
