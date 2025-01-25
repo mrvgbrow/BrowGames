@@ -20,15 +20,16 @@ from . import spacerace_asteroid as asteroid
 import background as bg
 import gameobject as go
 
-def run(preset_init,settings_dict,quickstart=False):
+def run(current_pars,settings_dict,quickstart=False,default='Original'):
     __location__=os.path.realpath(os.path.join(os.getcwd(),os.path.dirname(__file__)))
     gc.gc,sdict=gc.make_shortcuts(gc.gc)
     gc.gc=gc.process_game_arguments(sys.argv,gc.gc,sdict)
     
     clock=gameutils.browgame_init(font=True,clock=True)
     presets_dict=presets.load_presets('SpaceRace')
-    preset_set=preset_init
-    gc.set_preset(presets_dict[preset_set])
+    if not current_pars:
+        preset_set=default
+        gc.set_preset(presets_dict[preset_set])
     gc.scale_parameters()
     
     # Load the menu. Continue reloading the menu until an option is selected that requests
@@ -36,7 +37,7 @@ def run(preset_init,settings_dict,quickstart=False):
     if not quickstart:
         back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Space Race',settings_dict,presets_dict,preset_set,False,False)
         if back_to_main:
-            return settings_dict
+            return settings_dict,True
      
         # Scale the selected game constants and extract them as a dictionary
         gc.set_preset(current_pars)
@@ -210,5 +211,5 @@ def run(preset_init,settings_dict,quickstart=False):
                     game_message='Draw!'
             pygame.time.set_timer(ENDGAME, 2000,loops=1)
             game_state=0
-    return settings_dict
+    return settings_dict,False
     

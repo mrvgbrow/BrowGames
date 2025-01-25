@@ -23,14 +23,15 @@ from .import pong_ball as ball
 from .import pong_wall as wall
 from .import pong_gameconstants as gc
 
-def run(preset_init,settings_dict,quickstart=False):
+def run(current_pars,settings_dict,quickstart=False,default='Original'):
     # Initialize the game, timer, and fonts
     __location__=os.path.realpath(os.path.join(os.getcwd(),os.path.dirname(__file__)))
     clock=gameutils.browgame_init(font=True,clock=True)
     presets_dict=presets.load_presets('Pong')
     settings.set_settings(settings_dict)
-    preset_set=preset_init
-    gc.set_preset(presets_dict[preset_set])
+    if not current_pars:
+        preset_set=default
+        gc.set_preset(presets_dict[preset_set])
     gc.scale_parameters()
     
     
@@ -39,7 +40,7 @@ def run(preset_init,settings_dict,quickstart=False):
     if not quickstart:
         back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Pong',settings_dict,presets_dict,preset_set,True,True)
         if back_to_main:
-            return settings_dict
+            return settings_dict, True
      
         # Scale the selected game constants and extract them as a dictionary
         gc.set_preset(current_pars)
@@ -48,7 +49,7 @@ def run(preset_init,settings_dict,quickstart=False):
     
     font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE) # A pong-like font. Used in displayed text.
     font_message=pygame.font.Font(None,36) 
-    gameutils.init_sound(__location__,["ding.mp3"])
+    gameutils.init_sound('Sounds',["ding.mp3"])
     
     # Initialize the various sprite groups.
     all_sprites = pygame.sprite.Group()
@@ -282,5 +283,5 @@ def run(preset_init,settings_dict,quickstart=False):
     gameutils.append_scores('Pong',[gc.PLAYER1_CONTROL,gc.PLAYER2_CONTROL],score,total_time)
     # Stop the sound effects
     pygame.mixer.music.stop()
-    return settings_dict
+    return settings_dict, False
     

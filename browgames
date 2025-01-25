@@ -39,19 +39,23 @@ while not all_quit:
         game=sys.argv[1]
         quickstart=True
 
-    if game == 'Pong':
-        settings_dict=pong.run("Original",settings_dict,quickstart=quickstart)
-    elif game == 'Space Race':
-        settings_dict=spacerace.run("Original",settings_dict,quickstart=quickstart)
-    elif game == 'Pong Doubles':
-        settings_dict=pong.run("Doubles",settings_dict,quickstart=quickstart)
-    elif game == 'Pong Soccer':
-        settings_dict=pong.run("Pong Soccer",settings_dict,quickstart=quickstart)
-    elif game == 'Crazy Foot':
-        settings_dict=pong.run("Crazy Foot",settings_dict,quickstart=quickstart)
-    elif game == 'Quadrapong':
-        settings_dict=quadrapong.run("Original",settings_dict,quickstart=quickstart)
+    back_to_main=False
+    while not back_to_main and not all_quit:
+        back_to_main=True
+        pars=None
+        if game == 'Pong':
+            settings_dict,back_to_main=pong.run(pars,settings_dict,quickstart=quickstart,default="Original")
+        elif game == 'Space Race':
+            settings_dict,back_to_main=spacerace.run(pars,settings_dict,quickstart=quickstart,default="Original")
+        elif game == 'Pong Doubles':
+            settings_dict,back_to_main=pong.run(pars,settings_dict,quickstart=quickstart,default="Doubles")
+        elif game == 'Pong Soccer':
+            settings_dict=pong.run(pars,settings_dict,quickstart=quickstart,default="Pong Soccer")
+        elif game == 'Crazy Foot':
+            settings_dict,back_to_main=pong.run(pars,settings_dict,quickstart=quickstart,default="Crazy Foot")
+        elif game == 'Quadrapong':
+            settings_dict,back_to_main=quadrapong.run(pars,settings_dict,quickstart=quickstart,default="Original")
 
-    if quickstart:
-        all_quit=True
+        if quickstart:
+            all_quit=True
  

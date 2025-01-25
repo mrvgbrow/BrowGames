@@ -16,14 +16,15 @@ import gameutils
 import datetime
 from . import quadrapong_gameconstants as gc
 
-def run(preset_init,settings_dict,quickstart=False):
+def run(current_pars,settings_dict,quickstart=False,default='Original'):
     # Initialize the game, timer, and fonts
     __location__=os.path.realpath(os.path.join(os.getcwd(),os.path.dirname(__file__)))
     clock=gameutils.browgame_init(font=True,clock=True)
     presets_dict=presets.load_presets('Quadrapong')
+    if not current_pars:
+        preset_set=default
+        gc.set_preset(presets_dict[preset_set])
     settings.set_settings(settings_dict)
-    preset_set=preset_init
-    gc.set_preset(presets_dict[preset_set])
     gc.scale_parameters()
 
     # Load the menu. Continue reloading the menu until an option is selected that requests
@@ -31,14 +32,14 @@ def run(preset_init,settings_dict,quickstart=False):
     if not quickstart:
         back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Quadrapong',settings_dict,presets_dict,preset_set,True,True)
         if back_to_main:
-            return settings_dict
+            return settings_dict,True
         gc.set_preset(current_pars)
         gc.scale_parameters()
     current_parameters=gc.get_parameters(list(presets_dict[preset_set].keys()))
 
     font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE) # A pong-like font. Used in displayed text.
     font_message=pygame.font.Font(None,36) 
-    gameutils.init_sound(__location__,["ding.mp3"])
+    gameutils.init_sound('Sounds',["ding.mp3"])
     font=pygame.font.Font(None,gc.FONT_SIZE)
 
     if settings.sets['FULLSCREEN_MODE']:
@@ -160,6 +161,7 @@ def run(preset_init,settings_dict,quickstart=False):
                         for player_j in players:
                             if player_j.target_ball==ball_hit.ball_id:
                                 player_j.reset_target()
+                pygame.mixer.music.play(loops=1)
     
         # Check whether any balls are colliding with the walls
         for wall_i in walls:
@@ -182,4 +184,4 @@ def run(preset_init,settings_dict,quickstart=False):
     # Stop the sound effects
     pygame.mixer.music.stop()
     
-    return settings_dict
+    return settings_dict,False
