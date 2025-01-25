@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-added_files = [('pong/ding.mp3','pong'),('*.ttf','.'),('pong/presets/*','pong/presets'),('text/instructions.md','text'),('text/version.md','text'),('game_list.dat','.'),('Pong/*.py','pong'),('SpaceRace/*.py','spacerace'),('settings_default.dat','.'),('*.jpg','.'),('SpaceRace/presets/*.dat','spacerace/presets'),('SpaceRace/sprites/Ship/*','spacerace/sprites/ship'),('SpaceRace/sprites/Asteroid/*','spacerace/sprites/asteroid'),('SpaceRace/sprites/Asteroid_old/*','spacerace/sprites/asteroid_old'),('SpaceRace/sprites/Burst/*','spacerace/sprites/burst'),('SpaceRace/sprites/Canister/*','spacerace/sprites/canister')]
+added_files = [('Sounds/*.mp3','sounds'),('*.ttf','.'),('pong/presets/*','pong/presets'),('text/instructions.md','text'),('text/version.md','text'),('game_list.dat','.'),('Pong/*.py','pong'),('SpaceRace/*.py','spacerace'),('settings_default.dat','.'),('*.jpg','.'),('SpaceRace/presets/*.dat','spacerace/presets'),('SpaceRace/sprites/Ship/*','spacerace/sprites/ship'),('SpaceRace/sprites/Asteroid/*','spacerace/sprites/asteroid'),('SpaceRace/sprites/Asteroid_old/*','spacerace/sprites/asteroid_old'),('SpaceRace/sprites/Burst/*','spacerace/sprites/burst'),('SpaceRace/sprites/Canister/*','spacerace/sprites/canister'),('QuadraPong/presets/*.dat','quadrapong/presets'),('Quadrapong/*.py','quadrapong')]
 paths=['Pong']
 
 a = Analysis(

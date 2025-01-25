@@ -51,6 +51,7 @@ When you load BrowGames, you will  be greeted by the main menu
 <li>Scales - The sizes of game objects will often (but not always) be specified as a scale, which represents a multiplicative scaling to the native sprite size. Integer values of these parameters will usually produce better looking sprites.</li>
 <li>Tick Framerate - Frames per second.</li>
 <li>Player [1-4] Control - The controls for player [1-4]. Can be "Arrows" (the arrow keys on the keyboard), "WASD" or "IJKL" (the corresponding letters on the keyboard), "Computer" for automatic control, or "None". When available, the "None" option removes the player from the game.</li>
+<li>Show End Message - When set to On, a message will display at the end of the game indicating who won.</li>
 </ol>
 <h2>Pong</h2>
 <p>The BrowGames version of Pong is actually multiple games in one program. Because many of the ball and paddle games that appeared in arcades in the early '70s (e.g., Pong, Pong Doubles, Pong Soccer) were so similar, I can reproduce them by simply altering the game parameters of the original <i>Pong</i>.</p>
@@ -136,3 +137,18 @@ When you load BrowGames, you will  be greeted by the main menu
 <li>Canister Fraction - The fraction of the asteroid field that is randomly replaced by canisters, between 0 and 1.</li>
 </ul>
 
+<h2>Quadrapong</h2>
+<p>The BrowGames version of Quadrapong is a distinct program from the other Pong variants because of the significant differences in the game geometry. </p>
+<p>Despite that fact, many of the parameters in Quadrapong have the same meaning as in Pong, so check that section if a parameter is not listed here.</p>
+<h3>Presets</h3>
+<ul>
+<li>Standard - The standard game configuration.</li>
+</ul>
+<h3>Parameter Descriptions</h3>
+
+<ul>
+<li>Screen Pad - The distance of the walls from the edge of the screen, as a fraction of the screen height.</li>
+<li>Lives Start - The initial number of lives that each player has. When these lives expire, the player is removed from the game.</li>
+<li>Paddle Wall Offset - The offset between the paddle and the wall, as a fraction of the screen height.</li>
+<li>Wall Length - The distance from the corner of a wall to the start of a player goal, as a fraction of the screen height.</li>
+</ul>

@@ -1,3 +1,30 @@
+<h1>Version 1.1</h1>
+
+<p>BrowGames is a collection of customizable classic games, all coded from scratch in Python. See The Retrogame Deconstruction Zone (https://www.retrogamedeconstructionzone.com) for details.</p>
+
+<h2>New Features</h2>
+
+<ul>
+<li>Added Quadrapong as a playable game.</li>
+<li>Space Race: Can specify a revive time for the ship after it's hit by an asteroid.</li>
+<li>Space Race: Can optionally turn off the end-game message.</li>
+<li>Pong: Can optionally turn off the end-game message.</li>
+</ul>
+<h2>Bug Fixes</h2>
+<ul>
+<li>Space Race: "Juiced Up" had the timer duration set too low, increased to one minute.</li>
+</ul>
+
+<h2>Improvements</h2>
+<ul>
+<li>Game parameters menus no longer display underscores in the parameter names.</li>
+<li>After a game is finished, return to the game main menu rather than the main menu. Also, remembers the game parameters that were set during the last play.</li>
+<li>X button in main menu closes the program. </li>
+<li>X button in game menu returns to main menu. </li>
+<li>Color submenus in game parameters menu are labelled with appropriate color (red, green, blue, or alpha).</li>
+<li>Space Race: Improved tuning of "Original" preset to more closely resemble the original.</li>
+</ul>
+
 <h1>Version 1.0</h1>
 
 <p>BrowGames is a collection of customizable classic games, all coded from scratch in Python. The original versions of most of these games are not playable in emulators because they had no CPU. In addition, BrowGames gives you the freedom to manipulate basic game parameters to see how it changes the gameplay.</p>

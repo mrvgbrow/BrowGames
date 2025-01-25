@@ -1,5 +1,6 @@
-<p>BrowGames is a collection of customizable classic games, all coded from scratch in Python. The original versions of most of these games are not playable in emulators because they had no CPU. In addition, BrowGames gives you the freedom to manipulate basic game parameters to see how it changes the gameplay.</p>
-By default, BrowGames will default to a parameter set that is very similar to the original game, but many other presets are available to experiment with. For historical context on the games included here, as well as details about their implementation, see The Retrogame Deconstruction Zone (https://www.retrogamedeconstructionzone.com).</p>
+BrowGames is a collection of customizable classic games, all coded from scratch in Python. The original versions of most of these games are not playable in emulators because they had no CPU. In addition, BrowGames gives you the freedom to manipulate basic game parameters to see how it changes the gameplay.
+
+By default, BrowGames will default to a parameter set that is very similar to the original game, but many other presets are available to experiment with. For historical context on the games included here, as well as details about their implementation, see The Retrogame Deconstruction Zone (https://www.retrogamedeconstructionzone.com).
 
 If you wish to run the program from the source code using a Python interpreter, you will need pygame and pygame_menu.
 
