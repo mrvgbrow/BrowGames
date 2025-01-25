@@ -9,7 +9,7 @@ if getattr(sys,'frozen', False):
 
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide' 
-#os.environ['SDL_VIDEO_WINDOW_POS']="%d,%d" % (0,0)
+os.environ['SDL_VIDEO_CENTERED']='1'
 import pygame
 from Pong import pong
 from SpaceRace import spacerace
