@@ -23,6 +23,7 @@ class PlayerShip(go.GameObject):
         self.init_position=position
         super(PlayerShip,self).__init__(sprite_name,position,color=color,scale=scale,pace=pace,boundary=boundary,image_path=image_path,collidecount=collidecount)
         self.add_sequences()
+        self.finish_collide()
         self.power_counter=0
         self.animate=gc.gc['PLAYER_ANIMATE']
         self.control=control

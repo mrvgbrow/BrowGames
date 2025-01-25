@@ -235,6 +235,10 @@ class GameObject(pygame.sprite.Sprite):
         if self.ticker_dict and 'Collide' in self.ticker_dict:
             self.ticker_dict['Collide'].reset()
 
+    def finish_collide(self):
+        if self.ticker_dict and 'Collide' in self.ticker_dict:
+            self.ticker_dict['Collide'].finish()
+
     def check_collide_counter(self):
         if self.ticker_dict:
             if 'Collide' in self.ticker_dict:
