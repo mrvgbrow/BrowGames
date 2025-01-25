@@ -7,17 +7,28 @@ import pygame
 button_color=(255,229,180)
 button_text=(25,25,25)
 
-def run_menu(title,settings_dict,presets_dict,preset_default,fourplayers,mouse_allowed):
-  global menu_run,current_pars,current_settings,back_to_main
+def run_menu(title,settings_dict,presets_dict,preset_default,fourplayers,mouse_allowed,init_pars=None):
+  global menu_run,current_settings,back_to_main,current_pars
   font_size=24
   screen = pygame.display.set_mode((800,600))
   menu_run=True
+  if not init_pars:
+      preset_selected=preset_default
+  else:
+      preset_selected=None
+  def play_selected():
+      global back_to_main
+      back_to_main=False
+      menu.close()
   while menu_run:
       menu_run=False
-      back_to_main=False
+      back_to_main=True
       browtheme=pygame_menu.Theme(background_color=(255,255,255,255), title_font_shadow=True,title_background_color=(50,0,100,255),selection_color=(25,25,180,255))
       menu=pygame_menu.Menu(title,800,600,theme=browtheme,onclose=pygame_menu.events.CLOSE)
-      current_pars=presets_dict[preset_default]
+      if preset_selected:
+          current_pars=presets_dict[preset_selected]
+      else:
+          current_pars=init_pars
       n_parameters=len(current_pars.keys())
       n_rows=int(n_parameters/2)+2
       current_settings=settings_dict
@@ -26,7 +37,7 @@ def run_menu(title,settings_dict,presets_dict,preset_default,fourplayers,mouse_a
       parmenu=pygame_menu.Menu('Game Parameters',800,600,theme=browtheme,columns=2,rows=n_rows)
       pmenu=pygame_menu.Menu('Presets',800,600,theme=browtheme,onclose=pygame_menu.events.CLOSE)
       spmenu=pygame_menu.Menu('Save Preset',800,600,theme=browtheme)
-      menu.add.button('Play with Current Settings',pygame_menu.events.CLOSE,font_size=font_size)
+      menu.add.button('Play with Current Settings',play_selected,font_size=font_size)
       menu.add.button('Presets',pmenu,font_size=font_size)
       menu.add.button('Settings',smenu,font_size=font_size)
       menu.add.button('Game Parameters',parmenu,font_size=font_size)
@@ -41,7 +52,8 @@ def run_menu(title,settings_dict,presets_dict,preset_default,fourplayers,mouse_a
       menu.add.label('',font_size=font_size)
       add_control_menu(menu,fourplayers,mouse_allowed)
       menu.add.label('',font_size=font_size)
-      preset_input=menu.add.label('Loaded preset: '+preset_default,font_size=font_size)
+      preset_displayed=preset_selected if preset_selected else 'Custom'
+      preset_input=menu.add.label('Loaded preset: '+preset_displayed,font_size=font_size)
 #  make_amenu(amenu)
       make_parmenu(parmenu,presets_dict)
       make_smenu(smenu)
@@ -49,7 +61,7 @@ def run_menu(title,settings_dict,presets_dict,preset_default,fourplayers,mouse_a
       make_spmenu(spmenu)
       menu.mainloop(screen)
       settings.set_settings(current_settings)
-      preset_default=preset_input.get_title()[15:]
+      preset_selected=preset_input.get_title()[15:]
       if back_to_main:
           break
   return back_to_main,menu_run,preset_input.get_title()[15:],current_pars
@@ -88,9 +100,10 @@ def make_pmenu(pmenu,presets_dict,preset_input):
   global button_color, button_text
   font_size=24
   def select_preset(widget=None):
-      global menu_run
+      global menu_run, back_to_main
       preset_input.set_title('Loaded Preset: '+widget.get_title())
       menu_run=True
+      back_to_main=False
       pmenu.close()
   for preset_key in sorted(list(presets_dict.keys())):
       preset_name=preset_key

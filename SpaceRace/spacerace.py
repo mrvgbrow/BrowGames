@@ -30,14 +30,17 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
     if not current_pars:
         preset_set=default
         gc.set_preset(presets_dict[preset_set])
-    gc.scale_parameters()
+        gc.scale_parameters()
+    else:
+        gc.set_preset(current_pars)
+        preset_set=None
     
     # Load the menu. Continue reloading the menu until an option is selected that requests
     # the game to load.
     if not quickstart:
-        back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Space Race',settings_dict,presets_dict,preset_set,False,False)
+        back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Space Race',settings_dict,presets_dict,preset_set,False,False,init_pars=current_pars)
         if back_to_main:
-            return settings_dict,True
+            return settings_dict,True,current_pars
      
         # Scale the selected game constants and extract them as a dictionary
         gc.set_preset(current_pars)
@@ -211,5 +214,5 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
                     game_message='Draw!'
             pygame.time.set_timer(ENDGAME, 2000,loops=1)
             game_state=0
-    return settings_dict,False
+    return settings_dict,False,current_pars
     

@@ -2,6 +2,7 @@
 
 import pygame
 import random
+import settings 
 import controls as ctrl
 import genutils
 import math
@@ -40,7 +41,7 @@ class Player(pygame.sprite.Sprite):
         if paddle_type=='curved': self.curved_draw(color)
         self.mask=pygame.mask.from_surface(self.surf)
 
-    def update(self, pressed_keys):
+    def update(self, pressed_keys,mouse_relative):
         if self.control == 'Computer':
             if self.target>0:
                 if random.random()<gc.AI_RANDOM_ADJUST:
@@ -53,6 +54,11 @@ class Player(pygame.sprite.Sprite):
                     direction=self.target_position-self.rect.centerx
                     if abs(direction) > gc.PLAYER_MOVESTEP:
                         self.rect.move_ip(genutils.sign(direction)*gc.PLAYER_MOVESTEP,0)
+        elif self.control == 'Mouse':
+            if self.orientation=='vertical':
+                self.rect.move_ip(0,mouse_relative[1]*settings.sets['MOUSE_SENSITIVITY'])
+            else:
+                self.rect.move_ip(mouse_relative[1]*settings.sets['MOUSE_SENSITIVITY'],0)
         elif pressed_keys[ctrl.keycons[self.control]['up']]:
             if self.orientation=='vertical': self.rect.move_ip(0,-gc.PLAYER_MOVESTEP)
         elif pressed_keys[ctrl.keycons[self.control]['down']]:
@@ -74,7 +80,7 @@ class Player(pygame.sprite.Sprite):
                 self.rect.right=gc.SCREEN_WIDTH-gc.PADDLE_LIMIT
 
     def compute_error_distance(self):
-        error_distance= gc.PADDLE_LENGTH*gc.AI_ERROR_DISTANCE*(1+gc.AI_YSPEED_ERROR_FACTOR*abs(self.target_ball_obj.speedy)/gc.BALL_MAX_SPEED)
+        error_distance= gc.PADDLE_LENGTH*gc.AI_ERROR_DISTANCE*(1+gc.AI_SPEED_ERROR_FACTOR*abs(self.target_ball_obj.base_speed)/gc.BALL_MAX_SPEED)
         return error_distance
 
     def curved_draw(self,color):
@@ -149,6 +155,8 @@ class Player(pygame.sprite.Sprite):
                     ball_distance=gc.SCREEN_HEIGHT
                     target=-1000
                 player_distance=abs(self.rect.centerx-target)/gc.PLAYER_MOVESTEP
+            if gc.AI_TRY_ALL:
+                player_distance=0.0
             if player_distance<ball_distance and target>gc.PADDLE_LIMIT and target<gc.SCREEN_HEIGHT-gc.PADDLE_LIMIT and ball_distance>0:
                 if (abs(target-self.target)>gc.PADDLE_LENGTH/8 or self.target==-1) and ball_distance<ball_choice[0]:
                     ball_choice=[ball_distance,ball_i,target]

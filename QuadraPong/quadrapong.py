@@ -24,19 +24,22 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
     if not current_pars:
         preset_set=default
         gc.set_preset(presets_dict[preset_set])
+        gc.scale_parameters()
+    else:
+        gc.set_preset(current_pars)
+        preset_set=None
     settings.set_settings(settings_dict)
-    gc.scale_parameters()
 
     # Load the menu. Continue reloading the menu until an option is selected that requests
     # the game to load.
     if not quickstart:
-        back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Quadrapong',settings_dict,presets_dict,preset_set,True,True)
+        back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Quadrapong',settings_dict,presets_dict,preset_set,True,True,init_pars=current_pars)
         if back_to_main:
-            return settings_dict,True
+            return settings_dict,True,current_pars
         gc.set_preset(current_pars)
         gc.scale_parameters()
-    current_parameters=gc.get_parameters(list(presets_dict[preset_set].keys()))
 
+    current_parameters=gc.get_parameters(list(current_pars.keys()))
     font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE) # A pong-like font. Used in displayed text.
     font_message=pygame.font.Font(None,36) 
     gameutils.init_sound('Sounds',["ding.mp3"])
@@ -52,12 +55,14 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
     players=[]
     all_sprites = pygame.sprite.Group()
     players = pygame.sprite.Group()
-    player1=player.Player(gc.PLAYER1_COLOR,1,gc.PLAYER1_CONTROL,gc.PADDLE_TYPE)
-    player2=player.Player(gc.PLAYER2_COLOR,2,gc.PLAYER2_CONTROL,gc.PADDLE_TYPE)
-    player3=player.Player(gc.PLAYER3_COLOR,3,gc.PLAYER3_CONTROL,gc.PADDLE_TYPE)
-    player4=player.Player(gc.PLAYER4_COLOR,4,gc.PLAYER4_CONTROL,gc.PADDLE_TYPE)
-    all_sprites.add(player1,player2,player3,player4)
-    players.add(player1,player2,player3,player4)
+    for player_i in range(4):
+        player_control=current_parameters['PLAYER'+str(player_i+1)+'_CONTROL']
+        player_color=current_parameters['PLAYER'+str(player_i+1)+'_COLOR']
+        if player_control=='Mouse':
+            gameutils.mouse_init()
+        player_obj=player.Player(player_color,player_i+1,player_control,gc.PADDLE_TYPE)
+        all_sprites.add(player_obj)
+        players.add(player_obj)
 
     life_counter_bottom=bg.Life_Counter((0.8*gc.SCREEN_WIDTH,gc.SCREEN_WIDTH-gc.SCREEN_PAD/2),gc.LIVES_START,'right',(15,15))
     life_counter_left=bg.Life_Counter((gc.SCREEN_PAD/2,0.8*gc.SCREEN_HEIGHT),gc.LIVES_START,'up',(15,15))
@@ -109,6 +114,7 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
             step=False
     
         pressed_keys = pygame.key.get_pressed()
+        mouse_relative = pygame.mouse.get_rel()
     
         # Update the ball positions
         for ball_i in balls:
@@ -135,7 +141,7 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
 
         # Only update the AI position when the ball is moving towards it
         for player_i in players:
-            player_i.update(pressed_keys)
+            player_i.update(pressed_keys,mouse_relative)
     
         gameutils.render(screen,all_sprites,gc.SCREEN_COLOR)
 
@@ -184,4 +190,4 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
     # Stop the sound effects
     pygame.mixer.music.stop()
     
-    return settings_dict,False
+    return settings_dict,False,current_pars

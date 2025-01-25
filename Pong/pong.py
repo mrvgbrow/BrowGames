@@ -32,21 +32,24 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
     if not current_pars:
         preset_set=default
         gc.set_preset(presets_dict[preset_set])
-    gc.scale_parameters()
+        gc.scale_parameters()
+    else:
+        gc.set_preset(current_pars)
+        preset_set=None
     
     
     # Load the menu. Continue reloading the menu until an option is selected that requests
     # the game to load.
     if not quickstart:
-        back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Pong',settings_dict,presets_dict,preset_set,True,True)
+        back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Pong',settings_dict,presets_dict,preset_set,True,True,init_pars=current_pars)
         if back_to_main:
-            return settings_dict, True
+            return settings_dict,True,current_pars
      
         # Scale the selected game constants and extract them as a dictionary
         gc.set_preset(current_pars)
         gc.scale_parameters()
-    current_parameters=gc.get_parameters(list(presets_dict[preset_set].keys()))
     
+    current_parameters=gc.get_parameters(list(current_pars.keys()))
     font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE) # A pong-like font. Used in displayed text.
     font_message=pygame.font.Font(None,36) 
     gameutils.init_sound('Sounds',["ding.mp3"])
@@ -283,5 +286,5 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
     gameutils.append_scores('Pong',[gc.PLAYER1_CONTROL,gc.PLAYER2_CONTROL],score,total_time)
     # Stop the sound effects
     pygame.mixer.music.stop()
-    return settings_dict, False
+    return settings_dict,False,current_pars
     

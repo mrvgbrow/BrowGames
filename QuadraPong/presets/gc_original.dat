@@ -47,9 +47,10 @@ BALL_RADIUS=7
 BALL_COLOR=(100,200,100)
 
 # AI Properties
-AI_ERROR_DISTANCE=1.8
+AI_ERROR_DISTANCE=0.5
 AI_RANDOM_ADJUST=0.02
-AI_YSPEED_ERROR_FACTOR=0.0
+AI_SPEED_ERROR_FACTOR=0.5
+AI_TRY_ALL=True
 
 # Wall properties
 WALL_WIDTH=0.02
@@ -107,4 +108,3 @@ def get_parameters(parameter_list):
        value=globals()[par]
        pars_dict[par]=value
     return pars_dict
-
