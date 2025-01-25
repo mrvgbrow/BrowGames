@@ -26,6 +26,7 @@ class GameObject(pygame.sprite.Sprite):
             if default_index>1:
                 default_sequence+=str(default_index)
         self.controller=controller
+        self.invisible=False
         self.default_sequence=default_sequence
         self.tie=tie
         self.key_mode=key_mode

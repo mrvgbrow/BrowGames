@@ -45,7 +45,8 @@ def show_time(game_time,font,screen,position):
 def render(screen,all_sprites,screen_color):
     screen.fill(screen_color)
     for entity in all_sprites:
-        screen.blit(entity.surf,entity.rect)
+        if not hasattr(entity,'invisible') or not entity.invisible:
+            screen.blit(entity.surf,entity.rect)
 
 def advance_clock(clock,framerate,game_time):
     clock.tick(framerate)
