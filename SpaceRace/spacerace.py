@@ -67,11 +67,11 @@ def run(preset_init,settings_dict,quickstart=False):
 
     
     if gc.gc['PLAYER1_CONTROL']!='None':
-        player1=spacerace_player.PlayerShip('Ship',(gc.gc['PLAYER1_X_POSITION'],gc.gc['PLAYER_Y_START']),scale=gc.gc['PLAYER_SCALE'],control=gc.gc['PLAYER1_CONTROL'],move_speed=gc.gc['PLAYER_SPEED'],player_side=1,pace=gc.gc['PLAYER_ANIM_PACE'],boundary=boundary2,image_path=__location__) #,color=gc.gc['PLAYER1_COLOR'])
+        player1=spacerace_player.PlayerShip('Ship',(gc.gc['PLAYER1_X_POSITION'],gc.gc['PLAYER_Y_START']),scale=gc.gc['PLAYER_SCALE'],control=gc.gc['PLAYER1_CONTROL'],move_speed=gc.gc['PLAYER_SPEED'],player_side=1,pace=gc.gc['PLAYER_ANIM_PACE'],boundary=boundary2,image_path=__location__,collidecount=gc.gc['PLAYER_REVIVE_TIME']) #,color=gc.gc['PLAYER1_COLOR'])
         all_sprites.add(player1)
         players.add(player1)
     if gc.gc['PLAYER2_CONTROL']!='None':
-        player2=spacerace_player.PlayerShip('Ship',(gc.gc['PLAYER2_X_POSITION'],gc.gc['PLAYER_Y_START']),scale=gc.gc['PLAYER_SCALE'],control=gc.gc['PLAYER2_CONTROL'],move_speed=gc.gc['PLAYER_SPEED'],player_side=2,pace=gc.gc['PLAYER_ANIM_PACE'],boundary=boundary2,image_path=__location__) #,color=gc.gc['PLAYER2_COLOR'])
+        player2=spacerace_player.PlayerShip('Ship',(gc.gc['PLAYER2_X_POSITION'],gc.gc['PLAYER_Y_START']),scale=gc.gc['PLAYER_SCALE'],control=gc.gc['PLAYER2_CONTROL'],move_speed=gc.gc['PLAYER_SPEED'],player_side=2,pace=gc.gc['PLAYER_ANIM_PACE'],boundary=boundary2,image_path=__location__,collidecount=gc.gc['PLAYER_REVIVE_TIME']) #,color=gc.gc['PLAYER2_COLOR'])
         all_sprites.add(player2)
         players.add(player2)
 
@@ -143,7 +143,7 @@ def run(preset_init,settings_dict,quickstart=False):
         for player in players:
             if game_state==1:
                 player.update(pressed_keys,asteroids,gc.gc['GRAVITY'])
-                if player.rect.bottom<0:
+                if player.rect.bottom<0 and player.check_collide_counter():
                     score_player[player.player_side-1]+=1
                     player.reset(wrap=True)
     
@@ -201,12 +201,13 @@ def run(preset_init,settings_dict,quickstart=False):
     
         # Game finished
         if game_state==2:
-            if score_player[0]>score_player[1]:
-                game_message='Player 1 wins!'
-            elif score_player[1]>score_player[0]:
-                game_message='Player 2 wins!'
-            else:
-                game_message='Draw!'
+            if gc.gc['SHOW_END_MESSAGE']:
+                if score_player[0]>score_player[1]:
+                    game_message='Player 1 wins!'
+                elif score_player[1]>score_player[0]:
+                    game_message='Player 2 wins!'
+                else:
+                    game_message='Draw!'
             pygame.time.set_timer(ENDGAME, 2000,loops=1)
             game_state=0
     return settings_dict

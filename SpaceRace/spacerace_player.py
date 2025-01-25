@@ -2,6 +2,7 @@
 
 import pygame
 import os
+import random
 from . import spacerace_gameconstants as gc
 import settings
 import gameobject as go
@@ -18,9 +19,9 @@ def decide_move(sprite_move,sprites_avoid,movestep,nsteps=1):
     return True
 
 class PlayerShip(go.GameObject):
-    def __init__(self,sprite_name,position,move_speed=0,control='Computer',player_side=1,color=None,scale=None,pace=None,boundary=None,image_path=''):
+    def __init__(self,sprite_name,position,move_speed=0,control='Computer',player_side=1,color=None,scale=None,pace=None,boundary=None,image_path='',collidecount=None):
         self.init_position=position
-        super(PlayerShip,self).__init__(sprite_name,position,color=color,scale=scale,pace=pace,boundary=boundary,image_path=image_path)
+        super(PlayerShip,self).__init__(sprite_name,position,color=color,scale=scale,pace=pace,boundary=boundary,image_path=image_path,collidecount=collidecount)
         self.add_sequences()
         self.power_counter=0
         self.animate=gc.gc['PLAYER_ANIMATE']
@@ -30,6 +31,9 @@ class PlayerShip(go.GameObject):
         self.powerup=False
 
     def update(self,pressed_keys,asteroids,gravity):
+        super(PlayerShip,self).update_tickers()
+        if not super(PlayerShip,self).check_collide_counter(): return
+        self.invisible=False
         if not self.sequence.update():
             if self.dead:
                 pygame.sprite.Sprite.kill(self)
@@ -98,6 +102,8 @@ class PlayerShip(go.GameObject):
         self.velocity.y=0
         self.velocity.x=0
         self.set_powerup(power=False)
+        super(PlayerShip,self).reset_collide()
+        self.invisible=True
 
     def set_powerup(self,power=True):
         if power and self.powerup:
