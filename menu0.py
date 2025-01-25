@@ -12,7 +12,7 @@ def run_menu(title,screen,settings_dict):
   menu_run=False
   all_quit=False
   browtheme=pygame_menu.Theme(background_color=(255,255,255,255), title_font_shadow=True,title_background_color=(50,0,100,255),selection_color=(25,25,180,255),widget_font_color=(25,25,25,255))
-  menu=pygame_menu.Menu(title,800,600,theme=browtheme,onclose=pygame_menu.events.CLOSE)
+  menu=pygame_menu.Menu(title,800,600,theme=browtheme,onclose=pygame_menu.events.EXIT)
   current_sets=settings_dict
   gmenu=pygame_menu.Menu('Game List',800,600,theme=browtheme,onclose=pygame_menu.events.CLOSE)
   amenu=pygame_menu.Menu('About',800,600,theme=browtheme)
