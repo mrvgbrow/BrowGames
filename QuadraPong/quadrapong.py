@@ -40,10 +40,9 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
         gc.scale_parameters()
 
     current_parameters=gc.get_parameters(list(current_pars.keys()))
-    font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE) # A pong-like font. Used in displayed text.
+#    font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE) # A pong-like font. Used in displayed text.
     font_message=pygame.font.Font(None,36) 
     gameutils.init_sound('Sounds',["ding.mp3"])
-    font=pygame.font.Font(None,gc.FONT_SIZE)
 
     if settings.sets['FULLSCREEN_MODE']:
         screen = pygame.display.set_mode([gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT],pygame.FULLSCREEN)
@@ -53,10 +52,12 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
     # Create the player and ball sprites, add them to sprite groups for 
     # ease of processing.
     players=[]
+    scores=[gc.LIVES_START]*4
     all_sprites = pygame.sprite.Group()
     players = pygame.sprite.Group()
     for player_i in range(4):
         player_control=current_parameters['PLAYER'+str(player_i+1)+'_CONTROL']
+        if player_control == "None": scores[player_i]=0
         player_color=current_parameters['PLAYER'+str(player_i+1)+'_COLOR']
         if player_control=='Mouse':
             gameutils.mouse_init()
@@ -86,9 +87,9 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
     # Initialize variables
     running = True    # Flag indicating when to stop the game
     total_time=0      
-    scores=[gc.LIVES_START]*4
     alive=[True,True,True,True]
     game_state=0
+    ball_position_array=[]
     pause=False
     step=False
     
@@ -121,6 +122,7 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
             scored=ball_i.update(scores)
             if scored!=None: 
                 life_counters[scored].decrement_counter()
+            ball_position_array.append((ball_i.x,ball_i.y))
 
         for iscore, score in enumerate(scores):
             if score<=0 and alive[iscore]:
@@ -145,8 +147,12 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
     
         gameutils.render(screen,all_sprites,gc.SCREEN_COLOR)
 
-        for life_counter in life_counters:
-            life_counter.blit(screen)
+        if not gc.SCORE_HIDE:
+            for life_counter in life_counters:
+                life_counter.blit(screen)
+
+        if gc.SHOW_BALL_TRAIL:
+            gameutils.draw_trail(screen,ball_position_array)
     
         # Check whether any balls are colliding with the players.
         # If so, compute the bounce angle and change the active player
@@ -183,6 +189,7 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
         total_time=gameutils.advance_clock(clock,gc.TICK_FRAMERATE,total_time)
     
         if not balls:
+            ball_position_array=[]
             game_state=0
     
     gameutils.append_scores('Quadrapong',[gc.PLAYER1_CONTROL,gc.PLAYER2_CONTROL],scores,total_time)
