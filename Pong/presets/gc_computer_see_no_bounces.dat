@@ -3,6 +3,7 @@
 import pygame
 import math
 
+SHOW_END_MESSAGE=True
 SCREEN_WIDTH=800
 SCREEN_HEIGHT=600
 PLAYER4_PADDLE_TYPE='normal'

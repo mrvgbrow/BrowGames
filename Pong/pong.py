@@ -147,7 +147,8 @@ def run(preset_init,settings_dict,quickstart=False):
                     player.target=None
             for side in range(2):
                 if score[side]>=gc.SCORE_MAX:
-                    win_text=font_message.render('Player '+str(side+1)+' Wins!',True,(255,255,255))
+                    if gc.SHOW_END_MESSAGE:
+                        win_text=font_message.render('Player '+str(side+1)+' Wins!',True,(255,255,255))
                     game_state=1
                     time_ref_1=total_time
             ball_position_array.append((ball_i.x,ball_i.y))
@@ -261,7 +262,8 @@ def run(preset_init,settings_dict,quickstart=False):
     
         # If the game has been won by one of the players, display the end game message.. After 3 seconds, the game will close.
         if game_state==1:
-            screen.blit(win_text, (gc.SCREEN_WIDTH/2-win_text.get_width()/2,gc.SCREEN_HEIGHT*0.53-win_text.get_height()/2))
+            if gc.SHOW_END_MESSAGE:
+                screen.blit(win_text, (gc.SCREEN_WIDTH/2-win_text.get_width()/2,gc.SCREEN_HEIGHT*0.53-win_text.get_height()/2))
             if total_time-time_ref_1>3:
                 running=False
     
