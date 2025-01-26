@@ -152,6 +152,7 @@ def make_parmenu(parmenu,presets_dict):
   for par in sorted(current_pars):
       value=current_pars[par]
       par_display=par.replace('_',' ').title()
+      par_display=par_display.replace('Ai ','AI ')
       if type(value) is bool:
           widget=parmenu.add.toggle_switch(par_display,value,onchange=set_input,args=[par],font_size=font_size,align=pygame_menu.locals.ALIGN_LEFT)
       elif type(value) is int:
