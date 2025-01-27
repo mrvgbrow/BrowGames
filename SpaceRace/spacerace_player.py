@@ -5,18 +5,11 @@ import os
 import random
 from . import spacerace_gameconstants as gc
 import settings
+import aifunctions
+import spritefunctions as sf
 import gameobject as go
 import spritefunctions as sf
 import controls as ctrl
-
-def decide_move(sprite_move,sprites_avoid,movestep,nsteps=1):
-    prect=[sprite_move.rect.left,sprite_move.rect.right,sprite_move.rect.top+movestep,sprite_move.rect.bottom+movestep]
-    for sprite_avoid in sprites_avoid:
-        for step in range(nsteps):
-            erect=sprite_avoid.rect
-            if erect.left+step*sprite_avoid.velocity.x<=prect[1] and erect.right+step*sprite_avoid.velocity.x>=prect[0] and erect.top<=prect[3]+step*movestep and erect.bottom>=prect[2]+step*movestep:
-                return False
-    return True
 
 class PlayerShip(go.GameObject):
     def __init__(self,sprite_name,position,move_speed=0,control='Computer',player_side=1,color=None,scale=None,pace=None,boundary=None,image_path='',collidecount=None):
@@ -50,16 +43,18 @@ class PlayerShip(go.GameObject):
                 nsteps=gc.gc['PLAYER1_STEPS_ANTICIPATE']
             else:
                 nsteps=gc.gc['PLAYER2_STEPS_ANTICIPATE']
-            if self.powerup or decide_move(self,asteroids,-self.move_speed,nsteps=nsteps):
+            move_dir=aifunctions.decide_move(self,asteroids,(0,-self.move_speed),nsteps=nsteps,color_avoid=False,just_look_ahead=gc.gc['AI_FORWARD_ONLY'])
+            if self.powerup or move_dir[1]!=0.0:
                 if self.animate:
                     if self.sequence.name=='Default':
                         self.set_sequence('Takeoff')
                     if self.sequence.name=='DefaultPower':
                         self.set_sequence('TakeoffPower')
                 if gravity==0:
-                    self.position.y-=self.move_speed
+                    self.position.y+=move_dir[1]
                 else:
-                    self.velocity.y-=gc.gc['PLAYER_ACCELERATION']
+                    if abs(self.velocity.y)<gc.gc['PLAYER_SPEED']:
+                        self.velocity.y-=gc.gc['PLAYER_ACCELERATION']
             if self.sequence.name=='Burn':
                 self.set_sequence('Deburn')
             if self.sequence.name=='BurnPower':
@@ -92,19 +87,20 @@ class PlayerShip(go.GameObject):
             self.update_position(self.velocity)
         super(PlayerShip,self).perform_movement()
         if self.rect.centery > gc.gc['PLAYER_Y_START'] and gravity>0:
-            self.reset()
+            self.reset(counter=False)
             super(PlayerShip,self).perform_movement()
         self.check_boundary()
 
-    def reset(self,wrap=False):
+    def reset(self,wrap=False,counter=True):
         self.position.y=self.init_position[1]
         if wrap: self.position.y+=self.rect.bottom-self.rect.top
         self.position.x=self.init_position[0]
         self.velocity.y=0
         self.velocity.x=0
         self.set_powerup(power=False)
-        super(PlayerShip,self).reset_collide()
-        self.invisible=True
+        if counter:
+            super(PlayerShip,self).reset_collide()
+            self.invisible=True
 
     def set_powerup(self,power=True):
         if power and self.powerup:
