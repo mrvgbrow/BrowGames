@@ -15,20 +15,20 @@ class Boundary(pygame.Rect):
         self.wrap=wrap
 
 class Border(pygame.sprite.Sprite):
-    def __init__(self,thick=2,color=(255,255,255),back_color=(0,0,0)):
+    def __init__(self,rect,thick=2,color=(255,255,255),back_color=(0,0,0)):
         super(Border,self).__init__()
-        left=thick/2
-        top=thick/2
-        right=gc.gc['SCREEN_WIDTH']-thick/2
-        bottom=gc.gc['SCREEN_HEIGHT']-thick/2
-        self.surf=pygame.Surface((gc.gc['SCREEN_WIDTH'],gc.gc['SCREEN_HEIGHT']))
+        left=int(thick/2)
+        top=int(thick/2)
+        right=int(rect.width-thick/2)
+        bottom=int(rect.height-thick/2)
+        self.surf=pygame.Surface((rect.width,rect.height))
         self.surf.fill(back_color)
         self.surf.set_colorkey(back_color)
-        pygame.draw.line(self.surf,color,(left,1),(left,gc.gc['SCREEN_HEIGHT']-1),width=thick)
-        pygame.draw.line(self.surf,color,(1,top),(gc.gc['SCREEN_WIDTH']-1,top),width=thick)
-        pygame.draw.line(self.surf,color,(right,1),(right,gc.gc['SCREEN_HEIGHT']-1),width=thick)
-        pygame.draw.line(self.surf,color,(gc.gc['SCREEN_WIDTH']-1,bottom),(1,bottom),width=thick)
-        self.rect = self.surf.get_rect(left=gc.gc['LEFT'],top=gc.gc['TOP'])
+        pygame.draw.line(self.surf,color,(left,top),(left,rect.height-1),width=thick)
+        pygame.draw.line(self.surf,color,(left,top),(rect.width-1,top),width=thick)
+        pygame.draw.line(self.surf,color,(right,top),(right,rect.height-1),width=thick)
+        pygame.draw.line(self.surf,color,(rect.width-1,bottom),(left,bottom),width=thick)
+        self.rect = self.surf.get_rect(left=rect.left,top=rect.top)
 
 class DashedBoundary(pygame.sprite.Sprite):
     def __init__(self,x_position,thick=2,n_dashes=30):
