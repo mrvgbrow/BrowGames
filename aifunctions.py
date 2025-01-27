@@ -9,35 +9,44 @@ import pygame
 import genutils as genu
 from collections import deque
 
+# Check for collisions between a specified sprite and group of other sprites.
+# Can look ahead an arbitrary number of steps, assuming constant motion for all sprites.
 def check_steps(sprite_move,sprites_avoid,movestep,nsteps=1):
     prect=[sprite_move.rect.left,sprite_move.rect.right,sprite_move.rect.top,sprite_move.rect.bottom]
     for sprite_avoid in sprites_avoid:
-        for step in range(nsteps):
+        for step in range(1,nsteps+1):
             erect=sprite_avoid.rect
             if erect.left+step*sprite_avoid.velocity.x<=prect[1]+step*movestep[0] and erect.right+step*sprite_avoid.velocity.x>=prect[0]+step*movestep[0] and erect.top<=prect[3]+step*movestep[1] and erect.bottom>=prect[2]+step*movestep[1]:
                 return sprite_avoid
     return None
 
-def decide_move(sprite_move,sprites_avoid,movestep,nsteps=1,color_avoid=False):
+# Decide whether to move a sprite based on whether it will collide with other sprites. Can optionally change the color of any sprites that are found to pose a collision risk.
+def decide_move(sprite_move,sprites_avoid,movestep,nsteps=1,color_avoid=False,just_look_ahead=False):
     if color_avoid:
         for sprite_avoid in sprites_avoid:
             sf.fill(sprite_avoid.surf,(255,255,255,255))
+    # First check for collisions from moving in the specified direction
     collide_risk=check_steps(sprite_move,sprites_avoid,movestep,nsteps=nsteps)
     if collide_risk:
         if color_avoid:
             sf.fill(collide_risk.surf,(255,0,0,255))
+        # If a collision is found, test whether it's safe to stay still.
         collide_risk2=check_steps(sprite_move,sprites_avoid,(0.0,0.0),nsteps=nsteps)
+        if just_look_ahead:
+            return (0.0,0.0)
     else:
         return movestep
     if collide_risk2:
         if color_avoid:
             sf.fill(collide_risk2.surf,(255,0,0,255))
+        # If a collision is found from moving forward and staying still, test whether it's safe to move backwards.
         collide_risk3=check_steps(sprite_move,sprites_avoid,(-movestep[0],-movestep[1]),nsteps=nsteps)
     else:
         return (0.0,0.0)
     if collide_risk3:
         if color_avoid:
             sf.fill(collide_risk3.surf,(255,0,0,255))
+        # If all paths have collisions, just move forward.
         return movestep
     else:
         return (-movestep[0],-movestep[1])
