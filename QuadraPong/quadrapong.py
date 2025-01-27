@@ -8,6 +8,7 @@ import sys
 from . import quadrapong_wall as wallmod
 from . import quadrapong_player as player
 from . import quadrapong_ball as ball
+import paddlefunctions as pf
 import presets
 import background as bg
 import settings
@@ -39,7 +40,7 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
         gc.set_preset(current_pars)
         gc.scale_parameters()
 
-    current_parameters=gc.get_parameters(list(current_pars.keys()))
+    current_parameters=gc.get_parameters(gc.__dir__())
 #    font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE) # A pong-like font. Used in displayed text.
     font_message=pygame.font.Font(None,36) 
     gameutils.init_sound('Sounds',["ding.mp3"])
@@ -136,7 +137,7 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
         # For each player, choose a ball to target, starting with the innermost player
         for player_i in players:
             if not player_i.target_ball:
-                ball_targeted=player_i.choose_target(balls_to_hit)
+                ball_targeted=pf.choose_target(player_i,balls_to_hit,gc.SCREEN_HEIGHT,gc.SCREEN_WIDTH,gc.PADDLE_LIMIT,gc.PLAYER_MOVESTEP,gc.PADDLE_LENGTH,ai_try_all=gc.AI_TRY_ALL)
                 if ball_targeted:
                    balls_to_hit.remove(ball_targeted)
                    player_i.randomize_target_position()
@@ -162,11 +163,11 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
                 for ball_hit in balls_hit:
                     if player_i.player_side!=ball_hit.player_hit:
                         if gc.ORIGINAL_BOUNCE:
-                            new_angle=player_i.compute_original_angle((ball_hit.rect.centerx,ball_hit.rect.centery),(ball_hit.speedx,ball_hit.speedy))
+                            new_angle=pf.compute_original_angle(player_i,ball_hit,gc.PADDLE_LENGTH)
                             ball_hit.set_angle(new_angle)
                         else:
                             ball_hit.bounce_wall(player_i.collision_direction)
-                            anglechange=player_i.compute_anglechange([ball_hit.rect.centerx,ball_hit.rect.centery])
+                            anglechange=pf.compute_anglechange(player_i,ball_hit,radius=gc.PADDLE_RADIUS,paddle_length=gc.PADDLE_LENGTH,paddle_control_factor=gc.PADDLE_CONTROL_FACTOR)
                             ball_hit.anglechange(anglechange)
                         ball_hit.player_hit=player_i.player_side
                         balls_to_hit.append(ball_hit)

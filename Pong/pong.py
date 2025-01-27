@@ -49,7 +49,7 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
         gc.set_preset(current_pars)
         gc.scale_parameters()
     
-    current_parameters=gc.get_parameters(list(current_pars.keys()))
+    current_parameters=gc.get_parameters(gc.__dir__())
     font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE) # A pong-like font. Used in displayed text.
     font_message=pygame.font.Font(None,36) 
     gameutils.init_sound('Sounds',["ding.mp3"])

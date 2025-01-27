@@ -3,6 +3,7 @@
 import pygame
 import random
 import settings 
+import paddlefunctions as pf
 import controls as ctrl
 import genutils
 import math
@@ -38,7 +39,7 @@ class Player(pygame.sprite.Sprite):
                 position[1],
             )
         )
-        if paddle_type=='curved': self.curved_draw(color)
+        if paddle_type=='curved': pf.curved_draw(self,color,gc.SCREEN_COLOR,gc.PADDLE_RADIUS,gc.PADDLE_WIDTH)
         self.mask=pygame.mask.from_surface(self.surf)
 
     def update(self, pressed_keys,mouse_relative):
@@ -95,44 +96,6 @@ class Player(pygame.sprite.Sprite):
         elif self.player_side==4:
             self.surf=pygame.transform.flip(self.surf,False,True)
         self.mask=pygame.mask.from_surface(self.surf)
-
-    def compute_original_angle(self,ballpos,ball_speed):
-        location_on_paddle=self.compute_paddle_location(ballpos)
-        if self.orientation=='vertical':
-            if ball_speed[0]>0:
-              original_angle=-math.pi/16*location_on_paddle-math.pi
-            else:
-              original_angle=math.pi/16*location_on_paddle
-        else:
-            if ball_speed[1]<0:
-              original_angle=-math.pi/16*location_on_paddle+math.pi/2
-            else:
-              original_angle=math.pi/16*location_on_paddle-math.pi/2
-        return original_angle
-
-    def compute_paddle_location(self,ballpos):
-        coord=ballpos[1] if self.orientation=='vertical' else ballpos[0]
-        selfcoord=self.rect.centery if self.orientation=='vertical' else self.rect.centerx
-        location_on_paddle=math.floor((coord-selfcoord)/gc.PADDLE_LENGTH*8)
-        return location_on_paddle
-
-    def compute_anglechange(self,ballpos):
-        if self.orientation=='vertical':
-            location_on_paddle=ballpos[1]-self.rect.centery
-        else:
-            location_on_paddle=ballpos[0]-self.rect.centerx
-        if self.type=='curved':
-            if location_on_paddle>gc.PLAYER_RADIUS:
-                location_on_paddle=gc.PLAYER_RADIUS
-            elif location_on_paddle<-gc.PLAYER_RADIUS:
-                location_on_paddle=-gc.PLAYER_RADIUS
-            nominal_change=2*math.asin(location_on_paddle/gc.PADDLE_RADIUS)
-        else:
-            nominal_change=location_on_paddle/gc.PADDLE_LENGTH*math.pi
-        if self.player_side==2 or self.player_side==3:
-            nominal_change*=-1
-        adjusted_change=nominal_change*gc.PADDLE_CONTROL_FACTOR
-        return adjusted_change
 
     def choose_target(self,balls):
         ball_choice=[gc.SCREEN_WIDTH,None,-1]
