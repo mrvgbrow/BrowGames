@@ -34,7 +34,7 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
     # Load the menu. Continue reloading the menu until an option is selected that requests
     # the game to load.
     if not quickstart:
-        back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Quadrapong',settings_dict,presets_dict,preset_set,True,True,init_pars=current_pars)
+        back_to_main,menu_run,preset_out,current_pars=menu.run_menu('Quadrapong',settings_dict,presets_dict,preset_set,4,True,init_pars=current_pars)
         if back_to_main:
             return settings_dict,True,current_pars
         gc.set_preset(current_pars)
