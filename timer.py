@@ -5,7 +5,7 @@ import gameconstants as gc
 
 
 class Timer(pygame.sprite.Sprite):
-    def __init__(self,position,dimensions,duration,orientation='left',color=(255,255,255),ttype='bar'):
+    def __init__(self,position,dimensions,duration,orientation='left',color=(255,255,255),ttype='bar',font=None):
         super(Timer,self).__init__()
         self.dimensions=dimensions
         self.orientation=orientation
@@ -17,18 +17,24 @@ class Timer(pygame.sprite.Sprite):
         self.position=position
         self.time_left=duration
         if ttype=='digits':
-            self.font=pygame.font.Font(None,int(min(dimensions[0],dimensions[1])))
+            self.font=font if font else pygame.font.Font(None,int(min(dimensions[0],dimensions[1])))
             self.surf=self.font.render(str(int(self.time_left/1000)),True,color)
+            self.rect = self.surf.get_rect(
+                center=(
+                    position[0],
+                    position[1],
+                )
+            )        
         else:
             self.surf=pygame.Surface((dimensions[0],dimensions[1]))
             self.surf.fill(color)
+            self.rect = self.surf.get_rect(
+                center=(
+                    position[0]+dimensions[0]/2,
+                    position[1]+dimensions[1]/2,
+                )
+            )        
         self.paused=True
-        self.rect = self.surf.get_rect(
-            center=(
-                position[0]+dimensions[0]/2,
-                position[1]+dimensions[1]/2,
-            )
-        )        
 
     def reset(self):
         self.time_left=duration
@@ -39,11 +45,11 @@ class Timer(pygame.sprite.Sprite):
     def start(self):
         self.paused=False
 
-    def update(self):
+    def update(self,framerate=None):
         if not self.paused and self.time_left>0:
             self.time_left-=1
         if self.ttype=='digits':
-            self.surf=self.font.render(str(int(self.time_left/gc.gc['TICK_FRAMERATE'])),True,self.color)
+            self.surf=self.font.render(str(int(self.time_left/framerate)),True,self.color)
         elif self.ttype=='bar':
             if self.orientation=='left':
                 self.surf=pygame.transform.scale(self.surf,(self.dimensions[0]*self.time_left/self.duration,self.dimensions[1]))
