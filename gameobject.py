@@ -315,7 +315,7 @@ class PlayerFixed(GameObject):
         return direction
 
     def update_all(self,pressed_keys,computer_keys=None):
-        if computer_keys and self.move_mode=='computer':
+        if computer_keys and self.move_mode=='Computer':
             direction=self.update_controls_computer(computer_keys)
         else:
             direction=self.update_controls(pressed_keys)
@@ -326,7 +326,8 @@ class GameObjectSimple(pygame.sprite.Sprite):
     def __init__(self,position,sprite_name=None,scale=4,color=None,angle0=0,
                  default_sequence=None,sprite_id=None,surface=None,mask=None,
                  image_path=''):
-        super(GameObjectSimple,self).__init__(image_path=image_path)
+        super(GameObjectSimple,self).__init__()
+        self.image_path=image_path
         if sprite_name:
             self.build_sprite(sprite_name,color,scale)
             if not default_sequence:
@@ -368,7 +369,7 @@ class GameObjectSimple(pygame.sprite.Sprite):
         self.sequence_dict = {
                 'Default' : sf.Sequence(sprite_name=sprite_name,name='Default',
                                         frozen=True,scale=scale,color=color,
-                                        loop=-1),
+                                        loop=-1,image_path=self.image_path),
         }
         index=1
 
