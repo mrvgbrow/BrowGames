@@ -1,0 +1,116 @@
+#!/c/Users/sp4ce/AppData/Local/Programs/Python/Python310/python
+
+import os
+import sys
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide' 
+#os.environ['SDL_VIDEO_WINDOW_POS']="%d,%d" % (0,0)
+import pygame
+import timer
+import genutils as genu
+import random
+import gameconstants as gc
+import background as bg
+import mazefunctions as mf
+import gameobject as go
+
+gc.gc,sdict=gc.make_shortcuts(gc.gc)
+gc.gc=gc.process_game_arguments(sys.argv,gc.gc,sdict)
+
+pygame.init()
+pygame.font.init()
+
+screen = pygame.display.set_mode([gc.gc['FULL_WIDTH'], gc.gc['FULL_HEIGHT']])
+screen_rect=pygame.Rect((gc.gc['LEFT'],gc.gc['TOP']),(gc.gc['SCREEN_WIDTH'],gc.gc['SCREEN_HEIGHT']))
+panel=pygame.Surface((gc.gc['SCREEN_WIDTH'],gc.gc['FULL_HEIGHT']-gc.gc['SCREEN_HEIGHT']))
+panel_rect=panel.get_rect(left=0,top=0)
+border=bg.Border(thick=gc.gc['BORDER_THICK'])
+PIECEADD=pygame.USEREVENT+1
+
+maze_sprites=mf.make_full_mazes(gc.gc['SCREEN_WIDTH'],gc.gc['SCREEN_HEIGHT'],gc.gc['TOP'],
+                                gc.gc['BORDER_THICK'],gc.gc['SCREEN_COLOR'],gc.gc['MAZE_COLOR'],
+                                gc.gc['NUMBER_TILES_X'],gc.gc['NUMBER_TILES_Y'])
+maze_sprites_pieces=mf.make_maze_pieces(gc.gc['SCREEN_WIDTH'],gc.gc['SCREEN_HEIGHT'],gc.gc['TOP'],
+                                gc.gc['BORDER_THICK'],gc.gc['SCREEN_COLOR'],gc.gc['MAZE_COLOR'],
+                                gc.gc['NUMBER_TILES_X'],gc.gc['NUMBER_TILES_Y'])
+maze_irect=maze_sprites[0].surf.get_rect(left=0,top=0)
+maze_srect=maze_sprites[0].surf.get_rect(left=gc.gc['BORDER_THICK'],top=gc.gc['TOP']+gc.gc['BORDER_THICK'])
+maze_sprites[0].rect=maze_srect
+
+boundary=bg.Boundary(maze_srect,stop=[True,True,True,True])
+
+clock=pygame.time.Clock()
+
+# Make the player sprites
+all_sprites = pygame.sprite.Group()
+
+
+all_sprites.add(border)
+
+mazepart_sprites=[]
+running = True
+pygame.time.set_timer(PIECEADD,1500,loops=1)
+pause=False
+total_time=0
+score_player=0
+piece_count=0
+step=False
+game_state=3   # 0 - game ending, 1 - game playing, 2 - time expired, 3 - initial countdown, 4 - point scored
+game_message=''
+while running:
+
+
+    # Did the user click the window close button?
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == gc.KEYDOWN:
+            if event.key == gc.K_ESCAPE:
+                running = False
+            if event.key == gc.K_p:
+                if pause:
+                    pause=False
+                else:
+                    pause=True
+            if event.key == gc.K_RIGHTBRACKET:
+                step=True
+        elif event.type==PIECEADD:
+            if piece_count==15:
+                all_sprites=pygame.sprite.Group()
+                all_sprites.add(border)
+            if piece_count<29:
+                pygame.time.set_timer(PIECEADD,300,loops=1)
+            all_sprites.add(maze_sprites_pieces[piece_count])
+            piece_count+=1
+
+    # If paused, continuously skip over the game loop (except event processing).
+    # If taking one step through the loop, don't pause but unset the step
+    # immediately after.
+    if pause and not step:
+        pygame.time.delay(16)
+        continue
+    if step:
+        step=False
+
+    # Fill the background
+    screen.fill(gc.gc['SCREEN_COLOR'])
+
+    # Fill the panel
+    panel.fill(gc.gc['PANEL_COLOR'])
+
+    screen.blit(panel,panel_rect)
+
+    # Update all sprites
+    if game_state != 4:
+        for entity in all_sprites:
+            screen.blit(entity.surf,entity.rect)
+
+    # Flip the display
+    pygame.display.flip()
+
+    # Only run the timer if the game is still going
+    if game_state==1 or game_state>=3:
+        clock.tick(gc.gc['TICK_FRAMERATE'])
+        total_time=total_time+1/gc.gc['TICK_FRAMERATE']
+
+# Done! Time to quit.
+pygame.quit()
