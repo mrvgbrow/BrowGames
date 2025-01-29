@@ -1,3 +1,26 @@
+<h1>Version 1.11</h1>
+
+<p>BrowGames is a collection of customizable classic games, all coded from scratch in Python. See The Retrogame Deconstruction Zone (https://www.retrogamedeconstructionzone.com) for details.</p>
+
+<h2>New Features</h2>
+
+<ul>
+<li>Space Race: Added presets for gravity and animated sprites.</li>
+<li>Space Race: Can optionally tell computer player to only move forward.</li>
+<li>Quadrapong: Adding curved paddle option.</li>
+</ul>
+<h2>Bug Fixes</h2>
+<ul>
+<li>Space Race: Ship was resetting repeatedly in home position.
+<li>Capitalize both letters in acronym "AI" in parameter names.</li>
+<li>Off-by-one error in AI algorithm (currently just used in Space Race).</li>
+</ul>
+
+<h2>Improvements</h2>
+<ul>
+<li>Space Race: When gravity is on, limit computer player to speed specified in game parameters.</li>
+</ul>
+
 <h1>Version 1.1</h1>
 
 <p>BrowGames is a collection of customizable classic games, all coded from scratch in Python. See The Retrogame Deconstruction Zone (https://www.retrogamedeconstructionzone.com) for details.</p>

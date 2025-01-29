@@ -14,6 +14,7 @@ import pygame
 from Pong import pong
 from SpaceRace import spacerace
 from QuadraPong import quadrapong
+from Gotcha import gotcha
 import menu0
 import settings
 
@@ -55,6 +56,8 @@ while not all_quit:
             settings_dict,back_to_main,pars=pong.run(pars,settings_dict,quickstart=quickstart,default="Crazy Foot")
         elif game == 'Quadrapong':
             settings_dict,back_to_main,pars=quadrapong.run(pars,settings_dict,quickstart=quickstart,default="Original")
+        elif game == 'Gotcha':
+            settings_dict,back_to_main,pars=gotcha.run(pars,settings_dict,quickstart=quickstart,default="Original")
 
         if quickstart:
             all_quit=True

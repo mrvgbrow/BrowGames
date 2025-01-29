@@ -1,7 +1,7 @@
 <h1>BrowGames Instructions</h1>
 
 <p>BrowGames is a collection of customizable classic games, all coded from scratch in Python. The original versions of most of these games are not playable in emulators because they had no CPU. In addition, BrowGames gives you the freedom to manipulate basic game parameters to see how it changes the gameplay.</p>
-By default, BrowGames will default to a parameter set that is very similar to the original game, but many other presets are available to experiment with. For historical context on the games included here, as well as details about their implementation, see The Retrogame Deconstruction Zone (https://www.retrogamedeconstructionzone.com).</p>
+By default, BrowGames will use a parameter set that is very similar to the original game, but many other presets are available to experiment with. For historical context on the games included here, as well as details about their implementation, see The Retrogame Deconstruction Zone (https://www.retrogamedeconstructionzone.com).</p>
 
 <h2>Running from the Source Code</h2>
 If you wish to run the program from the source code using a Python interpreter, you will need pygame and pygame_menu.
@@ -118,6 +118,7 @@ When you load BrowGames, you will  be greeted by the main menu
 <li>Player Speed - The speed of the player when Gravity is set to 0, in pixels per second.</li>
 <li>Player Acceleration - The acceleration of the player when thrusters are active, in pixels per second squared. This value only applies when gravity is set greater than zero. If this value is lower than the acceleration due to gravity, the player won't be able to move.</li>
 <li>Player [1-2] Steps Anticipate - When the computer player is determining when to move, it will look this many steps ahead before doing so.</li>
+<li>AI Forward Only - When set to On, the computer player will only move forward or remain still, never move backwards.</li>
 <li>Player Collision Reset - When set to On, the player will return to their starting position when they hit an asteroid. When it's off, asteroid collisions will result in an impulse that reverses the player speed.</li>
 <li>Player Animate - When set to On, the player sprite will be animated with thrusters and sometimes an invincibility sequence.</li>
 <li>Player Anim Pace - When the player sprite is animated, this is the number of game frames between frames of animation.</li>
