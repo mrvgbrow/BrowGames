@@ -15,7 +15,7 @@ class Wall(pygame.sprite.Sprite):
                 position=[gc.SCREEN_WIDTH/2,gc.SCREEN_PAD+(side-2)/2*(gc.SCREEN_HEIGHT-2*gc.SCREEN_PAD)]
             else:
                 xsize=gc.WALL_LENGTH
-                position=[gc.SCREEN_PAD+xsize/2+(corner-1)*(gc.SCREEN_WIDTH-2*gc.SCREEN_PAD-xsize),gc.SCREEN_PAD+(side-2)/2*(gc.SCREEN_HEIGHT-2*gc.SCREEN_PAD)]
+                position=[gc.SCREEN_PAD+gc.WALL_WIDTH/2+xsize/2+(corner-1)*(gc.SCREEN_WIDTH-2*gc.SCREEN_PAD-xsize-gc.WALL_WIDTH),gc.SCREEN_PAD+(side-2)/2*(gc.SCREEN_HEIGHT-2*gc.SCREEN_PAD)]
         else:
             self.orientation='vertical'
             xsize=gc.WALL_WIDTH
@@ -24,7 +24,7 @@ class Wall(pygame.sprite.Sprite):
                 position=[gc.SCREEN_PAD+(side-1)/2*(gc.SCREEN_WIDTH-2*gc.SCREEN_PAD),gc.SCREEN_HEIGHT/2]
             else:
                 ysize=gc.WALL_LENGTH
-                position=[gc.SCREEN_PAD+(side-1)/2*(gc.SCREEN_WIDTH-2*gc.SCREEN_PAD),gc.SCREEN_PAD+ysize/2+(corner-1)*(gc.SCREEN_HEIGHT-2*gc.SCREEN_PAD-ysize)]
+                position=[gc.SCREEN_PAD+(side-1)/2*(gc.SCREEN_WIDTH-2*gc.SCREEN_PAD),gc.SCREEN_PAD+ysize/2+gc.WALL_WIDTH/2+(corner-1)*(gc.SCREEN_HEIGHT-2*gc.SCREEN_PAD-ysize-gc.WALL_WIDTH)]
         collision_directions=['right','down','left','up']
         self.collision_direction=collision_directions[side-1]
         self.surf=pygame.Surface((xsize,ysize))
