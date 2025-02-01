@@ -44,17 +44,18 @@ class PlayerShip(go.GameObject):
             else:
                 nsteps=gc.gc['PLAYER2_STEPS_ANTICIPATE']
             move_dir=aifunctions.decide_move(self,asteroids,(0,-self.move_speed),nsteps=nsteps,color_avoid=False,just_look_ahead=gc.gc['AI_FORWARD_ONLY'])
-            if self.powerup or move_dir[1]!=0.0:
-                if self.animate:
-                    if self.sequence.name=='Default':
-                        self.set_sequence('Takeoff')
-                    if self.sequence.name=='DefaultPower':
-                        self.set_sequence('TakeoffPower')
-                if gravity==0:
-                    self.position.y+=move_dir[1]
-                else:
-                    if abs(self.velocity.y)<gc.gc['PLAYER_SPEED']:
-                        self.velocity.y-=gc.gc['PLAYER_ACCELERATION']
+            if self.animate and move_dir[1]<0.0:
+                if self.sequence.name=='Default':
+                    self.set_sequence('Takeoff')
+                if self.sequence.name=='DefaultPower':
+                    self.set_sequence('TakeoffPower')
+            if gravity==0:
+                self.position.y+=move_dir[1]
+            else:
+                if self.powerup or (abs(self.velocity.y)<gc.gc['PLAYER_SPEED'] and move_dir[1]<0):
+                    self.velocity.y-=gc.gc['PLAYER_ACCELERATION']
+                elif move_dir[1]>=0 and self.velocity.y<0 and gc.gc['REVERSE_THRUST']:
+                    self.velocity.y+=gc.gc['PLAYER_ACCELERATION']
             if self.sequence.name=='Burn':
                 self.set_sequence('Deburn')
             if self.sequence.name=='BurnPower':
@@ -72,6 +73,8 @@ class PlayerShip(go.GameObject):
         elif pressed_keys[ctrl.keycons[self.control]['down']]:
             if gravity==0:
                 self.position.y+=self.move_speed
+            elif gc.gc['REVERSE_THRUST']:
+                self.velocity.y+=gc.gc['PLAYER_ACCELERATION']
         else:
             if self.animate:
                 if self.sequence.name=='Burn':
