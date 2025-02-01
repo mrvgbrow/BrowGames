@@ -319,8 +319,16 @@ def getrandints(N,end):
         randints.append(random.randint(1,end))
     return randints
 
-def angle_to_coords(angle,amplitude):
-    return amplitude*math.cos(angle),amplitude*math.sin(angle)
+def angle_to_coords(angle,coord,reference_coord='amplitude'):
+    if reference_coord=='amplitude':
+        return coord*math.cos(angle),coord*math.sin(angle)
+    elif reference_coord=='x':
+        return coord,coord*math.tan(angle)
+    elif math.tan(angle)!=0:
+        return coord/math.tan(angle),coord
+    else:
+        return None
+
 
 def coords_to_angle(coordx,coordy):
     return math.atan2(coordy,coordx),(coordx*coordx+coordy*coordy)**0.5
