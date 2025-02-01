@@ -245,17 +245,17 @@ class Life_Counter():
 
     def get_marker(self,count):
         if self.direction=='right':
-            x_pos=self.position[0]+self.life_size[0]/2+self.separation*count
-            y_pos=self.position[1]+self.life_size[1]/2
+            x_pos=self.position[0]+self.separation*count
+            y_pos=self.position[1]
         elif self.direction=='left':
-            x_pos=self.position[0]-self.life_size[0]/2-self.separation*count
-            y_pos=self.position[1]+self.life_size[1]/2
+            x_pos=self.position[0]-self.separation*count
+            y_pos=self.position[1]
         elif self.direction=='down':
-            x_pos=self.position[0]+self.life_size[0]/2
-            y_pos=self.position[1]+self.life_size[1]/2+self.separation*count
+            x_pos=self.position[0]
+            y_pos=self.position[1]+self.separation*count
         else:
-            x_pos=self.position[0]+self.life_size[0]/2
-            y_pos=self.position[1]-self.life_size[1]/2-self.separation*count
+            x_pos=self.position[0]
+            y_pos=self.position[1]-self.separation*count
         return ObjectFill((x_pos,y_pos),self.life_size,color=self.color)
 
     def increment_counter(self):
