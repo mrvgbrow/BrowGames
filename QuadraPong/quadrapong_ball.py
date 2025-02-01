@@ -11,11 +11,15 @@ class Ball(pygame.sprite.Sprite):
     def __init__(self,ball_id):
         super(Ball,self).__init__()
         self.surf=pygame.Surface((2*gc.BALL_RADIUS,2*gc.BALL_RADIUS))
-        self.surf.fill(gc.SCREEN_COLOR)
         self.surf.set_colorkey(gc.SCREEN_COLOR,gc.RLEACCEL)
-        pygame.draw.circle(self.surf, gc.BALL_COLOR,(gc.BALL_RADIUS,gc.BALL_RADIUS),gc.BALL_RADIUS)
+        if gc.BALL_SQUARE:
+            self.surf.fill(gc.BALL_COLOR)
+        else:
+            self.surf.fill(gc.SCREEN_COLOR)
+            pygame.draw.circle(self.surf, gc.BALL_COLOR,(gc.BALL_RADIUS,gc.BALL_RADIUS),gc.BALL_RADIUS)
         self.mask=pygame.mask.from_surface(self.surf)
         self.speed=gc.BALL_SPEED
+        self.trap_counter=0
         self.base_speed=gc.BALL_SPEED
         self.ball_id=ball_id
         self.player_hit=-1
@@ -62,6 +66,7 @@ class Ball(pygame.sprite.Sprite):
             self.speedy=-abs(self.speedy)
         if direction=='down': 
             self.speedy=abs(self.speedy)
+        self.trap_counter=self.trap_counter+1 if abs(self.speedx)<1e-5 or abs(self.speedy)<1e-5 else 0
         pygame.mixer.music.play(loops=1)
 
     def anglechange(self,angle_change):
@@ -69,11 +74,23 @@ class Ball(pygame.sprite.Sprite):
         angle=angle_old+angle_change
         self.speedx,self.speedy=genutils.angle_to_coords(angle,speed)
 
-    def set_angle(self,angle_set):
+    def set_angle(self,angle_set,reference_paddle='vertical'):
         angle_old,speed=genutils.coords_to_angle(self.speedx,self.speedy)
         self.base_speed+=gc.BALL_SPEED_INCREASE
         speed=min(self.base_speed,gc.BALL_MAX_SPEED)
         self.speedx,self.speedy=genutils.angle_to_coords(angle_set,speed)
+        self.trap_counter=self.trap_counter+1 if abs(self.speedx)<1e-5 or abs(self.speedy)<1e-5 else 0
+        if self.trap_counter>gc.PADDLE_MAX_DRIBBLE:
+            angle_set=random.random()*math.pi*2
+            self.speedx,self.speedy=genutils.angle_to_coords(angle_set,speed)
+        if gc.ORIGINAL_BOUNCE:
+            if abs(self.speedx)>abs(self.speedy):
+                refcoord='x' 
+                refsign=math.copysign(1,self.speedx) 
+            else:
+                refcoord='y' 
+                refsign=math.copysign(1,self.speedy) 
+            self.speedx,self.speedy=genutils.angle_to_coords(angle_set,refsign*speed,reference_coord=refcoord)
 
     def compute_intercept(self,position,axis):
         if axis=='x':

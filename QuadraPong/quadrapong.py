@@ -4,6 +4,7 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide' 
 os.environ['SDL_VIDEO_WINDOW_POS']="%d,%d" % (0,0)
 import pygame
+import math
 import sys
 from . import quadrapong_wall as wallmod
 from . import quadrapong_player as player
@@ -56,9 +57,13 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
     scores=[gc.LIVES_START]*4
     all_sprites = pygame.sprite.Group()
     players = pygame.sprite.Group()
+    n_init_players=0
     for player_i in range(4):
         player_control=current_parameters['PLAYER'+str(player_i+1)+'_CONTROL']
-        if player_control == "None": scores[player_i]=0
+        if player_control == "None": 
+            scores[player_i]=0 
+        else: 
+            n_init_players+=1
         player_color=current_parameters['PLAYER'+str(player_i+1)+'_COLOR']
         if player_control=='Mouse':
             gameutils.mouse_init()
@@ -66,10 +71,12 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
         all_sprites.add(player_obj)
         players.add(player_obj)
 
-    life_counter_bottom=bg.Life_Counter((0.8*gc.SCREEN_WIDTH,gc.SCREEN_WIDTH-gc.SCREEN_PAD/2),gc.LIVES_START,'right',(15,15))
-    life_counter_left=bg.Life_Counter((gc.SCREEN_PAD/2,0.8*gc.SCREEN_HEIGHT),gc.LIVES_START,'up',(15,15))
-    life_counter_top=bg.Life_Counter((0.8*gc.SCREEN_WIDTH,gc.SCREEN_PAD/2),gc.LIVES_START,'right',(15,15))
-    life_counter_right=bg.Life_Counter((gc.SCREEN_WIDTH-gc.SCREEN_PAD/2,0.8*gc.SCREEN_HEIGHT),gc.LIVES_START,'up',(15,15))
+    life_counter_offset=gc.SCREEN_PAD+gc.WALL_WIDTH+0.12*gc.SCREEN_HEIGHT
+    life_counter_offset_2=gc.SCREEN_PAD-0.012*gc.SCREEN_HEIGHT-gc.WALL_WIDTH/2-gc.SCORE_SIZE/2
+    life_counter_bottom=bg.Life_Counter((life_counter_offset,gc.SCREEN_WIDTH-life_counter_offset_2),scores[3],'right',(gc.SCORE_SIZE/2,gc.SCORE_SIZE))
+    life_counter_left=bg.Life_Counter((life_counter_offset_2,life_counter_offset),scores[0],'up',(gc.SCORE_SIZE,gc.SCORE_SIZE/2),separation=gc.SCORE_SIZE*3/4)
+    life_counter_top=bg.Life_Counter((gc.SCREEN_WIDTH-life_counter_offset,life_counter_offset_2),scores[1],'right',(gc.SCORE_SIZE/2,gc.SCORE_SIZE))
+    life_counter_right=bg.Life_Counter((gc.SCREEN_WIDTH-life_counter_offset_2,gc.SCREEN_HEIGHT-life_counter_offset),scores[2],'up',(gc.SCORE_SIZE,gc.SCORE_SIZE/2),separation=gc.SCORE_SIZE*3/4)
     life_counters=[life_counter_left,life_counter_top,life_counter_right,life_counter_bottom]
     
     balls=pygame.sprite.Group()
@@ -125,6 +132,12 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
                 life_counters[scored].decrement_counter()
             ball_position_array.append((ball_i.x,ball_i.y))
 
+        # Only allow for orthogonal bounces if both horizontal and vertical 
+        # players are present
+        if (scores[0]>0 or scores[2]>0) and (scores[1]>0 or scores[3]>0):
+            angle_increment=math.pi/10
+        else:
+            angle_increment=math.pi/16
         for iscore, score in enumerate(scores):
             if score<=0 and alive[iscore]:
                 for player_i in players:
@@ -132,7 +145,14 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
                 all_sprites.add(center_walls.sprites()[iscore])
                 walls.add(center_walls.sprites()[iscore])
                 alive[iscore]=False
-
+                # If only one player is left, remove it and leave the ball bouncing
+                if alive.count(False)==3 and n_init_players>1:
+                    last_player_index=alive.index(True)
+                    all_sprites.add(center_walls.sprites()[last_player_index])
+                    walls.add(center_walls.sprites()[last_player_index])
+                    alive[last_player_index]=False
+                    for player_i in players:
+                        if player_i.player_side==last_player_index+1: player_i.kill()
     
         # For each player, choose a ball to target, starting with the innermost player
         for player_i in players:
@@ -163,8 +183,8 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
                 for ball_hit in balls_hit:
                     if player_i.player_side!=ball_hit.player_hit:
                         if gc.ORIGINAL_BOUNCE:
-                            new_angle=pf.compute_original_angle(player_i,ball_hit,gc.PADDLE_LENGTH)
-                            ball_hit.set_angle(new_angle)
+                            new_angle=pf.compute_original_angle(player_i,ball_hit,gc.PADDLE_LENGTH,angle_increment=angle_increment)
+                            ball_hit.set_angle(new_angle,reference_paddle=player_i.orientation)
                         else:
                             ball_hit.bounce_wall(player_i.collision_direction)
                             anglechange=pf.compute_anglechange(player_i,ball_hit,radius=gc.PADDLE_RADIUS,paddle_length=gc.PADDLE_LENGTH,paddle_control_factor=gc.PADDLE_CONTROL_FACTOR)
@@ -183,6 +203,10 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
                 for ball_hit in balls_hit:
                     ball_hit.bounce_wall(wall_i.collision_direction)
                     ball_hit.player_hit=-1
+                    balls_to_hit.append(ball_hit)
+                    for player_j in players:
+                        if player_j.target_ball==ball_hit.ball_id:
+                            player_j.reset_target()
 
         # Update the display
         pygame.display.flip()
