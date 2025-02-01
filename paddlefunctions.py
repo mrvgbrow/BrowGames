@@ -6,18 +6,18 @@ import math
 import pygame
 import genutils as genu
 
-def compute_original_angle(paddle,ball,paddle_length):
+def compute_original_angle(paddle,ball,paddle_length,angle_increment=math.pi/16):
     location_on_paddle=compute_paddle_location(paddle,ball,paddle_length)
     if paddle.orientation=='vertical':
         if ball.speedx>0:
-          original_angle=-math.pi/16*location_on_paddle-math.pi
+          original_angle=-angle_increment*location_on_paddle-math.pi
         else:
-          original_angle=math.pi/16*location_on_paddle
+          original_angle=angle_increment*location_on_paddle
     else:
         if ball.speedy<0:
-          original_angle=-math.pi/16*location_on_paddle+math.pi/2
+          original_angle=-angle_increment*location_on_paddle+math.pi/2
         else:
-          original_angle=math.pi/16*location_on_paddle-math.pi/2
+          original_angle=angle_increment*location_on_paddle-math.pi/2
     return original_angle
 
 def compute_paddle_location(paddle,ball,paddle_length):
