@@ -15,6 +15,8 @@ from Pong import pong
 from SpaceRace import spacerace
 from QuadraPong import quadrapong
 from Gotcha import gotcha
+from Rebound import rebound
+from Reverse import reverse
 import menu0
 import settings
 
@@ -58,6 +60,10 @@ while not all_quit:
             settings_dict,back_to_main,pars=quadrapong.run(pars,settings_dict,quickstart=quickstart,default="Original")
         elif game == 'Gotcha':
             settings_dict,back_to_main,pars=gotcha.run(pars,settings_dict,quickstart=quickstart,default="Original")
+        elif game == 'Rebound':
+            settings_dict,back_to_main,pars=rebound.run(pars,settings_dict,quickstart=quickstart,default="Original")
+        elif game == 'Reverse':
+            settings_dict,back_to_main,pars=reverse.run(pars,settings_dict,quickstart=quickstart,default="Standard")
 
         if quickstart:
             all_quit=True

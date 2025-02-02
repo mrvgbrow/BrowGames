@@ -42,7 +42,6 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
         gc.scale_parameters()
 
     current_parameters=gc.get_parameters(gc.__dir__())
-#    font=pygame.font.Font("pong-score-extended.ttf",gc.FONT_SIZE) # A pong-like font. Used in displayed text.
     font_message=pygame.font.Font(None,36) 
     gameutils.init_sound('Sounds',["ding.mp3"])
 
@@ -108,6 +107,8 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
             for i in range(gc.BALL_NUMBER):
                 ball_i=ball.Ball(i)
                 balls.add(ball_i)
+#                if i==0: ball_i.shoot((50,60),10,600,225)
+#                if i==1: ball_i.shoot((50,760),10,600,135)
                 balls_to_hit.append(ball_i)
                 all_sprites.add(ball_i)
     
@@ -132,12 +133,6 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
                 life_counters[scored].decrement_counter()
             ball_position_array.append((ball_i.x,ball_i.y))
 
-        # Only allow for orthogonal bounces if both horizontal and vertical 
-        # players are present
-        if (scores[0]>0 or scores[2]>0) and (scores[1]>0 or scores[3]>0):
-            angle_increment=math.pi/10
-        else:
-            angle_increment=math.pi/16
         for iscore, score in enumerate(scores):
             if score<=0 and alive[iscore]:
                 for player_i in players:
@@ -183,8 +178,12 @@ def run(current_pars,settings_dict,quickstart=False,default='Original'):
                 for ball_hit in balls_hit:
                     if player_i.player_side!=ball_hit.player_hit:
                         if gc.ORIGINAL_BOUNCE:
-                            new_angle=pf.compute_original_angle(player_i,ball_hit,gc.PADDLE_LENGTH,angle_increment=angle_increment)
-                            ball_hit.set_angle(new_angle,reference_paddle=player_i.orientation)
+                            if player_i.orientation=='vertical' and abs(ball_hit.speedx)<0.001 or player_i.orientation=='horizontal' and abs(ball_hit.speedy)<0.001:
+                                ball_hit.speedx=-ball_hit.speedx
+                                ball_hit.speedy=-ball_hit.speedy
+                            else:
+                                new_angle=pf.compute_original_angle(player_i,ball_hit,gc.PADDLE_LENGTH)
+                                ball_hit.set_angle(new_angle,reference_paddle=player_i.orientation)
                         else:
                             ball_hit.bounce_wall(player_i.collision_direction)
                             anglechange=pf.compute_anglechange(player_i,ball_hit,radius=gc.PADDLE_RADIUS,paddle_length=gc.PADDLE_LENGTH,paddle_control_factor=gc.PADDLE_CONTROL_FACTOR)
