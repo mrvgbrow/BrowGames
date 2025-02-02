@@ -98,3 +98,13 @@ class Ball(pygame.sprite.Sprite):
         else:
             intercept=genutils.find_intercept(self.speedy,self.speedx,self.rect.centery,self.rect.centerx,position)
         return intercept
+
+    def shoot(self,target,speed,distance,direction):
+        self.base_speed=speed
+        direction=direction*math.pi/180
+        self.speedx,self.speedy=genutils.angle_to_coords(direction,speed)
+        self.x=target[0]-distance*math.cos(direction)
+        self.rect.centerx=self.x
+        self.y=target[1]-distance*math.sin(direction)
+        self.rect.centery=self.y
+
