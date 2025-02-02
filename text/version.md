@@ -1,3 +1,30 @@
+<h1>Version 1.12</h1>
+
+<p>BrowGames is a collection of customizable classic games, all coded from scratch in Python. See The Retrogame Deconstruction Zone (https://www.retrogamedeconstructionzone.com) for details.</p>
+
+<h2>New Features</h2>
+
+<ul>
+<li>Quadrapong: Added a Standard preset for games that aren't trying to mimic the original version.</li>
+<li>Quadrapong: Added a parameter to adjust the size of the life counter.</li>
+<li>Quadrapong: Added a parameter to set a maximum number of "dribbles" before the ball bounces in a random direction (this helps avoid infinite loops).</li>
+<li>Space Race: Reverse Thrust option allows the ship to thrust backwards when gravity is on.</li>
+</ul>
+<h2>Bug Fixes</h2>
+<ul>
+<li>Quadrapong: "Ball Square" parameter wasn't working.</li>
+</ul>
+
+<h2>Improvements</h2>
+<ul>
+<li>Quadrapong: In the default preset, adjusting the layout and colors to more closely match original game.</li>
+<li>Quadrapong: "Original Bounce" now fixes the X or Y speed depending on the paddle it is deflected from.</li>
+<li>Quadrapong: Game now ends when one player remains.</li>
+<li>Quadrapong: Reset the computer target ball when it hits a wall. </li>
+<li>Quadrapong: Added special logic for impacts from the paddle side, to allow dribbling.</li>
+<li>Quadrapong: Implemented fixed bounce angles of +-(0,30,45,60) when "Original Bounce" is on.</li>
+</ul>
+
 <h1>Version 1.11</h1>
 
 <p>BrowGames is a collection of customizable classic games, all coded from scratch in Python. See The Retrogame Deconstruction Zone (https://www.retrogamedeconstructionzone.com) for details.</p>

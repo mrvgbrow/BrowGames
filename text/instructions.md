@@ -115,8 +115,9 @@ When you load BrowGames, you will  be greeted by the main menu
 <ul>
 <li>Gravity - The acceleration due to gravity, in pixels per second squared. Set to zero for no gravity. If this value is larger than Player Acceleration, gravity will prevent the ship from moving.</li>
 <li>Start Countdown - The initial countdown before the game begins.</li>
-<li>Player Speed - The speed of the player when Gravity is set to 0, in pixels per second.</li>
+<li>Player Speed - The speed of the player when Gravity is set to 0, in pixels per second. When gravity is non-zero, this is the maximum speed a computer player will go.</li>
 <li>Player Acceleration - The acceleration of the player when thrusters are active, in pixels per second squared. This value only applies when gravity is set greater than zero. If this value is lower than the acceleration due to gravity, the player won't be able to move.</li>
+<li>Reverse Thrust - When set to On, the ship can thrust backwards as well as forwards (only works when gravity is on).</li>
 <li>Player [1-2] Steps Anticipate - When the computer player is determining when to move, it will look this many steps ahead before doing so.</li>
 <li>AI Forward Only - When set to On, the computer player will only move forward or remain still, never move backwards.</li>
 <li>Player Collision Reset - When set to On, the player will return to their starting position when they hit an asteroid. When it's off, asteroid collisions will result in an impulse that reverses the player speed.</li>
@@ -149,7 +150,10 @@ When you load BrowGames, you will  be greeted by the main menu
 
 <ul>
 <li>Screen Pad - The distance of the walls from the edge of the screen, as a fraction of the screen height.</li>
+<li>Score Size - Size of the life counter relative to the screen height.</li>
 <li>Lives Start - The initial number of lives that each player has. When these lives expire, the player is removed from the game.</li>
 <li>Paddle Wall Offset - The offset between the paddle and the wall, as a fraction of the screen height.</li>
 <li>Wall Length - The distance from the corner of a wall to the start of a player goal, as a fraction of the screen height.</li>
+<li>AI Try All - When set to On, the computer player will try to hit a ball even if the paddle speed isn't enough to make it.</li>
+<li>Paddle Max Dribble - Sets a maximum number of times the ball can bounce off the paddle side before it bounces at a random angle. This logic is intended to avoid infinite loops.</li>
 </ul>
